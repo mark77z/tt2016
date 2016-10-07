@@ -1,0 +1,28 @@
+{{template "base/head" .}}
+<div class="admin new semester">
+	<div class="ui container">
+		<div class="ui grid">
+			{{template "admin/navbar" .}}
+			<div class="twelve wide column content">
+				{{template "base/alert" .}}
+				<h4 class="ui top attached header">
+					{{.i18n.Tr "admin.users.new_group"}}
+				</h4>
+				<div class="ui attached segment">
+					<form class="ui form" action="{{.Link}}" method="post">
+						{{.CsrfTokenHtml}}
+						<div class="required field {{if .Err_GroupName}}error{{end}}">
+							<label for="name">{{.i18n.Tr "group"}}</label>
+							<input id="name" name="name" value="{{.name}}" autofocus required>
+						</div>
+
+						<div class="field">
+							<button class="ui green button">{{.i18n.Tr "admin.users.new_group"}}</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{template "base/footer" .}}
