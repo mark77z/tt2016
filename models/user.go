@@ -39,6 +39,7 @@ type UserType int
 const (
 	USER_TYPE_INDIVIDUAL UserType = iota // Historic reason to make it starts at 0.
 	USER_TYPE_ORGANIZATION
+	USER_TYPE_PROFESSOR
 )
 
 var (
@@ -105,6 +106,9 @@ type User struct {
 	NumMembers  int
 	Teams       []*Team `xorm:"-"`
 	Members     []*User `xorm:"-"`
+
+	// For professor
+	Subjects	[]*Subject  `xorm:"-"`
 }
 
 func (u *User) BeforeInsert() {

@@ -25,6 +25,8 @@ const (
 	MAIL_AUTH_RESET_PASSWORD  base.TplName = "auth/reset_passwd"
 	MAIL_AUTH_REGISTER_NOTIFY base.TplName = "auth/register_notify"
 
+	MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY base.TplName = "auth/register_professor_notify"
+
 	MAIL_ISSUE_COMMENT base.TplName = "issue/comment"
 	MAIL_ISSUE_MENTION base.TplName = "issue/mention"
 
@@ -100,6 +102,23 @@ func SendActivateEmailMail(c *macaron.Context, u *User, email *EmailAddress) {
 
 	msg := mailer.NewMessage([]string{email.Email}, c.Tr("mail.activate_email"), body)
 	msg.Info = fmt.Sprintf("UID: %d, activate email", u.ID)
+
+	mailer.SendAsync(msg)
+}
+
+// SendNotifyAccountMail triggers a notify e-mail when a professor creates an account.
+func SendNotifyAccountMail(c *macaron.Context, u *User) {
+	data := map[string]interface{}{
+		"Username": u.DisplayName(),
+	}
+	body, err := mailRender.HTMLString(string(MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY), data)
+	if err != nil {
+		log.Error(3, "HTMLString: %v", err)
+		return
+	}
+
+	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_notify"), body)
+	msg.Info = fmt.Sprintf("UID: %d, registration notify", u.ID)
 
 	mailer.SendAsync(msg)
 }

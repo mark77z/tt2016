@@ -65,6 +65,7 @@ type RegisterForm struct {
 	Email    string `binding:"Required;Email;MaxSize(254)"`
 	Password string `binding:"Required;MaxSize(255)"`
 	Retype   string
+	Type 	 bool
 }
 
 func (f *RegisterForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {

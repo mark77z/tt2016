@@ -270,3 +270,181 @@ func SearchSubjectByName(opts *SearchSubjectOptions) (subjects []*Subject, _ int
 	}
 	return subjects, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&subjects)
 }
+
+
+/**
+ * SUBJECT - PROFESOR
+ *
+ *
+ *
+ *
+ *
+ * 
+ */
+// OrgUser represents an subject-professor relation.
+/*type SubjUser struct {
+	ID        int64 `xorm:"pk autoincr"`
+	Pid       int64 `xorm:"INDEX UNIQUE(s)"`
+	SubjID    int64 `xorm:"INDEX UNIQUE(s)"`
+	Status    bool  
+}
+
+func getSubjsByProfID(sess *xorm.Session, userID int64) ([]*Subject, error) {
+	subjs := make([]*Subject, 0, 10)
+	return subjs, sess.And("`subj_user`.uid=?", userID).
+		Join("INNER", "`subj_user`", "`subj_user`.subj_id=`user`.id").Where("`subj_user`.status=?",true).Find(&subjs)
+}
+
+// GetSubjsByProfID returns a list of Subjects associated with the ID
+func GetSubjsByProfID(userID int64) ([]*Subject, error) {
+	return getSubjsByProfID(x.NewSession(), userID)
+}
+
+
+// GetOrgsByUserIDDesc returns a list of organizations that the given user ID
+// has joined, ordered descending by the given condition.
+func GetOrgsByUserIDDesc(userID int64, desc string, showAll bool) ([]*User, error) {
+	return getOrgsByUserID(x.NewSession().Desc(desc), userID, showAll)
+}
+
+
+// GetOrgUsersByUserID returns all organization-user relations by user ID.
+func GetOrgUsersByUserID(uid int64, all bool) ([]*OrgUser, error) {
+	ous := make([]*OrgUser, 0, 10)
+	sess := x.Where("uid=?", uid)
+	if !all {
+		// Only show public organizations
+		sess.And("is_public=?", true)
+	}
+	err := sess.Find(&ous)
+	return ous, err
+}
+
+// GetOrgUsersByOrgID returns all organization-user relations by organization ID.
+func GetOrgUsersByOrgID(orgID int64) ([]*OrgUser, error) {
+	ous := make([]*OrgUser, 0, 10)
+	err := x.Where("org_id=?", orgID).Find(&ous)
+	return ous, err
+}
+
+// ChangeOrgUserStatus changes public or private membership status.
+func ChangeOrgUserStatus(orgID, uid int64, public bool) error {
+	ou := new(OrgUser)
+	has, err := x.Where("uid=?", uid).And("org_id=?", orgID).Get(ou)
+	if err != nil {
+		return err
+	} else if !has {
+		return nil
+	}
+
+	ou.IsPublic = public
+	_, err = x.Id(ou.ID).AllCols().Update(ou)
+	return err
+}
+
+// AddOrgUser adds new user to given organization.
+func AddOrgUser(orgID, uid int64) error {
+	if IsOrganizationMember(orgID, uid) {
+		return nil
+	}
+
+	sess := x.NewSession()
+	defer sess.Close()
+	if err := sess.Begin(); err != nil {
+		return err
+	}
+
+	ou := &OrgUser{
+		Uid:   uid,
+		OrgID: orgID,
+	}
+
+	if _, err := sess.Insert(ou); err != nil {
+		sess.Rollback()
+		return err
+	} else if _, err = sess.Exec("UPDATE `user` SET num_members = num_members + 1 WHERE id = ?", orgID); err != nil {
+		sess.Rollback()
+		return err
+	}
+
+	return sess.Commit()
+}
+
+// RemoveOrgUser removes user from given organization.
+func RemoveOrgUser(orgID, userID int64) error {
+	ou := new(OrgUser)
+
+	has, err := x.Where("uid=?", userID).And("org_id=?", orgID).Get(ou)
+	if err != nil {
+		return fmt.Errorf("get org-user: %v", err)
+	} else if !has {
+		return nil
+	}
+
+	user, err := GetUserByID(userID)
+	if err != nil {
+		return fmt.Errorf("GetUserByID [%d]: %v", userID, err)
+	}
+	org, err := GetUserByID(orgID)
+	if err != nil {
+		return fmt.Errorf("GetUserByID [%d]: %v", orgID, err)
+	}
+
+	// FIXME: only need to get IDs here, not all fields of repository.
+	repos, _, err := org.GetUserRepositories(user.ID, 1, org.NumRepos)
+	if err != nil {
+		return fmt.Errorf("GetUserRepositories [%d]: %v", user.ID, err)
+	}
+
+	// Check if the user to delete is the last member in owner team.
+	if IsOrganizationOwner(orgID, userID) {
+		t, err := org.GetOwnerTeam()
+		if err != nil {
+			return err
+		}
+		if t.NumMembers == 1 {
+			return ErrLastOrgOwner{UID: userID}
+		}
+	}
+
+	sess := x.NewSession()
+	defer sessionRelease(sess)
+	if err := sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err := sess.Id(ou.ID).Delete(ou); err != nil {
+		return err
+	} else if _, err = sess.Exec("UPDATE `user` SET num_members=num_members-1 WHERE id=?", orgID); err != nil {
+		return err
+	}
+
+	// Delete all repository accesses and unwatch them.
+	repoIDs := make([]int64, len(repos))
+	for i := range repos {
+		repoIDs = append(repoIDs, repos[i].ID)
+		if err = watchRepo(sess, user.ID, repos[i].ID, false); err != nil {
+			return err
+		}
+	}
+
+	if len(repoIDs) > 0 {
+		if _, err = sess.Where("user_id = ?", user.ID).In("repo_id", repoIDs).Delete(new(Access)); err != nil {
+			return err
+		}
+	}
+
+	// Delete member in his/her teams.
+	teams, err := getUserTeams(sess, org.ID, user.ID)
+	if err != nil {
+		return err
+	}
+	for _, t := range teams {
+		if err = removeTeamMember(sess, org.ID, t.ID, user.ID); err != nil {
+			return err
+		}
+	}
+
+	return sess.Commit()
+}
+*/

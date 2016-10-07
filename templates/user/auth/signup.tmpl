@@ -28,6 +28,10 @@
 							<label for="retype">{{.i18n.Tr "re_type"}}</label>
 							<input id="retype" name="retype" type="password" value="{{.retype}}" required>
 						</div>
+						<div class="inline field">
+							<label for="type"><strong>{{.i18n.Tr "type_professor"}}</strong></label>
+							<input name="type" type="checkbox" style="width: initial !important;">
+						</div>
 						{{if .EnableCaptcha}}
 							<div class="inline field">
 								<label></label>

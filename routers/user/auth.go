@@ -22,6 +22,7 @@ const (
 	SIGNIN          base.TplName = "user/auth/signin"
 	SIGNUP          base.TplName = "user/auth/signup"
 	ACTIVATE        base.TplName = "user/auth/activate"
+	NOTIFY        	base.TplName = "user/auth/prohibit_login"
 	FORGOT_PASSWORD base.TplName = "user/auth/forgot_passwd"
 	RESET_PASSWORD  base.TplName = "user/auth/reset_passwd"
 )
@@ -189,11 +190,18 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 		return
 	}
 
+	user_type = models.USER_TYPE_INDIVIDUAL
+	if form.Type {
+		user_type = models.USER_TYPE_PROFESSOR
+	}
+
+
 	u := &models.User{
 		Name:     form.UserName,
 		Email:    form.Email,
 		Passwd:   form.Password,
 		IsActive: !setting.Service.RegisterEmailConfirm,
+		ProhibitLogin: !form.Type,
 	}
 	if err := models.CreateUser(u); err != nil {
 		switch {
@@ -227,17 +235,31 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 	}
 
 	// Send confirmation email, no need for social account.
-	if setting.Service.RegisterEmailConfirm && u.ID > 1 {
-		models.SendActivateAccountMail(ctx.Context, u)
-		ctx.Data["IsSendRegisterMail"] = true
-		ctx.Data["Email"] = u.Email
-		ctx.Data["Hours"] = setting.Service.ActiveCodeLives / 60
-		ctx.HTML(200, ACTIVATE)
+	if form.Type {
+		if setting.Service.RegisterEmailConfirm && u.ID > 1 {
+			models.SendActivateAccountMail(ctx.Context, u)
+			ctx.Data["IsSendRegisterMail"] = true
+			ctx.Data["Email"] = u.Email
+			ctx.Data["Hours"] = setting.Service.ActiveCodeLives / 60
+			ctx.HTML(200, ACTIVATE)
 
-		if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
-			log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
+			if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
+				log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
+			}
+			return
 		}
-		return
+	} else {
+		if setting.Service.RegisterEmailConfirm && u.ID > 1 {
+			models.SendNotifyAccountMail(ctx.Context, u)
+			ctx.Data["IsSendRegisterMail"] = true
+			ctx.Data["Email"] = u.Email
+			ctx.HTML(200, NOTIFY)
+
+			if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
+				log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
+			}
+			return
+		}
 	}
 
 	ctx.Redirect(setting.AppSubUrl + "/user/login")
