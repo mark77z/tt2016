@@ -117,7 +117,7 @@ func SendNotifyAccountMail(c *macaron.Context, u *User) {
 		return
 	}
 
-	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_notify"), body)
+	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_professor_notify"), body)
 	msg.Info = fmt.Sprintf("UID: %d, registration notify", u.ID)
 
 	mailer.SendAsync(msg)

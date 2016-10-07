@@ -190,18 +190,19 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 		return
 	}
 
-	user_type = models.USER_TYPE_INDIVIDUAL
+	user_type := models.USER_TYPE_INDIVIDUAL
 	if form.Type {
 		user_type = models.USER_TYPE_PROFESSOR
 	}
-
+	log.Trace("checkbox: %s", form.Type)
 
 	u := &models.User{
 		Name:     form.UserName,
 		Email:    form.Email,
 		Passwd:   form.Password,
 		IsActive: !setting.Service.RegisterEmailConfirm,
-		ProhibitLogin: !form.Type,
+		ProhibitLogin: form.Type,
+		Type: 	user_type,
 	}
 	if err := models.CreateUser(u); err != nil {
 		switch {
@@ -237,11 +238,10 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 	// Send confirmation email, no need for social account.
 	if form.Type {
 		if setting.Service.RegisterEmailConfirm && u.ID > 1 {
-			models.SendActivateAccountMail(ctx.Context, u)
+			models.SendNotifyAccountMail(ctx.Context, u)
 			ctx.Data["IsSendRegisterMail"] = true
 			ctx.Data["Email"] = u.Email
-			ctx.Data["Hours"] = setting.Service.ActiveCodeLives / 60
-			ctx.HTML(200, ACTIVATE)
+			ctx.HTML(200, NOTIFY)
 
 			if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
 				log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
@@ -250,10 +250,11 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 		}
 	} else {
 		if setting.Service.RegisterEmailConfirm && u.ID > 1 {
-			models.SendNotifyAccountMail(ctx.Context, u)
+			models.SendActivateAccountMail(ctx.Context, u)
 			ctx.Data["IsSendRegisterMail"] = true
 			ctx.Data["Email"] = u.Email
-			ctx.HTML(200, NOTIFY)
+			ctx.Data["Hours"] = setting.Service.ActiveCodeLives / 60
+			ctx.HTML(200, ACTIVATE)
 
 			if err := ctx.Cache.Put("MailResendLimit_"+u.LowerName, u.LowerName, 180); err != nil {
 				log.Error(4, "Set cache(MailResendLimit) fail: %v", err)
