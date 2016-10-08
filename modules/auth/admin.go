@@ -78,3 +78,16 @@ type AdminEditGroupForm struct {
 func (f *AdminCreateGroupForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
+
+//*************TAG FORMS***************
+type AdminCreateTagForm struct {
+	Etiqueta	string `binding:"Required;MaxSize(50)"`
+}
+
+type AdminEditTagForm struct {
+	Etiqueta    string `binding:"Required;MaxSize(50)"`
+}
+
+func (f *AdminCreateTagForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f, ctx.Locale)
+}

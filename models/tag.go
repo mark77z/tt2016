@@ -19,9 +19,9 @@ import (
 
 
 // Subject represents the object of individual and member of organization.
-type Group struct {
-	ID        int64  `xorm:"pk autoincr"`
-	Name      string `xorm:"VARCHAR(6) UNIQUE NOT NULL"`
+type Tag struct {
+	ID        	int64  `xorm:"pk autoincr"`
+	Etiqueta    string `xorm:"VARCHAR(50) UNIQUE NOT NULL"`
 }
 
 
@@ -29,22 +29,22 @@ type Group struct {
 // the user name should be noncased unique.
 // If uid is presented, then check will rule out that one,
 // it is used when update a user name in settings page.
-func IsGroupExist(uid int64, name string) (bool, error) {
+func IsTagExist(uid int64, name string) (bool, error) {
 	if len(name) == 0 {
 		return false, nil
 	}
-	return x.Where("id!=?", uid).Get(&Group{Name: name})
+	return x.Where("id!=?", uid).Get(&Tag{Etiqueta: name})
 }
 
 var (
-	reversedGroupnames    = []string{"debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues", "pulls", "commits", "repo", "template", "admin", "new", ".", ".."}
-	reversedGroupPatterns = []string{"*.keys"}
+	reversedTagnames    = []string{"debug", "raw", "install", "api", "avatar", "user", "org", "help", "stars", "issues", "pulls", "commits", "repo", "template", "admin", "new", ".", ".."}
+	reversedTagPatterns = []string{"*.keys"}
 )
 
 // isUsableName checks if name is reserved or pattern of name is not allowed
 // based on given reversed names and patterns.
 // Names are exact match, patterns can be prefix or suffix match with placeholder '*'.
-func isUsableNameGroup(names, patterns []string, name string) error {
+func isUsableNameTag(names, patterns []string, name string) error {
 	name = strings.TrimSpace(strings.ToLower(name))
 	if utf8.RuneCountInString(name) == 0 {
 		return ErrNameEmpty
@@ -66,21 +66,21 @@ func isUsableNameGroup(names, patterns []string, name string) error {
 	return nil
 }
 
-func IsUsableGroupname(name string) error {
-	return isUsableNameGroup(reversedGroupnames, reversedGroupPatterns, name)
+func IsUsableTagName(name string) error {
+	return isUsableNameTag(reversedTagnames, reversedTagPatterns, name)
 }
 
-// CreateSubject creates record of a new user.
-func CreateGroup(g *Group) (err error) {
-	if err = IsUsableGroupname(g.Name); err != nil {
+// CreateTag creates record of a new tag.
+func CreateTag(t *Tag) (err error) {
+	if err = IsUsableTagName(t.Etiqueta); err != nil {
 		return err
 	}
 
-	isExist, err := IsGroupExist(0, g.Name)
+	isExist, err := IsTagExist(0, t.Etiqueta)
 	if err != nil {
 		return err
 	} else if isExist {
-		return ErrGroupAlreadyExist{g.Name}
+		return ErrTagAlreadyExist{t.Etiqueta}
 		//return nil
 	}
 
@@ -90,67 +90,67 @@ func CreateGroup(g *Group) (err error) {
 		return err
 	}
 
-	if _, err = sess.Insert(g); err != nil {
+	if _, err = sess.Insert(t); err != nil {
 		return err
 	} 
 
 	return sess.Commit()
 }
 
-func countGroups(e Engine) int64 {
-	count, _ := e.Where("id > 0").Count(new(Group))
+func countTags(e Engine) int64 {
+	count, _ := e.Where("id > 0").Count(new(Tag))
 	return count
 }
 
 // CountGroups returns number of groups.
-func CountGroups() int64 {
-	return countGroups(x)
+func CountTags() int64 {
+	return countTags(x)
 }
 
 // Groups returns number of groups in given page.
-func Groups(page, pageSize int) ([]*Group, error) {
-	groups := make([]*Group, 0, pageSize)
-	return groups, x.Limit(pageSize, (page-1)*pageSize).Where("id > 0").Asc("id").Find(&groups)
+func Tags(page, pageSize int) ([]*Tag, error) {
+	tags := make([]*Tag, 0, pageSize)
+	return tags, x.Limit(pageSize, (page-1)*pageSize).Where("id > 0").Asc("id").Find(&tags)
 }
 
 
-func getGroups() ([]*Group, error) {
-	groups := make([]*Group, 0, 5)
-	return groups, x.Asc("name").Find(&groups)
+func getTags() ([]*Tag, error) {
+	tags := make([]*Tag, 0, 5)
+	return tags, x.Asc("name").Find(&tags)
 }
 
-func GetGroups()([]*Group, error){
-	return getGroups()
+func GetTags()([]*Tag, error){
+	return getTags()
 }
 
 
-func updateGroup(e Engine, g *Group) error {
+func updateTag(e Engine, t *Tag) error {
 	// Organization does not need email
-	if err := IsUsableGroupname(g.Name); err != nil {
+	if err := IsUsableTagName(t.Etiqueta); err != nil {
 		return err
 	}
 
-	isExist, err := IsGroupExist(0, g.Name)
+	isExist, err := IsTagExist(0, t.Etiqueta)
 	if err != nil {
 		return err
 	} else if isExist {
-		return ErrGroupAlreadyExist{g.Name}
+		return ErrTagAlreadyExist{t.Etiqueta}
 		//return nil
 	}
 
-	_, err = e.Id(g.ID).AllCols().Update(g)
+	_, err = e.Id(t.ID).AllCols().Update(t)
 	return err
 }
 
 // UpdateSubject updates user's information.
-func UpdateGroup(g *Group) error {
-	return updateGroup(x, g)
+func UpdateTag(t *Tag) error {
+	return updateTag(x, t)
 }
 
 
-func deleteGroup(e *xorm.Session, g *Group) error {
+func deleteTag(e *xorm.Session, t *Tag) error {
 
-	if _, err := e.Id(g.ID).Delete(new(Group)); err != nil {
+	if _, err := e.Id(t.ID).Delete(new(Tag)); err != nil {
 		return fmt.Errorf("Delete: %v", err)
 	}
 
@@ -159,14 +159,14 @@ func deleteGroup(e *xorm.Session, g *Group) error {
 
 // DeleteGroup completely and permanently deletes everything of a user,
 // but issues/comments/pulls will be kept and shown as someone has been deleted.
-func DeleteGroup(g *Group) (err error) {
+func DeleteTag(t *Tag) (err error) {
 	sess := x.NewSession()
 	defer sessionRelease(sess)
 	if err = sess.Begin(); err != nil {
 		return err
 	}
 
-	if err = deleteGroup(sess, g); err != nil {
+	if err = deleteTag(sess, t); err != nil {
 		return err
 	}
 
@@ -178,52 +178,52 @@ func DeleteGroup(g *Group) (err error) {
 }
 
 
-func getGroupByID(e Engine, id int64) (*Group, error) {
-	g := new(Group)
-	has, err := e.Id(id).Get(g)
+func getTagByID(e Engine, id int64) (*Tag, error) {
+	t := new(Tag)
+	has, err := e.Id(id).Get(t)
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, ErrGroupNotExist{id, ""}
+		return nil, ErrTagNotExist{id, ""}
 	}
-	return g, nil
+	return t, nil
 }
 
 // GetGroupByID returns the user object by given ID if exists.
-func GetGroupByID(id int64) (*Group, error) {
-	return getGroupByID(x, id)
+func GetTagByID(id int64) (*Tag, error) {
+	return getTagByID(x, id)
 }
 
 // GetSubjectByName returns user by given name.
-func GetGroupByName(name string) (*Group, error) {
+func GetTagByName(name string) (*Tag, error) {
 	if len(name) == 0 {
-		return nil, ErrGroupNotExist{0, name}
+		return nil, ErrTagNotExist{0, name}
 	}
-	g := &Group{Name: name}
-	has, err := x.Get(g)
+	t := &Tag{Etiqueta: name}
+	has, err := x.Get(t)
 	if err != nil {
 		return nil, err
 	} else if !has {
-		return nil, ErrGroupNotExist{0, name}
+		return nil, ErrTagNotExist{0, name}
 	}
-	return g, nil
+	return t, nil
 }
 
 
 // GetGroupIDsByNames returns a slice of ids corresponds to names.
-func GetGroupIDsByNames(names []string) []int64 {
+func GetTagIDsByNames(names []string) []int64 {
 	ids := make([]int64, 0, len(names))
 	for _, name := range names {
-		g, err := GetGroupByName(name)
+		t, err := GetTagByName(name)
 		if err != nil {
 			continue
 		}
-		ids = append(ids, g.ID)
+		ids = append(ids, t.ID)
 	}
 	return ids
 }
 
-type SearchGroupOptions struct {
+type SearchTagOptions struct {
 	Keyword  string
 	OrderBy  string
 	Page     int
@@ -232,9 +232,9 @@ type SearchGroupOptions struct {
 
 // SearchSubjectByName takes keyword and part of user name to search,
 // it returns results in given range and number of total results.
-func SearchGroupByName(opts *SearchGroupOptions) (groups []*Group, _ int64, _ error) {
+func SearchTagByName(opts *SearchTagOptions) (tags []*Tag, _ int64, _ error) {
 	if len(opts.Keyword) == 0 {
-		return groups, 0, nil
+		return tags, 0, nil
 	}
 	opts.Keyword = strings.ToLower(opts.Keyword)
 
@@ -246,13 +246,13 @@ func SearchGroupByName(opts *SearchGroupOptions) (groups []*Group, _ int64, _ er
 	}
 
 	searchQuery := "%" + opts.Keyword + "%"
-	groups = make([]*Group, 0, opts.PageSize)
+	tags = make([]*Tag, 0, opts.PageSize)
 	// Append conditions
-	sess := x.Where("name LIKE ?", searchQuery)
+	sess := x.Where("etiqueta LIKE ?", searchQuery)
 
 	var countSess xorm.Session
 	countSess = *sess
-	count, err := countSess.Count(new(Group))
+	count, err := countSess.Count(new(Tag))
 	if err != nil {
 		return nil, 0, fmt.Errorf("Count: %v", err)
 	}
@@ -260,5 +260,5 @@ func SearchGroupByName(opts *SearchGroupOptions) (groups []*Group, _ int64, _ er
 	if len(opts.OrderBy) > 0 {
 		sess.OrderBy(opts.OrderBy)
 	}
-	return groups, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&groups)
+	return tags, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&tags)
 }

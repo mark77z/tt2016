@@ -747,7 +747,7 @@ func IsErrGroupNotExist(err error) bool {
 func (err ErrGroupNotExist) Error() string {
 	return fmt.Sprintf("group does not exist [uid: %d, name: %s]", err.UID, err.Name)
 }
-
+//*******************SEMESTER****************************
 type ErrSemesterAlreadyExist struct {
 	Name string
 }
@@ -774,4 +774,33 @@ func IsErrSemesterNotExist(err error) bool {
 
 func (err ErrSemesterNotExist) Error() string {
 	return fmt.Sprintf("semester does not exist [uid: %d, name: %s]", err.UID, err.Name)
+}
+
+//*********TAGS**************************
+type ErrTagAlreadyExist struct {
+	Name string
+}
+
+func IsErrTagAlreadyExist(err error) bool {
+	_, ok := err.(ErrTagAlreadyExist)
+	return ok
+}
+
+
+func (err ErrTagAlreadyExist) Error() string {
+	return fmt.Sprintf("tag already exists [name: %s]", err.Name)
+}
+
+type ErrTagNotExist struct {
+	UID  int64
+	Name string
+}
+
+func IsErrTagNotExist(err error) bool {
+	_, ok := err.(ErrTagNotExist)
+	return ok
+}
+
+func (err ErrTagNotExist) Error() string {
+	return fmt.Sprintf("tag does not exist [uid: %d, name: %s]", err.UID, err.Name)
 }
