@@ -39,6 +39,7 @@ type UserType int
 const (
 	USER_TYPE_INDIVIDUAL UserType = iota // Historic reason to make it starts at 0.
 	USER_TYPE_ORGANIZATION
+	USER_TYPE_PROFESSOR
 )
 
 var (
@@ -105,6 +106,9 @@ type User struct {
 	NumMembers  int
 	Teams       []*Team `xorm:"-"`
 	Members     []*User `xorm:"-"`
+
+	// For professor
+	Subjects	[]*Subject  `xorm:"-"`
 }
 
 func (u *User) BeforeInsert() {
@@ -566,7 +570,7 @@ func CreateUser(u *User) (err error) {
 }
 
 func countUsers(e Engine) int64 {
-	count, _ := e.Where("type=0").Count(new(User))
+	count, _ := e.Where("type=0").Or("type=2").Count(new(User))
 	return count
 }
 
@@ -578,7 +582,7 @@ func CountUsers() int64 {
 // Users returns number of users in given page.
 func Users(page, pageSize int) ([]*User, error) {
 	users := make([]*User, 0, pageSize)
-	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=0").Asc("id").Find(&users)
+	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=0").Or("type=2").Asc("id").Find(&users)
 }
 
 // get user by erify code
