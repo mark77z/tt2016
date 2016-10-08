@@ -21,6 +21,9 @@ const (
 	EXPLORE_REPOS         base.TplName = "explore/repos"
 	EXPLORE_USERS         base.TplName = "explore/users"
 	EXPLORE_ORGANIZATIONS base.TplName = "explore/organizations"
+	EXPLORE_SUBJECTS 	  base.TplName = "explore/subjects"
+	EXPLORE_SEMESTERS	  base.TplName = "explore/semesters"
+	EXPLORE_GROUPS	      base.TplName = "explore/groups"
 )
 
 func Home(ctx *context.Context) {
@@ -193,6 +196,192 @@ func ExploreOrganizations(ctx *context.Context) {
 		PageSize: setting.UI.ExplorePagingNum,
 		OrderBy:  "updated_unix DESC",
 		TplName:  EXPLORE_ORGANIZATIONS,
+	})
+}
+
+type SubjectsSearchOptions struct {
+	Counter  func() int64
+	Ranger   func(int, int) ([]*models.Subject, error)
+	PageSize int
+	OrderBy  string
+	TplName  base.TplName
+}
+
+func RenderSubjectsSearch(ctx *context.Context, opts *SubjectsSearchOptions) {
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	var (
+		subjects []*models.Subject
+		count int64
+		err   error
+	)
+
+	keyword := ctx.Query("q")
+	if len(keyword) == 0 {
+		subjects, err = opts.Ranger(page, opts.PageSize)
+		if err != nil {
+			ctx.Handle(500, "opts.Ranger", err)
+			return
+		}
+		count = opts.Counter()
+	} else {
+		subjects, count, err = models.SearchSubjectByName(&models.SearchSubjectOptions{
+			Keyword:  keyword,
+			OrderBy:  opts.OrderBy,
+			Page:     page,
+			PageSize: opts.PageSize,
+		})
+		if err != nil {
+			ctx.Handle(500, "SearchSubjectByName", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Page"] = paginater.New(int(count), opts.PageSize, page, 5)
+	ctx.Data["Subjects"] = subjects
+
+	ctx.HTML(200, opts.TplName)
+}
+
+func ExploreSubjects(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreSubjects"] = true
+
+	RenderSubjectsSearch(ctx, &SubjectsSearchOptions{
+		Counter:  models.CountSubjects,
+		Ranger:   models.Subjects,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "name ASC",
+		TplName:  EXPLORE_SUBJECTS,
+	})
+}
+
+type SemestersSearchOptions struct {
+	Counter  func() int64
+	Ranger   func(int, int) ([]*models.Semester, error)
+	PageSize int
+	OrderBy  string
+	TplName  base.TplName
+}
+
+func RenderSemestersSearch(ctx *context.Context, opts *SemestersSearchOptions) {
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	var (
+		semesters []*models.Semester
+		count int64
+		err   error
+	)
+
+	keyword := ctx.Query("q")
+	if len(keyword) == 0 {
+		semesters, err = opts.Ranger(page, opts.PageSize)
+		if err != nil {
+			ctx.Handle(500, "opts.Ranger", err)
+			return
+		}
+		count = opts.Counter()
+	} else {
+		semesters, count, err = models.SearchSemesterByName(&models.SearchSemesterOptions{
+			Keyword:  keyword,
+			OrderBy:  opts.OrderBy,
+			Page:     page,
+			PageSize: opts.PageSize,
+		})
+		if err != nil {
+			ctx.Handle(500, "SearchSemesterByName", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Page"] = paginater.New(int(count), opts.PageSize, page, 5)
+	ctx.Data["Semesters"] = semesters
+
+	ctx.HTML(200, opts.TplName)
+}
+
+func ExploreSemesters(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreSemesters"] = true
+
+	RenderSemestersSearch(ctx, &SemestersSearchOptions{
+		Counter:  models.CountSemesters,
+		Ranger:   models.Semesters,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "name ASC",
+		TplName:  EXPLORE_SEMESTERS,
+	})
+}
+
+type GrupsSearchOptions struct {
+	Counter  func() int64
+	Ranger   func(int, int) ([]*models.Group, error)
+	PageSize int
+	OrderBy  string
+	TplName  base.TplName
+}
+
+func RenderGroupsSearch(ctx *context.Context, opts *GrupsSearchOptions) {
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	var (
+		groups []*models.Group
+		count int64
+		err   error
+	)
+
+	keyword := ctx.Query("q")
+	if len(keyword) == 0 {
+		groups, err = opts.Ranger(page, opts.PageSize)
+		if err != nil {
+			ctx.Handle(500, "opts.Ranger", err)
+			return
+		}
+		count = opts.Counter()
+	} else {
+		groups, count, err = models.SearchGroupByName(&models.SearchGroupOptions{
+			Keyword:  keyword,
+			OrderBy:  opts.OrderBy,
+			Page:     page,
+			PageSize: opts.PageSize,
+		})
+		if err != nil {
+			ctx.Handle(500, "SearchGroupByName", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Page"] = paginater.New(int(count), opts.PageSize, page, 5)
+	ctx.Data["Groups"] = groups
+
+	ctx.HTML(200, opts.TplName)
+}
+
+func ExploreGroups(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreGroups"] = true
+
+	RenderGroupsSearch(ctx, &GrupsSearchOptions{
+		Counter:  models.CountGroups,
+		Ranger:   models.Groups,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "name ASC",
+		TplName:  EXPLORE_GROUPS,
 	})
 }
 

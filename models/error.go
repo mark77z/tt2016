@@ -690,3 +690,88 @@ func IsErrUploadNotExist(err error) bool {
 func (err ErrUploadNotExist) Error() string {
 	return fmt.Sprintf("attachment does not exist [id: %d, uuid: %s]", err.ID, err.UUID)
 }
+//*****************************************************************************
+//*****************************************************************************
+type ErrSubjectAlreadyExist struct {
+	Name string
+}
+
+func IsErrSubjectAlreadyExist(err error) bool {
+	_, ok := err.(ErrSubjectAlreadyExist)
+	return ok
+}
+
+
+func (err ErrSubjectAlreadyExist) Error() string {
+	return fmt.Sprintf("subject already exists [name: %s]", err.Name)
+}
+
+type ErrGroupAlreadyExist struct {
+	Name string
+}
+
+func IsErrGroupAlreadyExist(err error) bool {
+	_, ok := err.(ErrGroupAlreadyExist)
+	return ok
+}
+
+
+func (err ErrGroupAlreadyExist) Error() string {
+	return fmt.Sprintf("Group already exists [name: %s]", err.Name)
+}
+
+type ErrSubjectNotExist struct {
+	UID  int64
+	Name string
+}
+
+func IsErrSubjectNotExist(err error) bool {
+	_, ok := err.(ErrSubjectNotExist)
+	return ok
+}
+
+func (err ErrSubjectNotExist) Error() string {
+	return fmt.Sprintf("subject does not exist [uid: %d, name: %s]", err.UID, err.Name)
+}
+
+type ErrGroupNotExist struct {
+	UID  int64
+	Name string
+}
+
+func IsErrGroupNotExist(err error) bool {
+	_, ok := err.(ErrGroupNotExist)
+	return ok
+}
+
+func (err ErrGroupNotExist) Error() string {
+	return fmt.Sprintf("group does not exist [uid: %d, name: %s]", err.UID, err.Name)
+}
+
+type ErrSemesterAlreadyExist struct {
+	Name string
+}
+
+func IsErrSemesterAlreadyExist(err error) bool {
+	_, ok := err.(ErrSemesterAlreadyExist)
+	return ok
+}
+
+
+func (err ErrSemesterAlreadyExist) Error() string {
+	return fmt.Sprintf("semester already exists [name: %s]", err.Name)
+}
+
+type ErrSemesterNotExist struct {
+	UID  int64
+	Name string
+}
+
+func IsErrSemesterNotExist(err error) bool {
+	_, ok := err.(ErrSemesterNotExist)
+	return ok
+}
+
+func (err ErrSemesterNotExist) Error() string {
+	return fmt.Sprintf("semester does not exist [uid: %d, name: %s]", err.UID, err.Name)
+}

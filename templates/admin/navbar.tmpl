@@ -7,6 +7,15 @@
 		<a class="{{if .PageIsAdminUsers}}active{{end}} item" href="{{AppSubUrl}}/admin/users">
 			{{.i18n.Tr "admin.users"}}
 		</a>
+		<a class="{{if .PageIsAdminSemesters}}active{{end}} item" href="{{AppSubUrl}}/admin/semesters">
+			{{.i18n.Tr "admin.semesters"}}
+		</a>
+		<a class="{{if .PageIsAdminSubjects}}active{{end}} item" href="{{AppSubUrl}}/admin/subjects">
+			{{.i18n.Tr "admin.subjects"}}
+		</a>
+		<a class="{{if .PageIsAdminGroups}}active{{end}} item" href="{{AppSubUrl}}/admin/groups">
+			{{.i18n.Tr "admin.groups"}}
+		</a>
 		<a class="{{if .PageIsAdminOrganizations}}active{{end}} item" href="{{AppSubUrl}}/admin/orgs">
 			{{.i18n.Tr "admin.organizations"}}
 		</a>
