@@ -243,6 +243,9 @@ func runWeb(ctx *cli.Context) error {
 		m.Combo("/email").Get(user.SettingsEmails).
 			Post(bindIgnErr(auth.AddEmailForm{}), user.SettingsEmailPost)
 		m.Post("/email/delete", user.DeleteEmail)
+		m.Combo("/subject").Get(user.SettingsSubjects).
+			Post(bindIgnErr(auth.AddEmailForm{}), user.SettingsSubjectPost)
+		m.Post("/subject/delete", user.DeleteSubject)
 		m.Get("/password", user.SettingsPassword)
 		m.Post("/password", bindIgnErr(auth.ChangePasswordForm{}), user.SettingsPasswordPost)
 		m.Combo("/ssh").Get(user.SettingsSSHKeys).

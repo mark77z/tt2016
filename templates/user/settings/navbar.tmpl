@@ -13,6 +13,11 @@
 		<a class="{{if .PageIsSettingsEmails}}active{{end}} item" href="{{AppSubUrl}}/user/settings/email">
 			{{.i18n.Tr "settings.emails"}}
 		</a>
+		{{if .ContextUser.IsOrganization}}
+			<a class="{{if .PageIsSettingsSubjects}}active{{end}} item" href="{{AppSubUrl}}/user/settings/subject">
+				{{.i18n.Tr "settings.subjects"}}
+			</a>
+		{{end}}
 		<a class="{{if .PageIsSettingsSSHKeys}}active{{end}} item" href="{{AppSubUrl}}/user/settings/ssh">
 			{{.i18n.Tr "settings.ssh_keys"}}
 		</a>

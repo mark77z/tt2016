@@ -125,6 +125,14 @@ func (f *AddEmailForm) Validate(ctx *macaron.Context, errs binding.Errors) bindi
 	return validate(errs, ctx.Data, f, ctx.Locale)
 }
 
+type AddSubjectForm struct {
+	Subject string `binding:"Required;MaxSize(254)"`
+}
+
+func (f *AddSubjectForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
+	return validate(errs, ctx.Data, f, ctx.Locale)
+}
+
 type ChangePasswordForm struct {
 	OldPassword string `form:"old_password" binding:"Required;MinSize(1);MaxSize(255)"`
 	Password    string `form:"password" binding:"Required;MaxSize(255)"`
