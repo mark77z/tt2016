@@ -218,6 +218,7 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/semesters", routers.ExploreSemesters)
 		m.Get("/groups", routers.ExploreGroups)
 		m.Get("/subjects", routers.ExploreSubjects)
+		m.Get("/tags", routers.ExploreTags)
 		
 	}, ignSignIn)
 	m.Combo("/install", routers.InstallInit).Get(routers.Install).
@@ -314,6 +315,13 @@ func runWeb(ctx *cli.Context) error {
 			m.Combo("/new").Get(admin.NewGroup).Post(bindIgnErr(auth.AdminCreateGroupForm{}), admin.NewGroupPost)
 			m.Combo("/:groupid").Get(admin.EditGroup).Post(bindIgnErr(auth.AdminEditGroupForm{}), admin.EditGroupPost)
 			m.Post("/:groupid/delete", admin.DeleteGroup)
+		})
+
+		m.Group("/tags", func() {
+			m.Get("", admin.Tags)
+			m.Combo("/new").Get(admin.NewTag).Post(bindIgnErr(auth.AdminCreateTagForm{}), admin.NewTagPost)
+			m.Combo("/:tagid").Get(admin.EditTag).Post(bindIgnErr(auth.AdminEditTagForm{}), admin.EditTagPost)
+			m.Post("/:tagid/delete", admin.DeleteTag)
 		})
 
 		m.Group("/auths", func() {

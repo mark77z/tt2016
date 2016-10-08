@@ -67,7 +67,8 @@ func init() {
 		new(Mirror), new(Release), new(LoginSource), new(Webhook),
 		new(UpdateTask), new(HookTask),
 		new(Team), new(OrgUser), new(TeamUser), new(TeamRepo),
-		new(Notice), new(EmailAddress))
+		new(Notice), new(EmailAddress), new(Subject),
+		new(Semester), new(Group), new (Tag))
 
 	gonicNames := []string{"SSL"}
 	for _, name := range gonicNames {
@@ -214,6 +215,7 @@ type Statistic struct {
 		Issue, Comment, Oauth, Follow,
 		Mirror, Release, LoginSource, Webhook,
 		Milestone, Label, HookTask,
+		Subject, Group, Semester, Tag,
 		Team, UpdateTask, Attachment int64
 	}
 }
@@ -241,6 +243,10 @@ func GetStatistic() (stats Statistic) {
 	stats.Counter.Team, _ = x.Count(new(Team))
 	stats.Counter.UpdateTask, _ = x.Count(new(UpdateTask))
 	stats.Counter.Attachment, _ = x.Count(new(Attachment))
+	stats.Counter.Subject = CountSubjects()
+	stats.Counter.Group = CountGroups()
+	stats.Counter.Semester = CountSemesters()
+	stats.Counter.Tag = CountTags()
 	return
 }
 

@@ -11,7 +11,10 @@
 			<span class="octicon octicon-calendar"></span> {{.i18n.Tr "explore.semesters"}}
 		</a>
 		<a class="{{if .PageIsExploreGroups}}active{{end}} item" href="{{AppSubUrl}}/explore/groups">
-			<span class="octicon octicon-bookmark"></span> {{.i18n.Tr "explore.groups"}}
+			<span class="octicon octicon-briefcase"></span> {{.i18n.Tr "explore.groups"}}
+		</a>
+		<a class="{{if .PageIsExploreTags}}active{{end}} item" href="{{AppSubUrl}}/explore/tags">
+			<span class="octicon octicon-bookmark"></span> {{.i18n.Tr "explore.tags"}}
 		</a>
 		<a class="{{if .PageIsExploreUsers}}active{{end}} item" href="{{AppSubUrl}}/explore/users">
 			<span class="octicon octicon-person"></span> {{.i18n.Tr "explore.users"}}

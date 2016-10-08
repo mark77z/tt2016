@@ -1,0 +1,42 @@
+{{template "base/head" .}}
+<div class="admin edit tag">
+	<div class="ui container">
+		<div class="ui grid">
+			{{template "admin/navbar" .}}
+			<div class="twelve wide column content">
+				{{template "base/alert" .}}
+				<h4 class="ui top attached header">
+					{{.i18n.Tr "admin.edit_tag"}}
+				</h4>
+				<div class="ui attached segment">
+					<form class="ui form" action="{{.Link}}" method="post">
+						{{.CsrfTokenHtml}}
+						<div class="required inline field {{if .Err_TagName}}error{{end}}">
+							<label for="etiqueta">{{.i18n.Tr "tag"}}</label>
+							<input id="etiqueta" name="etiqueta" value="{{ .Tag.Etiqueta}}" autofocus>
+						</div>
+						
+						<div class="ui divider"></div>
+
+						<div class="field">
+							<button class="ui green button">{{.i18n.Tr "admin.update_tag"}}</button>
+							<div class="ui red button delete-button" data-url="{{$.Link}}/delete" data-id="{{.Subject.ID}}">{{.i18n.Tr "admin.delete_tag"}}</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="ui small basic delete modal">
+	<div class="ui icon header">
+		<i class="trash icon"></i>
+		{{.i18n.Tr "settings.delete_tag_title"}}
+	</div>
+	<div class="content">
+		<p>{{.i18n.Tr "settings.delete_tag_desc"}}</p>
+	</div>
+	{{template "base/delete_modal_actions" .}}
+</div>
+{{template "base/footer" .}}

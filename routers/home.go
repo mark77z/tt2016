@@ -24,6 +24,7 @@ const (
 	EXPLORE_SUBJECTS 	  base.TplName = "explore/subjects"
 	EXPLORE_SEMESTERS	  base.TplName = "explore/semesters"
 	EXPLORE_GROUPS	      base.TplName = "explore/groups"
+	EXPLORE_TAGS	      base.TplName = "explore/tags"
 )
 
 func Home(ctx *context.Context) {
@@ -382,6 +383,68 @@ func ExploreGroups(ctx *context.Context) {
 		PageSize: setting.UI.ExplorePagingNum,
 		OrderBy:  "name ASC",
 		TplName:  EXPLORE_GROUPS,
+	})
+}
+
+type TagsSearchOptions struct {
+	Counter  func() int64
+	Ranger   func(int, int) ([]*models.Tag, error)
+	PageSize int
+	OrderBy  string
+	TplName  base.TplName
+}
+
+func RenderTagsSearch(ctx *context.Context, opts *TagsSearchOptions) {
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	var (
+		tags []*models.Tag
+		count int64
+		err   error
+	)
+
+	keyword := ctx.Query("q")
+	if len(keyword) == 0 {
+		tags, err = opts.Ranger(page, opts.PageSize)
+		if err != nil {
+			ctx.Handle(500, "opts.Ranger", err)
+			return
+		}
+		count = opts.Counter()
+	} else {
+		tags, count, err = models.SearchTagByName(&models.SearchTagOptions{
+			Keyword:  keyword,
+			OrderBy:  opts.OrderBy,
+			Page:     page,
+			PageSize: opts.PageSize,
+		})
+		if err != nil {
+			ctx.Handle(500, "SearchTagByName", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Page"] = paginater.New(int(count), opts.PageSize, page, 5)
+	ctx.Data["Tags"] = tags
+
+	ctx.HTML(200, opts.TplName)
+}
+
+func ExploreTags(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreTags"] = true
+
+	RenderTagsSearch(ctx, &TagsSearchOptions{
+		Counter:  models.CountTags,
+		Ranger:   models.Tags,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "name ASC",
+		TplName:  EXPLORE_TAGS,
 	})
 }
 
