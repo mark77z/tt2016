@@ -287,6 +287,12 @@ func runWeb(ctx *cli.Context) error {
 			m.Post("/:userid/delete", admin.DeleteUser)
 		})
 
+		m.Group("/applications", func() {
+			m.Get("", admin.Applications)
+			m.Post("/activate", admin.ActivateUser)
+			m.Post("/delete", admin.DeleteApplicationUser)
+		})
+
 		m.Group("/orgs", func() {
 			m.Get("", admin.Organizations)
 		})
