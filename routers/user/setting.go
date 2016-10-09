@@ -25,6 +25,7 @@ const (
 	SETTINGS_AVATAR       base.TplName = "user/settings/avatar"
 	SETTINGS_PASSWORD     base.TplName = "user/settings/password"
 	SETTINGS_EMAILS       base.TplName = "user/settings/email"
+	SETTINGS_SUBJECTS     base.TplName = "user/settings/subject"
 	SETTINGS_SSH_KEYS     base.TplName = "user/settings/sshkeys"
 	SETTINGS_SOCIAL       base.TplName = "user/settings/social"
 	SETTINGS_APPLICATIONS base.TplName = "user/settings/applications"
@@ -276,6 +277,48 @@ func SettingsEmailPost(ctx *context.Context, form auth.AddEmailForm) {
 }
 
 func DeleteEmail(ctx *context.Context) {
+	if err := models.DeleteEmailAddress(&models.EmailAddress{ID: ctx.QueryInt64("id")}); err != nil {
+		ctx.Handle(500, "DeleteEmail", err)
+		return
+	}
+	log.Trace("Email address deleted: %s", ctx.User.Name)
+
+	ctx.Flash.Success(ctx.Tr("settings.email_deletion_success"))
+	ctx.JSON(200, map[string]interface{}{
+		"redirect": setting.AppSubUrl + "/user/settings/email",
+	})
+}
+
+func SettingsSubjects(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	subjects, err := models.GetSubjsByUserID(ctx.User.ID)
+	if err != nil {
+		ctx.Handle(500, "GetSubjsByUserID", err)
+		return
+	}
+	ctx.Data["Subjects"] = subjects
+
+	ctx.HTML(200, SETTINGS_SUBJECTS)
+}
+
+func SettingsSubjectPost(ctx *context.Context, form auth.AddSubjectForm) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	// Add Email address.
+	subjects, err := models.GetSubjsByUserID(ctx.User.ID)
+	if err != nil {
+		ctx.Handle(500, "GetSubjsByUserID", err)
+		return
+	}
+	ctx.Data["Subjects"] = subjects
+
+	ctx.Redirect(setting.AppSubUrl + "/user/settings/subject")
+}
+
+func DeleteSubject(ctx *context.Context) {
 	if err := models.DeleteEmailAddress(&models.EmailAddress{ID: ctx.QueryInt64("id")}); err != nil {
 		ctx.Handle(500, "DeleteEmail", err)
 		return

@@ -259,6 +259,10 @@ code.wrap {
   padding: 8px 15px;
   font-weight: normal;
 }
+.ui.inline.activate-button {
+  padding: 8px 15px;
+  font-weight: normal;
+}
 .overflow.menu .items {
   max-height: 300px;
   overflow-y: auto;

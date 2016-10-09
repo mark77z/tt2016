@@ -25,7 +25,9 @@ const (
 	MAIL_AUTH_RESET_PASSWORD  base.TplName = "auth/reset_passwd"
 	MAIL_AUTH_REGISTER_NOTIFY base.TplName = "auth/register_notify"
 
-	MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY base.TplName = "auth/register_professor_notify"
+	MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY 	base.TplName = "auth/register_professor_notify"
+	MAIL_AUTH_REGISTER_PROFESSOR_APPROVED 	base.TplName = "auth/register_professor_approved"
+	MAIL_AUTH_REGISTER_PROFESSOR_DENIED 	base.TplName = "auth/register_professor_denied"
 
 	MAIL_ISSUE_COMMENT base.TplName = "issue/comment"
 	MAIL_ISSUE_MENTION base.TplName = "issue/mention"
@@ -119,6 +121,36 @@ func SendNotifyAccountMail(c *macaron.Context, u *User) {
 
 	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_professor_notify"), body)
 	msg.Info = fmt.Sprintf("UID: %d, registration notify", u.ID)
+
+	mailer.SendAsync(msg)
+}
+
+func SendApprovedAccountMail(c *macaron.Context, u *User) {
+	data := map[string]interface{}{
+		"Username": u.DisplayName(),
+	}
+	body, err := mailRender.HTMLString(string(MAIL_AUTH_REGISTER_PROFESSOR_APPROVED), data)
+	if err != nil {
+		log.Error(3, "HTMLString: %v", err)
+		return
+	}
+	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_professor_notify"), body)
+	msg.Info = fmt.Sprintf("UID: %d, registration notify : Approved", u.ID)
+
+	mailer.SendAsync(msg)
+}
+
+func SendDeniedAccountMail(c *macaron.Context, u *User) {
+	data := map[string]interface{}{
+		"Username": u.DisplayName(),
+	}
+	body, err := mailRender.HTMLString(string(MAIL_AUTH_REGISTER_PROFESSOR_DENIED), data)
+	if err != nil {
+		log.Error(3, "HTMLString: %v", err)
+		return
+	}
+	msg := mailer.NewMessage([]string{u.Email}, c.Tr("mail.register_professor_notify"), body)
+	msg.Info = fmt.Sprintf("UID: %d, registration notify : Denied", u.ID)
 
 	mailer.SendAsync(msg)
 }

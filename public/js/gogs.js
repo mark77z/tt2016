@@ -1307,6 +1307,16 @@ $(document).ready(function () {
     });
 
     // Helpers.
+     $('.activate-button').click(function () {
+        var $this = $(this);
+        $.post($this.data('url'), {
+            "_csrf": csrf,
+            "id": $this.data("id")
+        }).done(function (data) {
+            window.location.href = data.redirect;
+        });
+        return false;
+    });
     $('.delete-button').click(function () {
         var $this = $(this);
         $('.delete.modal').modal({

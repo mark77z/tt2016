@@ -73,27 +73,6 @@
 					</div>
 				</div>
 			</div>
-			<div class="ui eleven wide column">
-				<div class="ui secondary pointing menu">
-					<a class="{{if ne .TabName "activity"}}active{{end}} item" href="{{.Owner.HomeLink}}">
-						<i class="octicon octicon-repo"></i> {{.i18n.Tr "user.repositories"}}
-					</a>
-					<a class="item">
-						<a class="{{if eq .TabName "activity"}}active{{end}} item" href="{{.Owner.HomeLink}}?tab=activity">
-							<i class="octicon octicon-rss"></i> {{.i18n.Tr "user.activity"}}
-						</a>
-					</a>
-				</div>
-				{{if ne .TabName "activity"}}
-					{{template "explore/repo_list" .}}
-					{{template "explore/page" .}}
-				{{else}}
-					<br>
-					<div class="feeds">
-						{{template "user/dashboard/feeds" .}}
-					</div>
-				{{end}}
-			</div>
 		</div>
 	</div>
 </div>

@@ -396,6 +396,11 @@ func (u *User) IsWriterOfRepo(repo *Repository) bool {
 }
 
 // IsOrganization returns true if user is actually a organization.
+func (u *User) IsProfessor() bool {
+	return u.Type == USER_TYPE_PROFESSOR
+}
+
+// IsOrganization returns true if user is actually a organization.
 func (u *User) IsOrganization() bool {
 	return u.Type == USER_TYPE_ORGANIZATION
 }
@@ -570,7 +575,7 @@ func CreateUser(u *User) (err error) {
 }
 
 func countUsers(e Engine) int64 {
-	count, _ := e.Where("type=0").Or("type=2").Count(new(User))
+	count, _ := e.Where("type=0").Or("type=2").And("prohibit_login = ?", false).Count(new(User))
 	return count
 }
 
@@ -582,7 +587,7 @@ func CountUsers() int64 {
 // Users returns number of users in given page.
 func Users(page, pageSize int) ([]*User, error) {
 	users := make([]*User, 0, pageSize)
-	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=0").Or("type=2").Asc("id").Find(&users)
+	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=0").Or("type=2").And("prohibit_login = ?", false).Asc("id").Find(&users)
 }
 
 // get user by erify code
