@@ -1113,6 +1113,54 @@ function searchUsers() {
     hideWhenLostFocus('#search-user-box .results', '#search-user-box');
 }
 
+function searchSubjects() {
+    if (!$('#search-subject-box .results').length) {
+        return;
+    }
+
+    var $searchSubjectBox = $('#search-subject-box');
+    var $results = $searchSubjectBox.find('.results');
+    $searchSubjectBox.keyup(function () {
+        var $this = $(this);
+        var keyword = $this.find('input').val();
+        if (keyword.length < 2) {
+            $results.hide();
+            return;
+        }
+        $.ajax({
+            url: suburl + '/api/v1/subjects/search?q=' + keyword,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                $results.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item"><img class="ui avatar image" src="/img/subject.png"><span class="username">' + item.name + '</span>';
+                        html += '</div>';
+                    });
+                    $results.html(html);
+                    $this.find('.results .item').click(function () {
+                        $this.find('input').val($(this).find('.username').text());
+                        $results.hide();
+                    });
+                    $results.show();
+                } else {
+                    $results.hide();
+                }
+            }
+        });
+    });
+    $searchSubjectBox.find('input').focus(function () {
+        $searchSubjectBox.keyup();
+    });
+    hideWhenLostFocus('#search-subject-box .results', '#search-subject-box');
+}
+
 // FIXME: merge common parts in two functions
 function searchRepositories() {
     if (!$('#search-repo-box .results').length) {
@@ -1374,6 +1422,7 @@ $(document).ready(function () {
 
     buttonsClickOnEnter();
     searchUsers();
+    searchSubjects();
     searchRepositories();
 
     initCommentForm();

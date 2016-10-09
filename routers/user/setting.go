@@ -25,7 +25,7 @@ const (
 	SETTINGS_AVATAR       base.TplName = "user/settings/avatar"
 	SETTINGS_PASSWORD     base.TplName = "user/settings/password"
 	SETTINGS_EMAILS       base.TplName = "user/settings/email"
-	SETTINGS_SUBJECTS     base.TplName = "user/settings/subject"
+	SETTINGS_COURSES      base.TplName = "user/settings/course"
 	SETTINGS_SSH_KEYS     base.TplName = "user/settings/sshkeys"
 	SETTINGS_SOCIAL       base.TplName = "user/settings/social"
 	SETTINGS_APPLICATIONS base.TplName = "user/settings/applications"
@@ -289,36 +289,82 @@ func DeleteEmail(ctx *context.Context) {
 	})
 }
 
-func SettingsSubjects(ctx *context.Context) {
+func SettingsCourses(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("settings")
 	ctx.Data["PageIsSettingsSubjects"] = true
 
-	subjects, err := models.GetSubjsByUserID(ctx.User.ID)
+	courses, err := ctx.User.GetCoursesInfo()
 	if err != nil {
-		ctx.Handle(500, "GetSubjsByUserID", err)
+		ctx.Handle(500, "GetCoursesInfo", err)
 		return
 	}
-	ctx.Data["Subjects"] = subjects
+	ctx.Data["Courses"] = courses
 
-	ctx.HTML(200, SETTINGS_SUBJECTS)
+	ctx.HTML(200, SETTINGS_COURSES)
 }
 
-func SettingsSubjectPost(ctx *context.Context, form auth.AddSubjectForm) {
-	ctx.Data["Title"] = ctx.Tr("settings")
-	ctx.Data["PageIsSettingsSubjects"] = true
-
-	// Add Email address.
-	subjects, err := models.GetSubjsByUserID(ctx.User.ID)
-	if err != nil {
-		ctx.Handle(500, "GetSubjsByUserID", err)
+func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
+	name := ctx.Query("subject")
+	if len(name) == 0 {
+		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
 		return
 	}
-	ctx.Data["Subjects"] = subjects
 
-	ctx.Redirect(setting.AppSubUrl + "/user/settings/subject")
+	s, err := models.GetSubjectByName(name)
+	if err != nil {
+		if models.IsErrSubjectNotExist(err) {
+
+			subject := &models.Subject{
+				Name: 	name,
+			}
+			if err := models.CreateSubject(subject); err != nil {
+				switch {
+					case models.IsErrSubjectAlreadyExist(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("form.subjectname_been_taken"), SETTINGS_COURSES, &form)
+					case models.IsErrNameReserved(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(models.ErrNameReserved).Name), SETTINGS_COURSES, &form)
+					case models.IsErrNamePatternNotAllowed(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(models.ErrNamePatternNotAllowed).Pattern), SETTINGS_COURSES, &form)
+					default:
+						ctx.Handle(500, "CreateSubject", err)
+				}
+				return
+			}
+			s, err = models.GetSubjectByName(name)
+			log.Trace("Subject created by (%s): %s", ctx.User.Name, subject.Name)
+		} else {
+			ctx.Handle(500, "GetSubjectByName", err)
+		}
+	}
+
+	// Check if user is organization member.
+	if s.IsUserSubj(ctx.User.ID) {
+		ctx.Flash.Error(ctx.Tr("user.settings.course.subject_is_user_course"))
+		ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
+		return
+	}
+
+	if err = ctx.User.AddCourse(s.ID); err != nil {
+		ctx.Handle(500, "AddCollaborator", err)
+		return
+	}
+
+	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+	ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
 }
 
-func DeleteSubject(ctx *context.Context) {
+func ChangeCourseStatus(ctx *context.Context) {
+	if err := ctx.Repo.Repository.ChangeCollaborationAccessMode(
+		ctx.QueryInt64("uid"),
+		models.AccessMode(ctx.QueryInt("mode"))); err != nil {
+		log.Error(4, "ChangeCollaborationAccessMode: %v", err)
+	}
+}
+
+func DeleteCourse(ctx *context.Context) {
 	if err := models.DeleteEmailAddress(&models.EmailAddress{ID: ctx.QueryInt64("id")}); err != nil {
 		ctx.Handle(500, "DeleteEmail", err)
 		return
