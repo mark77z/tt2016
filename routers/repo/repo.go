@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"strings"
+    "strconv"
 
 	"github.com/Unknwon/com"
 
@@ -75,6 +76,13 @@ func Create(ctx *context.Context) {
 	ctx.Data["private"] = ctx.User.LastRepoVisibility
 	ctx.Data["IsForcedPrivate"] = setting.Repository.ForcePrivate
 
+	tags, err := models.GetTags()
+	if err != nil {
+		ctx.Handle(500, "GetTags", err)
+		return
+	}
+	ctx.Data["Tags"] = tags
+
 	ctxUser := checkContextUser(ctx, ctx.QueryInt64("org"))
 	if ctx.Written() {
 		return
@@ -128,8 +136,16 @@ func CreatePost(ctx *context.Context, form auth.CreateRepoForm) {
 		Readme:      form.Readme,
 		IsPrivate:   form.Private || setting.Repository.ForcePrivate,
 		AutoInit:    form.AutoInit,
+		Tags:		 form.Tags,
 	})
 	if err == nil {
+
+		arr_tags := strings.Split(form.Tags , ",")
+		for _, tag := range arr_tags {
+		    tagID, _ := strconv.ParseInt(tag, 10, 64)
+		    models.LinkTagtoRepo(tagID, repo.ID, true)
+		}
+
 		log.Trace("Repository created [%d]: %s/%s", repo.ID, ctxUser.Name, repo.Name)
 		ctx.Redirect(setting.AppSubUrl + "/" + ctxUser.Name + "/" + repo.Name)
 		return

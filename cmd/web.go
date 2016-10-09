@@ -459,6 +459,11 @@ func runWeb(ctx *cli.Context) error {
 				m.Post("/delete", repo.DeleteCollaboration)
 			})
 
+			m.Group("/tags", func() {
+				m.Combo("").Get(repo.ManageTag).Post(repo.ManageTagPost)
+				m.Post("/delete", repo.DeleteCollaboration)
+			})
+
 			m.Group("/hooks", func() {
 				m.Get("", repo.Webhooks)
 				m.Post("/delete", repo.DeleteWebhook)

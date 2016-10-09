@@ -65,7 +65,7 @@ func init() {
 		new(Issue), new(PullRequest), new(Comment), new(Attachment), new(IssueUser),
 		new(Label), new(IssueLabel), new(Milestone),
 		new(Mirror), new(Release), new(LoginSource), new(Webhook),
-		new(UpdateTask), new(HookTask),
+		new(UpdateTask), new(HookTask),new(TagsRepo),
 		new(Team), new(OrgUser), new(TeamUser), new(TeamRepo),
 		new(Notice), new(EmailAddress), new(Subject),
 		new(Semester), new(Group), new (Tag))

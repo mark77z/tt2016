@@ -116,7 +116,7 @@ func Tags(page, pageSize int) ([]*Tag, error) {
 
 func getTags() ([]*Tag, error) {
 	tags := make([]*Tag, 0, 5)
-	return tags, x.Asc("name").Find(&tags)
+	return tags, x.Asc("etiqueta").Find(&tags)
 }
 
 func GetTags()([]*Tag, error){

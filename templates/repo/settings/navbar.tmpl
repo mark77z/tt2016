@@ -4,6 +4,9 @@
 		<a class="{{if .PageIsSettingsOptions}}active{{end}} item" href="{{.RepoLink}}/settings">
 			{{.i18n.Tr "repo.settings.options"}}
 		</a>
+		<a class="{{if .PageIsSettingsTags}}active{{end}} item" href="{{.RepoLink}}/settings/tags">
+			{{.i18n.Tr "repo.settings.tags"}}
+		</a>
 		<a class="{{if .PageIsSettingsCollaboration}}active{{end}} item" href="{{.RepoLink}}/settings/collaboration">
 			{{.i18n.Tr "repo.settings.collaboration"}}
 		</a>
