@@ -20,6 +20,7 @@ import (
 	"github.com/gogits/gogs/routers/api/v1/org"
 	"github.com/gogits/gogs/routers/api/v1/repo"
 	"github.com/gogits/gogs/routers/api/v1/user"
+	"github.com/gogits/gogs/routers/api/v1/subject"
 )
 
 func repoAssignment() macaron.Handler {
@@ -222,6 +223,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 					Delete(user.DeletePublicKey)
 			})
 		}, reqToken())
+
+		//Subjects
+		m.Group("/subjects", func() {
+			m.Get("/search", subject.Search)
+		})
 
 		// Repositories
 		m.Combo("/user/repos", reqToken()).Get(repo.ListMyRepos).

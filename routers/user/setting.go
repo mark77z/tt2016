@@ -304,7 +304,7 @@ func SettingsCourses(ctx *context.Context) {
 }
 
 func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
-	name := strings.ToLower(ctx.Query("subject"))
+	name := ctx.Query("subject")
 	if len(name) == 0 {
 		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
 		return
@@ -313,10 +313,10 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 	s, err := models.GetSubjectByName(name)
 	if err != nil {
 		if models.IsErrSubjectNotExist(err) {
+
 			subject := &models.Subject{
 				Name: 	name,
 			}
-
 			if err := models.CreateSubject(subject); err != nil {
 				switch {
 					case models.IsErrSubjectAlreadyExist(err):
@@ -338,14 +338,12 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 		} else {
 			ctx.Handle(500, "GetSubjectByName", err)
 		}
-		return
 	}
-
 
 	// Check if user is organization member.
 	if s.IsUserSubj(ctx.User.ID) {
-		ctx.Flash.Info(ctx.Tr("repo.settings.user_is_org_member"))
-		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
+		ctx.Flash.Error(ctx.Tr("user.settings.course.subject_is_user_course"))
+		ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
 		return
 	}
 
@@ -355,7 +353,7 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
-	ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+	ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
 }
 
 func ChangeCourseStatus(ctx *context.Context) {

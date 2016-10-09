@@ -26,7 +26,7 @@ import:
 - package: github.com/gogits/chardet
 - package: github.com/gogits/cron
 - package: github.com/gogits/git-module
-- package: github.com/gogits/go-gogs-client
+- package: github.com/Astrear/go-gogs-client
 - package: github.com/issue9/identicon
 - package: github.com/kardianos/minwinsvc
 - package: github.com/lib/pq
