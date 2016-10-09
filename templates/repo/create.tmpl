@@ -59,7 +59,7 @@
 					<!-- METADATOS ESCOLARES-->
 					<div class="inline field">
 						<label>Tags</label>
-						<div class="ui multiple search normal selection dropdown">
+						<div class="ui multiple search normal selection dropdown" style="width: 45% !important;">
 							<input type="hidden" name="tags" value="{{.tags}}">
 							<div class="default text">{{.i18n.Tr "repo.repo_tag_helper"}}</div>
 							<div class="menu">
@@ -68,6 +68,7 @@
 								{{end}}
 							</div>
 						</div>
+						<a class="ui green button" target="_blank" href="{{AppSubUrl}}/tag/create" style="position:relative; top:8px;">{{.i18n.Tr "repo.create_tag"}}</a>
 					</div>
 					<!-- FIN METADATOS ESCOLARES-->
 					<div class="ui divider"></div>

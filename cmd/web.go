@@ -448,6 +448,11 @@ func runWeb(ctx *cli.Context) error {
 	}, reqSignIn)
 	// ***** END: Organization *****
 
+	m.Group("/tag", func() {
+		m.Get("/create", repo.CreateTag)
+		m.Post("/create", bindIgnErr(auth.CreateTagForm{}), repo.CreateTagPost)
+	}, reqSignIn)
+
 	// ***** START: Repository *****
 	m.Group("/repo", func() {
 		m.Get("/create", repo.Create)
