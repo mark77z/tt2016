@@ -2159,9 +2159,15 @@ func GetTagsOfRepo(repoID int64)([]*Tag, error){
 		tags = append(tags, tag)
 	}
 
-	fmt.Printf("Etiquetas [%v]", tags)
-
 	return tags,err
+}
+
+func UnlinkTagRepo(repoID int64, tagID int64) bool{
+	if _, err := x.Delete(&TagsRepo{0, tagID, repoID}); err != nil {
+		return false
+	} 
+
+	return true
 }
 
 func (repo *Repository) TagsHtml() template.HTML {

@@ -7,7 +7,7 @@ package repo
 import (
 	"strings"
 	"time"
-
+	"strconv"
 	"github.com/gogits/git-module"
 
 	"github.com/gogits/gogs/models"
@@ -311,54 +311,45 @@ func ManageTag(ctx *context.Context) {
 		ctx.Handle(500, "GetTags", err)
 		return
 	}
+
 	ctx.Data["TagsR"] = tags2
 
 	ctx.HTML(200, TAGS)
 }
 
 func ManageTagPost(ctx *context.Context) {
-	name := strings.ToLower(ctx.Query("collaborator"))
-	if len(name) == 0 || ctx.Repo.Owner.LowerName == name {
-		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
-		return
+	tags := strings.ToLower(ctx.Query("tags"))
+	repoID:= ctx.Repo.Repository.ID
+
+	arr_tags := strings.Split(tags , ",")
+	for _, tag := range arr_tags {
+	    tagID, _ := strconv.ParseInt(tag, 10, 64)
+	    models.LinkTagtoRepo(tagID, repoID, true)
 	}
 
-	u, err := models.GetUserByName(name)
-	if err != nil {
-		if models.IsErrUserNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
-			ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
-		} else {
-			ctx.Handle(500, "GetUserByName", err)
-		}
-		return
-	}
-
-	// Organization is not allowed to be added as a collaborator.
-	if u.IsOrganization() {
-		ctx.Flash.Error(ctx.Tr("repo.settings.org_not_allowed_to_be_collaborator"))
-		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
-		return
-	}
-
-	// Check if user is organization member.
-	if ctx.Repo.Owner.IsOrganization() && ctx.Repo.Owner.IsOrgMember(u.ID) {
-		ctx.Flash.Info(ctx.Tr("repo.settings.user_is_org_member"))
-		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
-		return
-	}
-
-	if err = ctx.Repo.Repository.AddCollaborator(u); err != nil {
-		ctx.Handle(500, "AddCollaborator", err)
-		return
-	}
-
-	if setting.Service.EnableNotifyMail {
-		models.SendCollaboratorMail(u, ctx.User, ctx.Repo.Repository)
-	}
-
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+	ctx.Flash.Success(ctx.Tr("repo.settings.add_tag_success"))
 	ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+}
+
+func DeleteTagsRepo(ctx *context.Context) {
+	if err := ctx.Repo.Repository.DeleteCollaboration(ctx.QueryInt64("id")); err != nil {
+		ctx.Flash.Error("DeleteCollaboration: " + err.Error())
+	} else {
+		ctx.Flash.Success(ctx.Tr("repo.settings.remove_tag_success"))
+	}
+
+	repoID:= ctx.Repo.Repository.ID
+	borrar := models.UnlinkTagRepo(repoID, ctx.QueryInt64("id"))
+
+	if borrar{
+		ctx.Flash.Success(ctx.Tr("repo.settings.remove_tag_success"))	
+	}else{
+		ctx.Flash.Error("Error unlinking tag")
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"redirect": ctx.Repo.RepoLink + "/settings/tags",
+	})
 }
 
 func Collaboration(ctx *context.Context) {

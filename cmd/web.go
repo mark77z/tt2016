@@ -470,7 +470,7 @@ func runWeb(ctx *cli.Context) error {
 
 			m.Group("/tags", func() {
 				m.Combo("").Get(repo.ManageTag).Post(repo.ManageTagPost)
-				m.Post("/delete", repo.DeleteCollaboration)
+				m.Post("/delete", repo.DeleteTagsRepo)
 			})
 
 			m.Group("/hooks", func() {
