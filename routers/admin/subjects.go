@@ -77,7 +77,7 @@ func NewSubjectPost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 		return
 	}
 
-	log.Trace("Account created by admin (%s): %s", ctx.User.Name, s.Name)
+	log.Trace("Subject created by admin (%s): %s", ctx.User.Name, s.Name)
 
 	ctx.Flash.Success(ctx.Tr("admin.users.new_subject_success", s.Name))
 	ctx.Redirect(setting.AppSubUrl + "/admin/subjects/" + com.ToStr(s.ID))
