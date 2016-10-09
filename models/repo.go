@@ -767,6 +767,8 @@ type CreateRepoOptions struct {
 	IsPrivate   bool
 	IsMirror    bool
 	AutoInit    bool
+	//**AGREGADOS
+	Tags 		string
 }
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -1335,6 +1337,7 @@ func DeleteRepository(uid, repoID int64) error {
 		&Release{RepoID: repoID},
 		&Collaboration{RepoID: repoID},
 		&PullRequest{BaseRepoID: repoID},
+		&TagsRepo{RepoID: repoID},
 	); err != nil {
 		return fmt.Errorf("deleteBeans: %v", err)
 	}
@@ -1510,7 +1513,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	repos = make([]*Repository, 0, opts.PageSize)
 
 	// Append conditions
-	sess := x.Where("LOWER(lower_name) LIKE ?", "%"+opts.Keyword+"%")
+	sess := x.Join("LEFT", "`tags_repo`", "`repository`.id=`tags_repo`.repo_id").Join("LEFT", "`tag`", "`tags_repo`.tag_id=`tag`.id").Where("LOWER(lower_name) LIKE ? OR LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%","%"+opts.Keyword+"%")
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)
 	}
@@ -2105,4 +2108,80 @@ func (repo *Repository) CreateNewBranch(doer *User, oldBranchName, branchName st
 	}
 
 	return nil
+}
+
+
+/////////////////////////
+//******TAGS_REPO******
+
+type TagsRepo struct {
+	ID     	int64 `xorm:"pk autoincr"`
+	TagID  	int64 `xorm:"UNIQUE(s)"`
+	RepoID 	int64 `xorm:"UNIQUE(s)"`
+}
+
+// Star or unstar repository.
+func LinkTagtoRepo(tagID, repoID int64, linked bool) (err error) {
+	if linked {
+		if IsTagLinked(tagID, repoID) {
+			return nil
+		}
+		if _, err = x.Insert(&TagsRepo{TagID: tagID, RepoID: repoID}); err != nil {
+			return err
+		} 
+	} else {
+		if !IsTagLinked(tagID, repoID) {
+			return nil
+		}
+		if _, err = x.Delete(&TagsRepo{0, tagID, repoID}); err != nil {
+			return err
+		}
+	}
+	return err
+}
+
+// IsStaring checks if user has starred given repository.
+func IsTagLinked(tagID, repoID int64) bool {
+	has, _ := x.Get(&TagsRepo{0, tagID, repoID})
+	return has
+}
+
+func GetTagsRepo(repoID int64)([]*TagsRepo, error){
+	tagsrepo := make([]*TagsRepo, 0, 10)
+	return tagsrepo, x.Find(&tagsrepo, &TagsRepo{RepoID: repoID})
+}
+
+func GetTagsOfRepo(repoID int64)([]*Tag, error){
+	tagsrepo,err := GetTagsRepo(repoID)
+	tags := make([]*Tag, 0, len(tagsrepo))
+	for _, tagrepo := range tagsrepo {
+		tag,_:= GetTagByID(tagrepo.TagID)
+		tags = append(tags, tag)
+	}
+
+	return tags,err
+}
+
+func UnlinkTagRepo(repoID int64, tagID int64) bool{
+	if _, err := x.Delete(&TagsRepo{0, tagID, repoID}); err != nil {
+		return false
+	} 
+
+	return true
+}
+
+func (repo *Repository) TagsHtml() template.HTML {
+	sanitize := func(s string) string {
+		return fmt.Sprintf(`<a href="%[1]s" target="_blank">%[1]s</a>`, s)
+	}
+
+	tagsrepo,_ := GetTagsRepo(repo.ID)
+
+	tagsHTML:= ""
+	for _, tagRepo := range tagsrepo {
+    	tag,_:= GetTagByID(tagRepo.TagID)
+    	tagsHTML += "<a href='/explore/repos?q="+tag.Etiqueta+"'>#"+tag.Etiqueta+"</a> "
+    }
+
+	return template.HTML(DescPattern.ReplaceAllStringFunc(markdown.Sanitizer.Sanitize(tagsHTML), sanitize))
 }

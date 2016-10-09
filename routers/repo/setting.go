@@ -7,7 +7,7 @@ package repo
 import (
 	"strings"
 	"time"
-
+	"strconv"
 	"github.com/gogits/git-module"
 
 	"github.com/gogits/gogs/models"
@@ -21,6 +21,7 @@ import (
 const (
 	SETTINGS_OPTIONS base.TplName = "repo/settings/options"
 	COLLABORATION    base.TplName = "repo/settings/collaboration"
+	TAGS    		 base.TplName = "repo/settings/tags_manage"
 	GITHOOKS         base.TplName = "repo/settings/githooks"
 	GITHOOK_EDIT     base.TplName = "repo/settings/githook_edit"
 	DEPLOY_KEYS      base.TplName = "repo/settings/deploy_keys"
@@ -290,6 +291,65 @@ func SettingsPost(ctx *context.Context, form auth.RepoSettingForm) {
 	default:
 		ctx.Handle(404, "", nil)
 	}
+}
+
+func ManageTag(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("repo.settings.tags")
+	ctx.Data["PageIsSettingsTags"] = true
+
+	repoID:= ctx.Repo.Repository.ID
+	tags, err := models.GetTagsOfRepo(repoID)
+
+	if err != nil {
+		ctx.Handle(500, "GetTagsOfRepo", err)
+		return
+	}
+	ctx.Data["Tags"] = tags
+
+	tags2, err := models.GetTags()
+	if err != nil {
+		ctx.Handle(500, "GetTags", err)
+		return
+	}
+
+	ctx.Data["TagsR"] = tags2
+
+	ctx.HTML(200, TAGS)
+}
+
+func ManageTagPost(ctx *context.Context) {
+	tags := strings.ToLower(ctx.Query("tags"))
+	repoID:= ctx.Repo.Repository.ID
+
+	arr_tags := strings.Split(tags , ",")
+	for _, tag := range arr_tags {
+	    tagID, _ := strconv.ParseInt(tag, 10, 64)
+	    models.LinkTagtoRepo(tagID, repoID, true)
+	}
+
+	ctx.Flash.Success(ctx.Tr("repo.settings.add_tag_success"))
+	ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+}
+
+func DeleteTagsRepo(ctx *context.Context) {
+	if err := ctx.Repo.Repository.DeleteCollaboration(ctx.QueryInt64("id")); err != nil {
+		ctx.Flash.Error("DeleteCollaboration: " + err.Error())
+	} else {
+		ctx.Flash.Success(ctx.Tr("repo.settings.remove_tag_success"))
+	}
+
+	repoID:= ctx.Repo.Repository.ID
+	borrar := models.UnlinkTagRepo(repoID, ctx.QueryInt64("id"))
+
+	if borrar{
+		ctx.Flash.Success(ctx.Tr("repo.settings.remove_tag_success"))	
+	}else{
+		ctx.Flash.Error("Error unlinking tag")
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"redirect": ctx.Repo.RepoLink + "/settings/tags",
+	})
 }
 
 func Collaboration(ctx *context.Context) {
