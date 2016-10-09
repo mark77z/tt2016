@@ -575,6 +575,21 @@ function initRepositoryCollaboration() {
     });
 }
 
+function initCourses() {
+    console.log('initCourses');
+
+    // Change course status
+    $('.access-mode.menu .item').click(function () {
+        console.log('test')
+        var $menu = $(this).parent();
+        $.post($menu.data('url'), {
+            "_csrf": csrf,
+            "sid": $menu.data('sid'),
+            "status": $(this).data('value')
+        })
+    });
+}
+
 function initWikiForm() {
     var $editArea = $('.repository.wiki textarea#edit_area');
     if ($editArea.length > 0) {
@@ -1452,7 +1467,8 @@ $(document).ready(function () {
 
     var routes = {
         'div.user.settings': initUserSettings,
-        'div.repository.settings.collaboration': initRepositoryCollaboration
+        'div.repository.settings.collaboration': initRepositoryCollaboration,
+        'div.user.course': initCourses
     };
 
     var selector;

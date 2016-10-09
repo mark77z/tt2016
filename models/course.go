@@ -8,6 +8,7 @@ import (
 	"fmt"
 )
 
+
 // Course represents an subject-user relation.
 type Course struct {
 	ID       int64 `xorm:"pk autoincr"`
@@ -34,8 +35,9 @@ func (u *User) AddCourse(subjID int64) error {
 	}
 
 	c := &Course{
-		Uid:   u.ID,
-		SubjID: subjID,
+		Uid:   		u.ID,
+		SubjID: 	subjID,
+		IsActive: 	true,
 	}
 
 	if _, err := sess.Insert(c); err != nil {
@@ -81,28 +83,36 @@ func (u *User) getCoursesInfo(e Engine) ([]*CourseInfo, error) {
 }
 
 // ChangeCourseStatus changes active or inactive status.
-func changeCourseStatus(subjID, uid int64, active bool) error {
+func (u *User) ChangeCourseStatus(subjID int64, active int) error {
 	c := new(Course)
-	has, err := x.Where("uid=?", uid).And("subj_id=?", subjID).Get(c)
+	has, err := x.Where("uid=?", u.ID).And("subj_id=?", subjID).Get(c)
 	if err != nil {
 		return err
 	} else if !has {
 		return nil
 	}
 
-	c.IsActive = active
+	status := false
+
+	if active == 1 {
+		status = true
+	} else {
+		status = false
+	}
+
+	c.IsActive = status 
 	_, err = x.Id(c.ID).AllCols().Update(c)
 	return err
 }
 
 
 // RemoveCourse removes user from given subject.
-func RemoveCourse(subjID, userID int64) error {
+func (u *User) RemoveCourse(subjID int64) error {
 	c := new(Course)
 
-	has, err := x.Where("uid=?", userID).And("subj_id=?", subjID).Get(c)
+	has, err := x.Where("uid=?", u.ID).And("subj_id=?", subjID).Get(c)
 	if err != nil {
-		return fmt.Errorf("get subj-user: %v", err)
+		return fmt.Errorf("get course: %v", err)
 	} else if !has {
 		return nil
 	}

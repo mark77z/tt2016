@@ -1,5 +1,5 @@
 {{template "base/head" .}}
-<div class="repository settings collaboration">
+<div class="user course">
 	<div class="ui container">
 		<div class="ui grid">
 			{{template "user/settings/navbar" .}}
@@ -20,14 +20,14 @@
 								<div class="ui inline dropdown">
 								  <div class="text">{{if .Course.IsActive}}Active{{else}}Inactive{{end}}</div>
 								  <i class="dropdown icon"></i>
-								  <div class="access-mode menu" data-url="{{$.Link}}/access_mode" data-uid="{{.ID}}">
-								    <div class="item" data-text="{{$.i18n.Tr "user.settings.course.admin"}}" data-value="0">{{$.i18n.Tr "user.settings.course.admin"}}</div>
-								    <div class="item" data-text="{{$.i18n.Tr "user.settings.course.write"}}" data-value="1">{{$.i18n.Tr "user.settings.course.write"}}</div>
+								  <div class="access-mode menu" data-url="{{$.Link}}/status" data-sid="{{.Subject.ID}}">
+								    <div class="item" data-text="{{$.i18n.Tr "user.settings.course.active"}}" data-value="1">{{$.i18n.Tr "user.settings.course.active"}}</div>
+								    <div class="item" data-text="{{$.i18n.Tr "user.settings.course.inactive"}}" data-value="0">{{$.i18n.Tr "user.settings.course.inactive"}}</div>
 								  </div>
 								</div>
 							</div>
 							<div class="ui two wide column">
-								<button class="ui red tiny button inline text-thin delete-button" data-url="{{$.Link}}/delete" data-id="{{.ID}}">
+								<button class="ui red tiny button inline text-thin delete-button" data-url="{{$.Link}}/delete" data-id="{{.Subject.ID}}">
 									{{$.i18n.Tr "user.settings.course.delete_course"}}
 								</button>
 							</div>

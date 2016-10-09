@@ -357,23 +357,23 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 }
 
 func ChangeCourseStatus(ctx *context.Context) {
-	if err := ctx.Repo.Repository.ChangeCollaborationAccessMode(
-		ctx.QueryInt64("uid"),
-		models.AccessMode(ctx.QueryInt("mode"))); err != nil {
-		log.Error(4, "ChangeCollaborationAccessMode: %v", err)
+	if err := ctx.User.ChangeCourseStatus(
+		ctx.QueryInt64("sid"),
+		ctx.QueryInt("status")); err != nil {
+		log.Error(4, "ChangeCourseStatus: %v", err)
 	}
 }
 
 func DeleteCourse(ctx *context.Context) {
-	if err := models.DeleteEmailAddress(&models.EmailAddress{ID: ctx.QueryInt64("id")}); err != nil {
-		ctx.Handle(500, "DeleteEmail", err)
+	if err := ctx.User.RemoveCourse(ctx.QueryInt64("id")); err != nil {
+		ctx.Handle(500, "RemoveCourse", err)
 		return
 	}
-	log.Trace("Email address deleted: %s", ctx.User.Name)
+	log.Trace("Removed course for profesor: %s", ctx.User.Name)
 
-	ctx.Flash.Success(ctx.Tr("settings.email_deletion_success"))
+	ctx.Flash.Success(ctx.Tr("settings.course_deletion_success"))
 	ctx.JSON(200, map[string]interface{}{
-		"redirect": setting.AppSubUrl + "/user/settings/email",
+		"redirect": setting.AppSubUrl + "/user/settings/course",
 	})
 }
 
