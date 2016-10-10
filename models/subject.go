@@ -154,6 +154,12 @@ func deleteSubject(e *xorm.Session, s *Subject) error {
 		return fmt.Errorf("Delete: %v", err)
 	}
 
+	if err = deleteBeans(e,
+		&Course{SubjID: s.ID},
+	); err != nil {
+		return fmt.Errorf("deleteBeans: %v", err)
+	}
+
 	return nil
 }
 
