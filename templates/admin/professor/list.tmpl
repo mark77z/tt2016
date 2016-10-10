@@ -6,10 +6,7 @@
 			<div class="twelve wide column content">
 				{{template "base/alert" .}}
 				<h4 class="ui top attached header">
-					{{.i18n.Tr "admin.users.user_manage_panel"}} ({{.i18n.Tr "admin.total" .Total}})
-					<div class="ui right">
-						<a class="ui black tiny button" href="{{AppSubUrl}}/admin/users/new">{{.i18n.Tr "admin.users.new_account"}}</a>
-					</div>
+					{{.i18n.Tr "admin.applications_manage_panel"}}
 				</h4>
 				<div class="ui attached segment">
 					{{template "admin/base/search" .}}
