@@ -21,7 +21,7 @@ import (
 // Subject represents the object of individual and member of organization.
 type Tag struct {
 	ID        	int64  `xorm:"pk autoincr"`
-	Etiqueta    string `xorm:"VARCHAR(50) UNIQUE NOT NULL"`
+	Etiqueta    string `xorm:"VARCHAR(30) UNIQUE NOT NULL"`
 }
 
 
@@ -149,6 +149,10 @@ func UpdateTag(t *Tag) error {
 
 
 func deleteTag(e *xorm.Session, t *Tag) error {
+
+	if _, err := e.Delete(&TagsRepo{TagID: t.ID}); err != nil {
+		return err
+	}
 
 	if _, err := e.Id(t.ID).Delete(new(Tag)); err != nil {
 		return fmt.Errorf("Delete: %v", err)

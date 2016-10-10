@@ -318,17 +318,55 @@ func ManageTag(ctx *context.Context) {
 }
 
 func ManageTagPost(ctx *context.Context) {
-	tags := strings.ToLower(ctx.Query("tags"))
-	repoID:= ctx.Repo.Repository.ID
 
-	arr_tags := strings.Split(tags , ",")
-	for _, tag := range arr_tags {
-	    tagID, _ := strconv.ParseInt(tag, 10, 64)
-	    models.LinkTagtoRepo(tagID, repoID, true)
+	switch ctx.Query("action") {
+		case "update":
+			tags := strings.ToLower(ctx.Query("tags"))
+			repoID:= ctx.Repo.Repository.ID
+
+			arr_tags := strings.Split(tags , ",")
+			for _, tag := range arr_tags {
+			    tagID, _ := strconv.ParseInt(tag, 10, 64)
+			    models.LinkTagtoRepo(tagID, repoID, true)
+			}
+
+			ctx.Flash.Success(ctx.Tr("repo.settings.add_tag_success"))
+			ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+
+		case "create":
+
+			t := &models.Tag{
+				Etiqueta: ctx.Query("etiqueta"),
+			}
+
+			if err := models.CreateTag(t); err != nil {
+				switch {
+					case models.IsErrTagAlreadyExist(err):
+						ctx.Data["Err_TagName"] = true
+						ctx.Flash.Error(ctx.Tr("form.tagname_been_taken"))
+						ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+					case models.IsErrNameReserved(err):
+						ctx.Data["Err_TagName"] = true
+						ctx.Flash.Error(ctx.Tr("user.form.name_reserved"))
+						ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+					case models.IsErrNamePatternNotAllowed(err):
+						ctx.Data["Err_TagName"] = true
+						ctx.Flash.Error(ctx.Tr("user.form.name_pattern_not_allowed"))
+						ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+					default:
+						ctx.Handle(500, "Create Tag User", err)
+				}
+				return
+			}
+
+			log.Trace("Tag created: %s", t.Etiqueta)
+
+			ctx.Flash.Success(ctx.Tr("admin.new_tag_success", t.Etiqueta))
+			ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)		
+
+		default:
+			ctx.Handle(404, "", nil)
 	}
-
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_tag_success"))
-	ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
 }
 
 func DeleteTagsRepo(ctx *context.Context) {

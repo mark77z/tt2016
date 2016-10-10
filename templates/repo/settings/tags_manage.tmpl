@@ -9,7 +9,7 @@
 				<h4 class="ui top attached header">
 					{{.i18n.Tr "repo.settings.manage_tags"}}
 				</h4>
-				<div class="ui attached segment collaborator list">
+				<div class="ui attached segment tags list">
 					{{range .Tags}}
 						<div class="item ui grid">
 							<div class="ui three wide column">
@@ -29,6 +29,7 @@
 				<div class="ui bottom attached segment">
 					<form class="ui form" id="repo-tags-form" action="{{.Link}}" method="post">
 						{{.CsrfTokenHtml}}
+						<input type="hidden" name="action" value="update">
 						<div class="inline field ui left">
 							<div id="search-tag">
 								<div class="ui multiple search normal selection dropdown">
@@ -43,9 +44,27 @@
 							</div>
 						</div>
 						<button class="ui green button" style="margin-left: 8px;">{{.i18n.Tr "repo.settings.add_tag"}}</button>
-						<a class="ui green button" href="{{AppSubUrl}}/tag/create">{{.i18n.Tr "repo.create_tag"}}</a>
 					</form>
 				</div>
+
+				<h4 class="ui top attached header">
+					{{.i18n.Tr "admin.new_tag"}}
+				</h4>
+				<div class="ui attached segment">
+					<form class="ui form" action="{{.Link}}" method="post">
+						{{.CsrfTokenHtml}}
+						<input type="hidden" name="action" value="create">
+						<div class="required field {{if .Err_TagName}}error{{end}}">
+							<label for="etiqueta">{{.i18n.Tr "tag"}}</label>
+							<input id="etiqueta" name="etiqueta" value="{{.etiqueta}}" maxlength="30" autofocus required>
+						</div>
+
+						<div class="field">
+							<button class="ui green button">{{.i18n.Tr "admin.new_tag"}}</button>
+						</div>
+					</form>
+				</div>
+
 			</div>
 		</div>
 	</div>
