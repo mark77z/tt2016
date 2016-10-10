@@ -2647,6 +2647,24 @@ footer .ui.language .menu {
   padding-top: 15px;
   padding-bottom: 80px;
 }
+
+.user.course .collaborator.list {
+  padding: 0;
+}
+.user.course .collaborator.list > .item {
+  margin: 0;
+  line-height: 2em;
+}
+.user.course .collaborator.list > .item:not(:last-child) {
+  border-bottom: 1px solid #DDD;
+}
+.user.course #repo-collab-form #search-user-box .results {
+  left: 7px;
+}
+.user.course #repo-collab-form .ui.button {
+  margin-left: 5px;
+  margin-top: -3px;
+}
 .user.settings .list .item.ui.grid {
   margin-top: 15px;
 }

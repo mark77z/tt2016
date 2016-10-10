@@ -395,7 +395,7 @@ func (u *User) IsWriterOfRepo(repo *Repository) bool {
 	return has
 }
 
-// IsOrganization returns true if user is actually a organization.
+// IsProfessor returns true if user is actually a organization.
 func (u *User) IsProfessor() bool {
 	return u.Type == USER_TYPE_PROFESSOR
 }
