@@ -292,10 +292,10 @@ func runWeb(ctx *cli.Context) error {
 		})
 
 		m.Group("/professors", func() {
-			m.Get("", admin.Users)
-			m.Combo("/new").Get(admin.NewUser).Post(bindIgnErr(auth.AdminCrateUserForm{}), admin.NewUserPost)
-			m.Combo("/:userid").Get(admin.EditUser).Post(bindIgnErr(auth.AdminEditUserForm{}), admin.EditUserPost)
-			m.Post("/:userid/delete", admin.DeleteUser)
+			m.Get("", admin.Professors)
+			m.Combo("/new").Get(admin.NewProfessor).Post(bindIgnErr(auth.AdminCrateUserForm{}), admin.NewProfessorPost)
+			m.Combo("/:userid").Get(admin.EditProfessor).Post(bindIgnErr(auth.AdminEditUserForm{}), admin.EditProfessorPost)
+			m.Post("/:userid/delete", admin.DeleteProfessor)
 		})
 
 		m.Group("/applications", func() {

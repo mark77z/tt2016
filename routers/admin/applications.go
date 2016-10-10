@@ -29,8 +29,8 @@ func Applications(ctx *context.Context) {
 
 	routers.RenderUserSearch(ctx, &routers.UserSearchOptions{
 		Type:     models.USER_TYPE_PROFESSOR,
-		Counter:  models.CountUsers,
-		Ranger:   models.Professors,
+		Counter:  models.CountApplications,
+		Ranger:   models.Applications,
 		PageSize: setting.UI.Admin.UserPagingNum,
 		OrderBy:  "id ASC",
 		TplName:  APPLICATIONS,
@@ -47,6 +47,7 @@ func ActivateUser(ctx *context.Context) {
 
 	u.IsActive = true
 	u.ProhibitLogin = false
+	u.IsAdmin = false
 
 	if err := models.UpdateUser(u); err != nil {
 		ctx.Handle(500, "UpdateUser", err)
