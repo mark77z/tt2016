@@ -1071,7 +1071,7 @@ function searchUsers() {
     $searchUserBox.keyup(function () {
         var $this = $(this);
         var keyword = $this.find('input').val();
-        if (keyword.length < 2) {
+        if (keyword.length < 1) {
             $results.hide();
             return;
         }
@@ -1111,6 +1111,33 @@ function searchUsers() {
         $searchUserBox.keyup();
     });
     hideWhenLostFocus('#search-user-box .results', '#search-user-box');
+}
+function searchTags() {
+    var $searchTagBox = $('#tag-box');
+    var $results = $searchTagBox.find('.menu');
+
+    $searchTagBox.click(function () {
+        var $this = $(this);
+        $.ajax({
+            url: suburl + '/api/v1/tags/search',
+            dataType: "json",
+            success: function (response) {
+
+                $results.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item" data-value="'+item.id+'">#'+item.etiqueta+'</div>';
+                    });
+                    $results.html(html);
+                    $results.show();
+                } else {
+                    $results.hide();
+                }
+            }
+        });
+    });
 }
 
 function searchSubjects() {
@@ -1424,6 +1451,7 @@ $(document).ready(function () {
     searchUsers();
     searchSubjects();
     searchRepositories();
+    searchTags();
 
     initCommentForm();
     initInstall();

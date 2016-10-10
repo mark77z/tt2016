@@ -5,7 +5,6 @@
 package repo
 
 import (
-	"github.com/Unknwon/com"
 
 	api "github.com/gogits/go-gogs-client"
 
@@ -14,15 +13,8 @@ import (
 )
 
 func SearchTag(ctx *context.APIContext) {
-	opts := &models.SearchTagOptions{
-		Keyword:  ctx.Query("q"),
-		PageSize: com.StrTo(ctx.Query("limit")).MustInt(),
-	}
-	if opts.PageSize == 0 {
-		opts.PageSize = 10
-	}
 
-	tags, _, err := models.SearchTagByName(opts)
+	tags, err := models.GetTags()
 	if err != nil {
 		ctx.JSON(500, map[string]interface{}{
 			"ok":    false,
