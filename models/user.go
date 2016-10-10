@@ -590,22 +590,6 @@ func Users(page, pageSize int) ([]*User, error) {
 	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=0").And("prohibit_login = ?", false).Asc("id").Find(&users)
 }
 
-func countProfessors(e Engine) int64 {
-	count, _ := e.Where("type=2").And("prohibit_login = ?", false).Count(new(User))
-	return count
-}
-
-// CountUsers returns number of users.
-func CountProfessors() int64 {
-	return countProfessors(x)
-}
-
-// Users returns number of users in given page.
-func Professors(page, pageSize int) ([]*User, error) {
-	users := make([]*User, 0, pageSize)
-	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=2").And("prohibit_login = ?", false).Asc("id").Find(&users)
-}
-
 // get user by erify code
 func getVerifyUser(code string) (user *User) {
 	if len(code) <= base.TimeLimitCodeLength {
