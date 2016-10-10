@@ -75,6 +75,7 @@ func Create(ctx *context.Context) {
 	ctx.Data["readme"] = "Default"
 	ctx.Data["private"] = ctx.User.LastRepoVisibility
 	ctx.Data["IsForcedPrivate"] = setting.Repository.ForcePrivate
+	ctx.Data["auto_init"] = true
 
 	tags, err := models.GetTags()
 	if err != nil {
