@@ -35,6 +35,8 @@ type CreateRepoForm struct {
 	Tags		string
 	Semester    int64
 	Group       int64
+	Subject 	int64
+	Professor   int64
 }
 
 func (f *CreateRepoForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {

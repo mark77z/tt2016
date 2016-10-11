@@ -168,6 +168,8 @@ func CreatePost(ctx *context.Context, form auth.CreateRepoForm) {
 		Tags:		 form.Tags,
 		SemesterID:  form.Semester,
 		GroupID:     form.Group,
+		ProfessorID:   form.Professor,
+		SubjectID:     form.Subject,
 	})
 	if err == nil {
 

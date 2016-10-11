@@ -161,6 +161,8 @@ type Repository struct {
 	DefaultBranch string
 
 	//** METADATOS ESCOLARES
+	ProfessorID	  	int64
+	SubjectID 	  	int64
 	SemesterID		int64
 	GroupID			int64
 	//**
@@ -473,6 +475,23 @@ func (repo *Repository) DescriptionHtml() template.HTML {
 /*
 Funciones para metadatos escolares
 */
+func (repo *Repository) GetProfessor() (*User, error) {
+	profesor, err := GetUserByID(repo.ProfessorID)
+	if err != nil{
+		return nil, err
+	}
+	return profesor, err
+}
+
+func (repo *Repository) GetSubject() (*Subject, error) {
+	subject, err := GetSubjectByID(repo.SubjectID)
+	if err != nil{
+		return nil, err
+	}
+
+	return subject, err
+}
+
 func (repo *Repository) GetSemester() (*Semester, error) {
 	semester, err := GetSemesterByID(repo.SemesterID)
 	if err != nil{
@@ -489,6 +508,24 @@ func (repo *Repository) GetGroup() (*Group, error) {
 	}
 
 	return group, err
+}
+
+func (repo *Repository) GetProfessorName() string {
+	profesor, err := GetUserByID(repo.ProfessorID)
+	if err != nil{
+		return ""
+	}
+
+	return profesor.FullName
+}
+
+func (repo *Repository) GetSubjectName() string {
+	subject, err := GetSubjectByID(repo.SubjectID)
+	if err != nil{
+		return ""
+	}
+
+	return subject.Name
 }
 
 func (repo *Repository) GetSemesterName() string {
@@ -816,6 +853,8 @@ type CreateRepoOptions struct {
 	Tags 		 string
 	SemesterID   int64
 	GroupID      int64
+	ProfessorID   int64
+	SubjectID     int64
 }
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -1012,6 +1051,8 @@ func CreateRepository(u *User, opts CreateRepoOptions) (_ *Repository, err error
 		//METATADOS ESCOLARES
 		GroupID:      opts.GroupID,
 		SemesterID:   opts.SemesterID,
+		ProfessorID:  opts.ProfessorID,
+		SubjectID:    opts.SubjectID,
 		//FIN METADATOS
 		EnableWiki:   true,
 		EnableIssues: true,
