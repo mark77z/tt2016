@@ -118,15 +118,19 @@
 						</div>
 					</div>
 
-					<div class="inline required field" id="tag_dropdown">
+					<div class="inline required field ui grid" id="tag_dropdown">
 						<label>Tags</label>
-						<div id="tag-box" class="ui multiple search normal selection dropdown" style="width: 45% !important;" forceSelection="true">
+						<div id="tag-box" class="ui multiple search normal selection dropdown" forceSelection="true">
 							<input type="hidden" id="tags_hidden" name="tags" value="{{.tags}}">
 							<div class="default text">{{.i18n.Tr "repo.repo_tag_helper"}}</div>
 							<div class="menu">
 							</div>
 						</div>
-						<a class="ui green button" target="_blank" href="{{AppSubUrl}}/tag/create" style="position:relative; top:8px;">{{.i18n.Tr "repo.create_tag"}}</a>
+						<a target="_blank" href="{{AppSubUrl}}/tag/create">
+							<button class="ui icon button green">
+							  <i class="plus icon"></i>
+							</button>
+						</a>
 					</div>
 					<!-- FIN METADATOS ESCOLARES-->
 					<div class="ui divider"></div>
