@@ -22,6 +22,7 @@ const (
 	PROFS     base.TplName = "admin/professor/list"
 	PROF_NEW  base.TplName = "admin/professor/new"
 	PROF_EDIT base.TplName = "admin/professor/edit"
+	SETTINGS_COURSES      base.TplName = "admin/professor/course"
 )
 
 func Professors(ctx *context.Context) {
@@ -225,5 +226,117 @@ func DeleteProfessor(ctx *context.Context) {
 	ctx.Flash.Success(ctx.Tr("admin.users.deletion_success"))
 	ctx.JSON(200, map[string]interface{}{
 		"redirect": setting.AppSubUrl + "/admin/professors",
+	})
+}
+
+func SettingsCourses(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
+	if err != nil {
+		ctx.Handle(500, "GetUserByID", err)
+		return
+	}
+
+	courses, err := u.GetCoursesInfo()
+	if err != nil {
+		ctx.Handle(500, "GetCoursesInfo", err)
+		return
+	}
+	ctx.Data["Courses"] = courses
+
+	ctx.HTML(200, SETTINGS_COURSES)
+}
+
+func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
+	u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
+	if err != nil {
+		ctx.Handle(500, "GetUserByID", err)
+		return
+	}
+
+	name := ctx.Query("subject")
+	if len(name) == 0 {
+		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+		return
+	}
+
+	s, err := models.GetSubjectByName(name)
+	if err != nil {
+		if models.IsErrSubjectNotExist(err) {
+
+			subject := &models.Subject{
+				Name: 	name,
+			}
+			if err := models.CreateSubject(subject); err != nil {
+				switch {
+					case models.IsErrSubjectAlreadyExist(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("form.subjectname_been_taken"), SETTINGS_COURSES, &form)
+					case models.IsErrNameReserved(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(models.ErrNameReserved).Name), SETTINGS_COURSES, &form)
+					case models.IsErrNamePatternNotAllowed(err):
+						ctx.Data["Err_SubjectName"] = true
+						ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(models.ErrNamePatternNotAllowed).Pattern), SETTINGS_COURSES, &form)
+					default:
+						ctx.Handle(500, "CreateSubject", err)
+				}
+				return
+			}
+			s, err = models.GetSubjectByName(name)
+			log.Trace("Subject created by (%s): %s", ctx.User.Name, subject.Name)
+		} else {
+			ctx.Handle(500, "GetSubjectByName", err)
+		}
+	}
+
+	// Check if user is organization member.
+	if s.IsUserSubj(u.ID) {
+		ctx.Flash.Error(ctx.Tr("user.settings.course.subject_is_user_course"))
+		ctx.Redirect(setting.AppSubUrl + "/admin/professors/" + ctx.Params(":userid") + "/course")
+		return
+	}
+
+	if err = u.AddCourse(s.ID); err != nil {
+		ctx.Handle(500, "AddCollaborator", err)
+		return
+	}
+
+	ctx.Flash.Success(ctx.Tr("user.settings.course.add_course_success"))
+	ctx.Redirect(setting.AppSubUrl + "/admin/professors/" + ctx.Params(":userid") + "/course")
+}
+
+func ChangeCourseStatus(ctx *context.Context) {
+	u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
+	if err != nil {
+		ctx.Handle(500, "GetUserByID", err)
+		return
+	}
+
+	if err := u.ChangeCourseStatus(
+		ctx.QueryInt64("sid"),
+		ctx.QueryInt("status")); err != nil {
+		log.Error(4, "ChangeCourseStatus: %v", err)
+	}
+}
+
+func DeleteCourse(ctx *context.Context) {
+	u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
+	if err != nil {
+		ctx.Handle(500, "GetUserByID", err)
+		return
+	}
+
+	if err := u.RemoveCourse(ctx.QueryInt64("id")); err != nil {
+		ctx.Handle(500, "RemoveCourse", err)
+		return
+	}
+	log.Trace("Removed course for profesor: %s", u.Name)
+
+	ctx.Flash.Success(ctx.Tr("user.settings.course.course_deletion_success"))
+	ctx.JSON(200, map[string]interface{}{
+		"redirect": setting.AppSubUrl + "/admin/professors/" + ctx.Params(":userid") + "/course",
 	})
 }

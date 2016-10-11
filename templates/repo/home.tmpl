@@ -3,6 +3,22 @@
 	{{template "repo/header" .}}
 	<div class="ui container">
 		{{template "base/alert" .}}
+		<a class="ui centered card" href="http://www.dog.com">
+		  <div class="content">
+		    <div class="header">Cute Dog</div>
+		    <div class="meta">
+		      <span class="category">Animals</span>
+		    </div>
+		    <div class="description">
+		      <p></p>
+		    </div>
+		  </div>
+		  <div class="extra content">
+		    <div class="right floated author">
+		      <img class="ui avatar image" src="/images/avatar/small/matt.jpg"> Matt
+		    </div>
+		  </div>
+		</a>
 		<p id="repo-desc">
 			{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
 			<a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a>
