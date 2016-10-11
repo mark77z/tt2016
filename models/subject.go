@@ -120,6 +120,11 @@ func getSubjects() ([]*Subject, error) {
 	return subjects, x.Asc("name").Find(&subjects)
 }
 
+func GetSubjectsProfessor(ProfessorID int64) ([]*Subject, error) {
+	subjects := make([]*Subject, 0, 5)
+	return subjects, x.Join("LEFT", "`course`", "`course`.subj_id=`subject`.id").Where("course.uid=?", ProfessorID).Asc("name").Find(&subjects)
+}
+
 func GetSubjects()([]*Subject, error){
 	return getSubjects()
 }

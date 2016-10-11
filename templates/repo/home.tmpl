@@ -36,6 +36,18 @@
 		</p>
 		{{end}}
 
+		{{if .Repository.ProfessorID}}
+		<p id="repo-prof">
+			<span class="profesor has-emoji"><span class="octicon octicon-mortar-board"></span> <a href="/explore/repos?q={{.Repository.GetProfessorName}}">{{.Repository.GetProfessorName}}</a></span>
+		</p>
+		{{end}}
+
+		{{if .Repository.SubjectID}}
+		<p id="repo-subject">
+			<span class="subject has-emoji"><span class="octicon octicon-book"></span> <a href="/explore/repos?q={{.Repository.GetSubjectName}}">{{.Repository.GetSubjectName}}</a></span>
+		</p>
+		{{end}}
+
 		<p>
 			{{.Repository.TagsHtml}}
 		</p>

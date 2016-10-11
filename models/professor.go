@@ -20,3 +20,12 @@ func Professors(page, pageSize int) ([]*User, error) {
 	users := make([]*User, 0, pageSize)
 	return users, x.Limit(pageSize, (page-1)*pageSize).Where("type=2").And("prohibit_login = ?", false).Asc("id").Find(&users)
 }
+
+func getProfessors() ([]*User, error) {
+	professors := make([]*User, 0, 20)
+	return professors, x.Where("type=2").Asc("full_name").Find(&professors)
+}
+
+func GetProfessors()([]*User, error){
+	return getProfessors()
+}
