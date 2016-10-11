@@ -14,6 +14,7 @@ type AdminCrateUserForm struct {
 	LoginType  string `binding:"Required"`
 	LoginName  string
 	UserName   string `binding:"Required;AlphaDashDot;MaxSize(35)"`
+	FullName   string `binding:"Required;MaxSize(60)"`
 	Email      string `binding:"Required;Email;MaxSize(254)"`
 	Password   string `binding:"MaxSize(255)"`
 	SendNotify bool

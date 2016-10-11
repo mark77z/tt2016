@@ -198,6 +198,7 @@ func SignUpPost(ctx *context.Context, cpt *captcha.Captcha, form auth.RegisterFo
 
 	u := &models.User{
 		Name:     form.UserName,
+		FullName: form.FullName,
 		Email:    form.Email,
 		Passwd:   form.Password,
 		IsActive: !setting.Service.RegisterEmailConfirm,
