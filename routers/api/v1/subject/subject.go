@@ -43,6 +43,7 @@ func Search(ctx *context.APIContext) {
 	})
 }
 
+
 func SearchByProfessor(ctx *context.APIContext) {
 	ProfessorID,_ := strconv.ParseInt(ctx.Query("q"), 10, 64)
 	subjects, err := models.GetSubjectsProfessor(ProfessorID)
