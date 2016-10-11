@@ -10,6 +10,7 @@ import (
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/context"
+	"strconv"
 )
 
 func Search(ctx *context.APIContext) {
@@ -40,4 +41,30 @@ func Search(ctx *context.APIContext) {
 		"ok":   true,
 		"data": results,
 	})
+}
+
+
+func SearchByProfessor(ctx *context.APIContext) {
+	ProfessorID,_ := strconv.ParseInt(ctx.Query("q"), 10, 64)
+	subjects, err := models.GetSubjectsProfessor(ProfessorID)
+	if err != nil {
+		ctx.JSON(500, map[string]interface{}{
+			"ok":    false,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	results := make([]*api.Subject, len(subjects))
+	for i := range subjects {
+		results[i] = &api.Subject{
+			ID:        subjects[i].ID,
+			Name:  	   subjects[i].Name,
+		}
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"ok":   true,
+		"data": results,
+	})	
 }
