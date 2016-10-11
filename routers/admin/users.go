@@ -78,6 +78,7 @@ func NewUserPost(ctx *context.Context, form auth.AdminCrateUserForm) {
 
 	u := &models.User{
 		Name:      form.UserName,
+		FullName:  form.FullName,
 		Email:     form.Email,
 		Passwd:    form.Password,
 		IsActive:  true,
