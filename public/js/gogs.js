@@ -1155,6 +1155,36 @@ function searchTags() {
     });
 }
 
+function getSubjectsFromProfessor(){
+    var $subjectsBox = $("#subject-box");
+    var $inputProfessor = $("#professor");
+    $inputProfessor.change(function (){
+        var $this = $(this);
+        var keyword = $this.val();
+        $.ajax({
+            url: suburl + '/api/v1/subjects/searchByProfessor?q=' + keyword,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                $subjectsBox.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item" data-value="'+item.id+'">'+item.name+'</div>';
+                    });
+                    $subjectsBox.html(html);
+                } else {
+                    $subjectsBox.hide();
+                }
+            }
+        });
+    });
+}
+
 function searchSubjects() {
     if (!$('#search-subject-box .results').length) {
         return;
@@ -1467,6 +1497,7 @@ $(document).ready(function () {
     searchSubjects();
     searchRepositories();
     searchTags();
+    getSubjectsFromProfessor();
 
     initCommentForm();
     initInstall();

@@ -105,6 +105,13 @@ func Create(ctx *context.Context) {
 	}
 	ctx.Data["Groups"] = groups
 
+	professors, err := models.GetProfessors()
+	if err != nil {
+		ctx.Handle(500, "GetProfessors", err)
+		return
+	}
+	ctx.Data["Professors"] = professors
+
 	ctxUser := checkContextUser(ctx, ctx.QueryInt64("org"))
 	if ctx.Written() {
 		return
