@@ -84,6 +84,27 @@ func Create(ctx *context.Context) {
 	}
 	ctx.Data["Tags"] = tags
 
+	subjects, err := models.GetSubjects()
+	if err != nil {
+		ctx.Handle(500, "GetSubjects", err)
+		return
+	}
+	ctx.Data["Subjects"] = subjects
+
+	semesters, err := models.GetSemesters()
+	if err != nil {
+		ctx.Handle(500, "GetSemesters", err)
+		return
+	}
+	ctx.Data["Semesters"] = semesters
+
+	groups, err := models.GetGroups()
+	if err != nil {
+		ctx.Handle(500, "GetGroups", err)
+		return
+	}
+	ctx.Data["Groups"] = groups
+
 	ctxUser := checkContextUser(ctx, ctx.QueryInt64("org"))
 	if ctx.Written() {
 		return
@@ -138,6 +159,8 @@ func CreatePost(ctx *context.Context, form auth.CreateRepoForm) {
 		IsPrivate:   form.Private || setting.Repository.ForcePrivate,
 		AutoInit:    form.AutoInit,
 		Tags:		 form.Tags,
+		SemesterID:  form.Semester,
+		GroupID:     form.Group,
 	})
 	if err == nil {
 

@@ -160,6 +160,11 @@ type Repository struct {
 	Website       string
 	DefaultBranch string
 
+	//** METADATOS ESCOLARES
+	SemesterID		int64
+	GroupID			int64
+	//**
+
 	NumWatches          int
 	NumStars            int
 	NumForks            int
@@ -465,6 +470,46 @@ func (repo *Repository) DescriptionHtml() template.HTML {
 	return template.HTML(DescPattern.ReplaceAllStringFunc(markdown.Sanitizer.Sanitize(repo.Description), sanitize))
 }
 
+/*
+Funciones para metadatos escolares
+*/
+func (repo *Repository) GetSemester() (*Semester, error) {
+	semester, err := GetSemesterByID(repo.SemesterID)
+	if err != nil{
+		return nil, err
+	}
+
+	return semester, err
+}
+
+func (repo *Repository) GetGroup() (*Group, error) {
+	group, err := GetGroupByID(repo.GroupID)
+	if err != nil{
+		return nil, err
+	}
+
+	return group, err
+}
+
+func (repo *Repository) GetSemesterName() string {
+	semester, err := GetSemesterByID(repo.SemesterID)
+	if err != nil{
+		return ""
+	}
+
+	return semester.Name
+}
+
+func (repo *Repository) GetGroupName() string {
+	group, err := GetGroupByID(repo.GroupID)
+	if err != nil{
+		return ""
+	}
+
+	return group.Name
+}
+//Fin metadatos escolares
+
 func (repo *Repository) LocalCopyPath() string {
 	return path.Join(setting.AppDataPath, "tmp/local-rpeo", com.ToStr(repo.ID))
 }
@@ -768,7 +813,9 @@ type CreateRepoOptions struct {
 	IsMirror    bool
 	AutoInit    bool
 	//**AGREGADOS
-	Tags 		string
+	Tags 		 string
+	SemesterID   int64
+	GroupID      int64
 }
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -962,6 +1009,10 @@ func CreateRepository(u *User, opts CreateRepoOptions) (_ *Repository, err error
 		LowerName:    strings.ToLower(opts.Name),
 		Description:  opts.Description,
 		IsPrivate:    opts.IsPrivate,
+		//METATADOS ESCOLARES
+		GroupID:      opts.GroupID,
+		SemesterID:   opts.SemesterID,
+		//FIN METADATOS
 		EnableWiki:   true,
 		EnableIssues: true,
 		EnablePulls:  true,
@@ -2112,8 +2163,10 @@ func (repo *Repository) CreateNewBranch(doer *User, oldBranchName, branchName st
 
 
 /////////////////////////
+/////////////////////////
 //******TAGS_REPO******
-
+/////////////////////////
+/////////////////////////
 type TagsRepo struct {
 	ID     	int64 `xorm:"pk autoincr"`
 	TagID  	int64 `xorm:"UNIQUE(s)"`

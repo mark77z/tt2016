@@ -7,6 +7,19 @@
 			{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
 			<a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a>
 		</p>
+		
+		{{if .Repository.SemesterID}}
+		<p id="repo-semester">
+			<span class="semester has-emoji"><span class="octicon octicon-calendar"></span> <a href="/explore/repos?q={{.Repository.GetSemesterName}}">{{.Repository.GetSemesterName}}</a></span>
+		</p>
+		{{end}}
+
+		{{if .Repository.GroupID}}
+		<p id="repo-group">
+			<span class="group has-emoji"><span class="octicon octicon-credit-card"></span> <a href="/explore/repos?q={{.Repository.GetGroupName}}">{{.Repository.GetGroupName}}</a></span>
+		</p>
+		{{end}}
+
 		<p>
 			{{.Repository.TagsHtml}}
 		</p>

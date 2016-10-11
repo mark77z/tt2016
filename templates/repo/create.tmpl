@@ -64,6 +64,49 @@
 
 					<div class="ui divider"></div>
 					<!-- METADATOS ESCOLARES-->
+
+					<div class="inline field">
+						<label>{{.i18n.Tr "repo.semester"}}</label>
+						<div class="ui search selection dropdown">
+							<input type="hidden" name="semester" value="{{.semester}}">
+							<div class="default text">{{.i18n.Tr "repo.select_semester"}}</div>
+							<i class="dropdown icon"></i>
+							<div class="menu">
+								{{range .Semesters}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
+							</div>
+						</div>
+					</div>
+
+					<div class="inline field">
+						<label>{{.i18n.Tr "repo.group"}}</label>
+						<div class="ui search selection dropdown">
+							<input type="hidden" name="group" value="{{.group}}">
+							<div class="default text">{{.i18n.Tr "repo.select_group"}}</div>
+							<i class="dropdown icon"></i>
+							<div class="menu">
+								{{range .Groups}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
+							</div>
+						</div>
+					</div>
+
+					<div class="inline field">
+						<label>{{.i18n.Tr "repo.subject"}}</label>
+						<div class="ui search selection dropdown">
+							<input type="hidden" name="subject" value="{{.subject}}">
+							<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
+							<i class="dropdown icon"></i>
+							<div class="menu">
+								{{range .Subjects}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
+							</div>
+						</div>
+					</div>
+
 					<div class="inline required field" id="tag_dropdown">
 						<label>Tags</label>
 						<div id="tag-box" class="ui multiple search normal selection dropdown" style="width: 45% !important;" forceSelection="true">
