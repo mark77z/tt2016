@@ -33,6 +33,8 @@ type CreateRepoForm struct {
 	Readme      string
 	//Agregados
 	Tags		string
+	Semester    int64
+	Group       int64
 }
 
 func (f *CreateRepoForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
