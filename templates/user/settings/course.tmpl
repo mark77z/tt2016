@@ -11,11 +11,11 @@
 				<div class="ui attached segment collaborator list">
 					{{range .Courses}}
 						<div class="item ui grid">
-							<div class="ui five wide column">
+							<div class="ui six wide column">
 								<img class="ui avatar image" src="/img/subject.png">
 								{{.Subject.Name}}
 							</div>
-							<div class="ui eight wide column">
+							<div class="ui seven wide column">
 								<span class="octicon octicon-shield"></span>
 								<div class="ui inline dropdown">
 								  <div class="text">{{if .Course.IsActive}}Active{{else}}Inactive{{end}}</div>
