@@ -352,7 +352,7 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 		return
 	}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+	ctx.Flash.Success(ctx.Tr("user.settings.course.add_course_success"))
 	ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
 }
 
@@ -371,7 +371,7 @@ func DeleteCourse(ctx *context.Context) {
 	}
 	log.Trace("Removed course for profesor: %s", ctx.User.Name)
 
-	ctx.Flash.Success(ctx.Tr("settings.course_deletion_success"))
+	ctx.Flash.Success(ctx.Tr("user.settings.course.course_deletion_success"))
 	ctx.JSON(200, map[string]interface{}{
 		"redirect": setting.AppSubUrl + "/user/settings/course",
 	})

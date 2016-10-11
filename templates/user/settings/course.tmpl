@@ -18,7 +18,7 @@
 							<div class="ui eight wide column">
 								<span class="octicon octicon-shield"></span>
 								<div class="ui inline dropdown">
-								  <div class="text">{{if .Course.IsActive}}Active{{else}}Inactive{{end}}</div>
+								  <div class="text">{{if .Course.IsActive}}Activo{{else}}Inactivo{{end}}</div>
 								  <i class="dropdown icon"></i>
 								  <div class="access-mode menu" data-url="{{$.Link}}/status" data-sid="{{.Subject.ID}}">
 								    <div class="item" data-text="{{$.i18n.Tr "user.settings.course.active"}}" data-value="1">{{$.i18n.Tr "user.settings.course.active"}}</div>

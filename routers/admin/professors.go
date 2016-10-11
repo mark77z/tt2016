@@ -81,6 +81,7 @@ func NewProfessorPost(ctx *context.Context, form auth.AdminCrateUserForm) {
 		Name:      form.UserName,
 		Email:     form.Email,
 		Passwd:    form.Password,
+		Type: 	   models.USER_TYPE_PROFESSOR,
 		IsActive:  true,
 		LoginType: models.LOGIN_PLAIN,
 	}
