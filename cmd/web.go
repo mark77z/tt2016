@@ -214,6 +214,7 @@ func runWeb(ctx *cli.Context) error {
 		})
 		m.Get("/repos", routers.ExploreRepos)
 		m.Get("/users", routers.ExploreUsers)
+		m.Get("/professors", routers.ExploreProfessors)
 		m.Get("/organizations", routers.ExploreOrganizations)
 		m.Get("/semesters", routers.ExploreSemesters)
 		m.Get("/groups", routers.ExploreGroups)
