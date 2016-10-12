@@ -161,10 +161,10 @@ type Repository struct {
 	DefaultBranch string
 
 	//** METADATOS ESCOLARES
-	ProfessorID	  	int64
-	SubjectID 	  	int64
-	SemesterID		int64
-	GroupID			int64
+	ProfessorID int64
+	SubjectID   int64
+	SemesterID  int64
+	GroupID     int64
 	//**
 
 	NumWatches          int
@@ -477,7 +477,7 @@ Funciones para metadatos escolares
 */
 func (repo *Repository) GetProfessor() (*User, error) {
 	profesor, err := GetUserByID(repo.ProfessorID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return profesor, err
@@ -485,7 +485,7 @@ func (repo *Repository) GetProfessor() (*User, error) {
 
 func (repo *Repository) GetSubject() (*Subject, error) {
 	subject, err := GetSubjectByID(repo.SubjectID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -494,7 +494,7 @@ func (repo *Repository) GetSubject() (*Subject, error) {
 
 func (repo *Repository) GetSemester() (*Semester, error) {
 	semester, err := GetSemesterByID(repo.SemesterID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -503,7 +503,7 @@ func (repo *Repository) GetSemester() (*Semester, error) {
 
 func (repo *Repository) GetGroup() (*Group, error) {
 	group, err := GetGroupByID(repo.GroupID)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -512,7 +512,7 @@ func (repo *Repository) GetGroup() (*Group, error) {
 
 func (repo *Repository) GetProfessorName() string {
 	profesor, err := GetUserByID(repo.ProfessorID)
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 
@@ -521,7 +521,7 @@ func (repo *Repository) GetProfessorName() string {
 
 func (repo *Repository) GetSubjectName() string {
 	subject, err := GetSubjectByID(repo.SubjectID)
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 
@@ -530,7 +530,7 @@ func (repo *Repository) GetSubjectName() string {
 
 func (repo *Repository) GetSemesterName() string {
 	semester, err := GetSemesterByID(repo.SemesterID)
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 
@@ -539,12 +539,13 @@ func (repo *Repository) GetSemesterName() string {
 
 func (repo *Repository) GetGroupName() string {
 	group, err := GetGroupByID(repo.GroupID)
-	if err != nil{
+	if err != nil {
 		return ""
 	}
 
 	return group.Name
 }
+
 //Fin metadatos escolares
 
 func (repo *Repository) LocalCopyPath() string {
@@ -850,11 +851,11 @@ type CreateRepoOptions struct {
 	IsMirror    bool
 	AutoInit    bool
 	//**AGREGADOS
-	Tags 		 string
-	SemesterID   int64
-	GroupID      int64
-	ProfessorID   int64
-	SubjectID     int64
+	Tags        string
+	SemesterID  int64
+	GroupID     int64
+	ProfessorID int64
+	SubjectID   int64
 }
 
 func getRepoInitFile(tp, name string) ([]byte, error) {
@@ -1042,17 +1043,17 @@ func CreateRepository(u *User, opts CreateRepoOptions) (_ *Repository, err error
 	}
 
 	repo := &Repository{
-		OwnerID:      u.ID,
-		Owner:        u,
-		Name:         opts.Name,
-		LowerName:    strings.ToLower(opts.Name),
-		Description:  opts.Description,
-		IsPrivate:    opts.IsPrivate,
+		OwnerID:     u.ID,
+		Owner:       u,
+		Name:        opts.Name,
+		LowerName:   strings.ToLower(opts.Name),
+		Description: opts.Description,
+		IsPrivate:   opts.IsPrivate,
 		//METATADOS ESCOLARES
-		GroupID:      opts.GroupID,
-		SemesterID:   opts.SemesterID,
-		ProfessorID:  opts.ProfessorID,
-		SubjectID:    opts.SubjectID,
+		GroupID:     opts.GroupID,
+		SemesterID:  opts.SemesterID,
+		ProfessorID: opts.ProfessorID,
+		SubjectID:   opts.SubjectID,
 		//FIN METADATOS
 		EnableWiki:   true,
 		EnableIssues: true,
@@ -1606,6 +1607,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 
 	// Append conditions
 	sess := x.
+<<<<<<< HEAD
 	Join("INNER", "semester", "repository.semester_id = semester.id").
 	Join("INNER", "user", "repository.professor_id = user.id").
 	Join("INNER", "subject", "repository.subject_id = subject.id").
@@ -1618,6 +1620,17 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
 	Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%").
 	Or("LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%")
+=======
+		Join("INNER", "semester", "repository.semester_id = semester.id").
+		Join("INNER", "user", "repository.professor_id = user.id").
+		Join("INNER", "subject", "repository.subject_id = subject.id").
+		Join("INNER", "tags_repo", "repository.id = tags_repo.repo_id").
+		Join("INNER", "tag", "tags_repo.tag_id = tag.id").
+		Where("LOWER(semester.name) LIKE ?", "%"+opts.Keyword+"%").
+		Or("LOWER(user.full_name) LIKE ?", "%"+opts.Keyword+"%").
+		Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
+		Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%")
+>>>>>>> 395ec51844238e255ed5168b404045c4d7b524c0
 
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)
@@ -2215,16 +2228,15 @@ func (repo *Repository) CreateNewBranch(doer *User, oldBranchName, branchName st
 	return nil
 }
 
-
 /////////////////////////
 /////////////////////////
 //******TAGS_REPO******
 /////////////////////////
 /////////////////////////
 type TagsRepo struct {
-	ID     	int64 `xorm:"pk autoincr"`
-	TagID  	int64 `xorm:"UNIQUE(s)"`
-	RepoID 	int64 `xorm:"UNIQUE(s)"`
+	ID     int64 `xorm:"pk autoincr"`
+	TagID  int64 `xorm:"UNIQUE(s)"`
+	RepoID int64 `xorm:"UNIQUE(s)"`
 }
 
 // Star or unstar repository.
@@ -2235,7 +2247,7 @@ func LinkTagtoRepo(tagID, repoID int64, linked bool) (err error) {
 		}
 		if _, err = x.Insert(&TagsRepo{TagID: tagID, RepoID: repoID}); err != nil {
 			return err
-		} 
+		}
 	} else {
 		if !IsTagLinked(tagID, repoID) {
 			return nil
@@ -2253,37 +2265,37 @@ func IsTagLinked(tagID, repoID int64) bool {
 	return has
 }
 
-func GetTagsRepo(repoID int64)([]*TagsRepo, error){
+func GetTagsRepo(repoID int64) ([]*TagsRepo, error) {
 	tagsrepo := make([]*TagsRepo, 0, 10)
 	return tagsrepo, x.Find(&tagsrepo, &TagsRepo{RepoID: repoID})
 }
 
-func GetTagsOfRepo(repoID int64)([]*Tag, error){
-	tagsrepo,err := GetTagsRepo(repoID)
+func GetTagsOfRepo(repoID int64) ([]*Tag, error) {
+	tagsrepo, err := GetTagsRepo(repoID)
 	tags := make([]*Tag, 0, len(tagsrepo))
 	for _, tagrepo := range tagsrepo {
-		tag,_:= GetTagByID(tagrepo.TagID)
+		tag, _ := GetTagByID(tagrepo.TagID)
 		tags = append(tags, tag)
 	}
 
-	return tags,err
+	return tags, err
 }
 
-func (r *Repository) GetTags()([]*Tag, error){
+func (r *Repository) GetTags() ([]*Tag, error) {
 	tagsrepo, err := GetTagsRepo(r.ID)
 	tags := make([]*Tag, 0, len(tagsrepo))
 	for _, tagrepo := range tagsrepo {
-		tag, _:= GetTagByID(tagrepo.TagID)
+		tag, _ := GetTagByID(tagrepo.TagID)
 		tags = append(tags, tag)
 	}
 
-	return tags,err
+	return tags, err
 }
 
-func UnlinkTagRepo(repoID int64, tagID int64) bool{
+func UnlinkTagRepo(repoID int64, tagID int64) bool {
 	if _, err := x.Delete(&TagsRepo{0, tagID, repoID}); err != nil {
 		return false
-	} 
+	}
 
 	return true
 }
@@ -2293,13 +2305,13 @@ func (repo *Repository) TagsHtml() template.HTML {
 		return fmt.Sprintf(`<a href="%[1]s" target="_blank">%[1]s</a>`, s)
 	}
 
-	tagsrepo,_ := GetTagsRepo(repo.ID)
+	tagsrepo, _ := GetTagsRepo(repo.ID)
 
-	tagsHTML:= ""
+	tagsHTML := ""
 	for _, tagRepo := range tagsrepo {
-    	tag,_:= GetTagByID(tagRepo.TagID)
-    	tagsHTML += "<a href='/explore/repos?q="+tag.Etiqueta+"'>#"+tag.Etiqueta+"</a> "
-    }
+		tag, _ := GetTagByID(tagRepo.TagID)
+		tagsHTML += "<a href='/explore/repos?q=" + tag.Etiqueta + "'>#" + tag.Etiqueta + "</a> "
+	}
 
 	return template.HTML(DescPattern.ReplaceAllStringFunc(markdown.Sanitizer.Sanitize(tagsHTML), sanitize))
 }

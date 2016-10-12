@@ -22,10 +22,10 @@ const (
 	EXPLORE_USERS         base.TplName = "explore/users"
 	EXPLORE_PROFESSORS 	  base.TplName = "explore/professors"
 	EXPLORE_ORGANIZATIONS base.TplName = "explore/organizations"
-	EXPLORE_SUBJECTS 	  base.TplName = "explore/subjects"
-	EXPLORE_SEMESTERS	  base.TplName = "explore/semesters"
-	EXPLORE_GROUPS	      base.TplName = "explore/groups"
-	EXPLORE_TAGS	      base.TplName = "explore/tags"
+	EXPLORE_SUBJECTS      base.TplName = "explore/subjects"
+	EXPLORE_SEMESTERS     base.TplName = "explore/semesters"
+	EXPLORE_GROUPS        base.TplName = "explore/groups"
+	EXPLORE_TAGS          base.TplName = "explore/tags"
 )
 
 func Home(ctx *context.Context) {
@@ -232,8 +232,8 @@ func RenderSubjectsSearch(ctx *context.Context, opts *SubjectsSearchOptions) {
 
 	var (
 		subjects []*models.Subject
-		count int64
-		err   error
+		count    int64
+		err      error
 	)
 
 	keyword := ctx.Query("q")
@@ -294,8 +294,8 @@ func RenderSemestersSearch(ctx *context.Context, opts *SemestersSearchOptions) {
 
 	var (
 		semesters []*models.Semester
-		count int64
-		err   error
+		count     int64
+		err       error
 	)
 
 	keyword := ctx.Query("q")
@@ -356,8 +356,8 @@ func RenderGroupsSearch(ctx *context.Context, opts *GrupsSearchOptions) {
 
 	var (
 		groups []*models.Group
-		count int64
-		err   error
+		count  int64
+		err    error
 	)
 
 	keyword := ctx.Query("q")
@@ -417,7 +417,7 @@ func RenderTagsSearch(ctx *context.Context, opts *TagsSearchOptions) {
 	}
 
 	var (
-		tags []*models.Tag
+		tags  []*models.Tag
 		count int64
 		err   error
 	)
@@ -459,7 +459,7 @@ func ExploreTags(ctx *context.Context) {
 		Counter:  models.CountTags,
 		Ranger:   models.Tags,
 		PageSize: setting.UI.ExplorePagingNum,
-		OrderBy:  "name ASC",
+		OrderBy:  "etiqueta ASC",
 		TplName:  EXPLORE_TAGS,
 	})
 }
