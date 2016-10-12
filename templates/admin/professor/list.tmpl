@@ -22,8 +22,6 @@
 								<th>{{.i18n.Tr "admin.users.name"}}</th>
 								<th>{{.i18n.Tr "email"}}</th>
 								<th>{{.i18n.Tr "admin.users.activated"}}</th>
-								<th>{{.i18n.Tr "admin.users.admin"}}</th>
-								<th>{{.i18n.Tr "admin.users.repos"}}</th>
 								<th>{{.i18n.Tr "admin.users.created"}}</th>
 								<th>{{.i18n.Tr "admin.users.edit"}}</th>
 								<th>{{.i18n.Tr "admin.users.professor.course"}}</th>
@@ -36,8 +34,6 @@
 									<td><a href="{{AppSubUrl}}/{{.Name}}">{{.Name}}</a></td>
 									<td><span class="text truncate email">{{.Email}}</span></td>
 									<td><i class="fa fa{{if .IsActive}}-check{{end}}-square-o"></i></td>
-									<td><i class="fa fa{{if .IsAdmin}}-check{{end}}-square-o"></i></td>
-									<td>{{.NumRepos}}</td>
 									<td><span title="{{DateFmtLong .Created}}">{{DateFmtShort .Created }}</span></td>
 									<td class="center aligned"><a href="{{$.Link}}/{{.ID}}"><i class="fa fa-pencil-square-o"></i></a></td>
 									<td class="center aligned"><a href="{{$.Link}}/{{.ID}}/course"><i class="fa fa-book"></i></a></td>
