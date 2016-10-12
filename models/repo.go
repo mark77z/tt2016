@@ -1605,7 +1605,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	repos = make([]*Repository, 0, opts.PageSize)
 
 	// Append conditions
-	sess := x.Join("LEFT", "`tags_repo`", "`repository`.id=`tags_repo`.repo_id").Join("LEFT", "`tag`", "`tags_repo`.tag_id=`tag`.id").Where("LOWER(lower_name) LIKE ? OR LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%","%"+opts.Keyword+"%")
+	sess := x.Join("LEFT", "`tags_repo`", "`repository`.id=`tags_repo`.repo_id").Join("LEFT", "`tag`", "`tags_repo`.tag_id=`tag`.id").Join("LEFT", "`semester`", "`repository`.semester_id=`semester`.id").Join("LEFT", "`user`", "`repository`.professor_id=`user`.id").Join("LEFT", "`subject`", "`repository`.subject_id=`subject`.id").Join("LEFT", "`group`", "`repository`.group_id=`group`.id").Where("LOWER(repository.lower_name) LIKE ? OR LOWER(tag.etiqueta) LIKE ? OR LOWER(subject.name) LIKE ? OR LOWER(semester.name) LIKE ? OR LOWER(user.full_name) LIKE ? OR LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%","%"+opts.Keyword+"%","%"+opts.Keyword+"%","%"+opts.Keyword+"%","%"+opts.Keyword+"%","%"+opts.Keyword+"%")
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)
 	}

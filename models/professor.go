@@ -23,7 +23,7 @@ func Professors(page, pageSize int) ([]*User, error) {
 
 func getProfessors() ([]*User, error) {
 	professors := make([]*User, 0, 20)
-	return professors, x.Where("type=2").Asc("full_name").Find(&professors)
+	return professors, x.Where("type=2").And("prohibit_login = ?", false).Asc("full_name").Find(&professors)
 }
 
 func GetProfessors()([]*User, error){
