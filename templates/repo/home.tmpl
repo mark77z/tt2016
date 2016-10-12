@@ -3,54 +3,63 @@
 	{{template "repo/header" .}}
 	<div class="ui container">
 		{{template "base/alert" .}}
-		<a class="ui centered card" href="http://www.dog.com">
+
+		<div class="ui center aligned container">
+			{{if .Repository.ProfessorID}}
+			<a class="ui image label" href="/explore/repos?q={{.Repository.GetProfessorName}}">
+			  <img src="{{if not .Professor.UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Professor.Avatar}}{{else}}/avatars/{{.Professor.ID}}{{end}}">
+			  Profesor
+			  <div class="detail">{{.Repository.GetProfessorName}}</div>
+			</a>
+			{{end}}
+
+			{{if .Repository.SubjectID}}
+			<a class="ui image label" href="/explore/repos?q={{.Repository.GetSubjectName}}">
+			  <i class="university icon"></i>
+			  Materia
+			  <div class="detail">{{.Repository.GetSubjectName}}</div>
+			</a>
+			{{end}}
+
+			{{if .Repository.SemesterID}}
+			<a class="ui image label" href="/explore/repos?q={{.Repository.GetSemesterName}}">
+			  <i class="calendar icon"></i>
+			  Semestre
+			  <div class="detail">{{.Repository.GetSemesterName}}</div>
+			</a>
+			{{end}}
+
+			{{if .Repository.GroupID}}
+			<a class="ui image label" href="/explore/repos?q={{.Repository.GetGroupName}}">
+			  <i class="university icon"></i>
+			  Grupo
+			  <div class="detail">{{.Repository.GetGroupName}}</div>
+			</a>
+			{{end}}
+		</div>
+
+		<div class="ui icon message">
+		  <i class="inbox icon"></i>
 		  <div class="content">
-		    <div class="header">Cute Dog</div>
-		    <div class="meta">
-		      <span class="category">Animals</span>
+		    <div class="header">
+		      Descripcion
 		    </div>
-		    <div class="description">
-		      <p></p>
-		    </div>
+				{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
+				<p><a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a></p>
 		  </div>
-		  <div class="extra content">
-		    <div class="right floated author">
-		      <img class="ui avatar image" src="/images/avatar/small/matt.jpg"> Matt
-		    </div>
-		  </div>
-		</a>
-		<p id="repo-desc">
-			{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
-			<a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a>
-		</p>
-		
-		{{if .Repository.SemesterID}}
-		<p id="repo-semester">
-			<span class="semester has-emoji"><span class="octicon octicon-calendar"></span> <a href="/explore/repos?q={{.Repository.GetSemesterName}}">{{.Repository.GetSemesterName}}</a></span>
-		</p>
-		{{end}}
+		</div>
 
-		{{if .Repository.GroupID}}
-		<p id="repo-group">
-			<span class="group has-emoji"><span class="octicon octicon-credit-card"></span> <a href="/explore/repos?q={{.Repository.GetGroupName}}">{{.Repository.GetGroupName}}</a></span>
-		</p>
-		{{end}}
+		<div class="ui mini horizontal divided list">
+		  {{range .HTags}}
+			<div class="item">
+			    <img class="ui avatar image" src="/img/tag.png">
+			    <div class="content">
+				      <a class="header" href="/explore/repos?q={{.Etiqueta}}">{{.Etiqueta}}</a>
+				    </div>
+				</div>
+			{{end}}
+		</div>
 
-		{{if .Repository.ProfessorID}}
-		<p id="repo-prof">
-			<span class="profesor has-emoji"><span class="octicon octicon-mortar-board"></span> <a href="/explore/repos?q={{.Repository.GetProfessorName}}">{{.Repository.GetProfessorName}}</a></span>
-		</p>
-		{{end}}
-
-		{{if .Repository.SubjectID}}
-		<p id="repo-subject">
-			<span class="subject has-emoji"><span class="octicon octicon-book"></span> <a href="/explore/repos?q={{.Repository.GetSubjectName}}">{{.Repository.GetSubjectName}}</a></span>
-		</p>
-		{{end}}
-
-		<p>
-			{{.Repository.TagsHtml}}
-		</p>
 		<div class="ui secondary menu">
 			{{if .PullRequestCtx.Allowed}}
 				<div class="fitted item">

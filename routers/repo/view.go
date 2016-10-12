@@ -266,10 +266,24 @@ func Home(ctx *context.Context) {
 		}
 	}
 
+	prof, err := ctx.Repo.Repository.GetProfessor()
+	if err != nil {
+		log.Trace("No professor found")
+		prof = nil
+	}
+
+	htags , err:= ctx.Repo.Repository.GetTags()
+	if err != nil {
+		log.Trace("No tags found")
+		htags = nil
+	}
+
 	ctx.Data["Paths"] = paths
 	ctx.Data["TreeLink"] = treeLink
 	ctx.Data["TreeNames"] = treeNames
 	ctx.Data["BranchLink"] = branchLink
+	ctx.Data["Professor"] = prof
+	ctx.Data["HTags"] = htags
 	ctx.HTML(200, HOME)
 }
 

@@ -2256,6 +2256,17 @@ func GetTagsOfRepo(repoID int64)([]*Tag, error){
 	return tags,err
 }
 
+func (r *Repository) GetTags()([]*Tag, error){
+	tagsrepo, err := GetTagsRepo(r.ID)
+	tags := make([]*Tag, 0, len(tagsrepo))
+	for _, tagrepo := range tagsrepo {
+		tag, _:= GetTagByID(tagrepo.TagID)
+		tags = append(tags, tag)
+	}
+
+	return tags,err
+}
+
 func UnlinkTagRepo(repoID int64, tagID int64) bool{
 	if _, err := x.Delete(&TagsRepo{0, tagID, repoID}); err != nil {
 		return false
