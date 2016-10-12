@@ -66,6 +66,43 @@ func (repo *Repository) AddCollaborator(u *User) error {
 	return sess.Commit()
 }
 
+func AddCollaboratorProfessor(professorID int64, repoID int64) error {
+	collaboration := &Collaboration{
+		RepoID: repoID,
+		UserID: professorID,
+	}
+
+	has, err := x.Get(collaboration)
+	if err != nil {
+		return err
+	} else if has {
+		return nil
+	}
+	collaboration.Mode = ACCESS_MODE_READ
+
+	sess := x.NewSession()
+	defer sessionRelease(sess)
+	if err = sess.Begin(); err != nil {
+		return err
+	}
+
+	if _, err = sess.InsertOne(collaboration); err != nil {
+		return err
+	}
+
+	affected, err := x.Insert(&Access{
+		UserID: professorID,
+		RepoID: repoID,
+		Mode:   ACCESS_MODE_READ,
+	})
+
+	if affected == 0 {
+		return err
+	}
+
+	return sess.Commit()
+}
+
 func (repo *Repository) getCollaborations(e Engine) ([]*Collaboration, error) {
 	collaborations := make([]*Collaboration, 0)
 	return collaborations, e.Find(&collaborations, &Collaboration{RepoID: repo.ID})

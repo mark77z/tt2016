@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 	"strings"
-    "strconv"
 
 	"github.com/Unknwon/com"
 
@@ -165,18 +165,23 @@ func CreatePost(ctx *context.Context, form auth.CreateRepoForm) {
 		Readme:      form.Readme,
 		IsPrivate:   form.Private || setting.Repository.ForcePrivate,
 		AutoInit:    form.AutoInit,
-		Tags:		 form.Tags,
+		Tags:        form.Tags,
 		SemesterID:  form.Semester,
 		GroupID:     form.Group,
-		ProfessorID:   form.Professor,
-		SubjectID:     form.Subject,
+		ProfessorID: form.Professor,
+		SubjectID:   form.Subject,
 	})
 	if err == nil {
 
-		arr_tags := strings.Split(form.Tags , ",")
+		arr_tags := strings.Split(form.Tags, ",")
 		for _, tag := range arr_tags {
-		    tagID, _ := strconv.ParseInt(tag, 10, 64)
-		    models.LinkTagtoRepo(tagID, repo.ID, true)
+			tagID, _ := strconv.ParseInt(tag, 10, 64)
+			models.LinkTagtoRepo(tagID, repo.ID, true)
+		}
+
+		if form.Professor != 0 {
+			//Agregar profesor como colaborador a repositorio con permisos de lectura
+			models.AddCollaboratorProfessor(form.Professor, repo.ID)
 		}
 
 		log.Trace("Repository created [%d]: %s/%s", repo.ID, ctxUser.Name, repo.Name)

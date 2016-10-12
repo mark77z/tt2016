@@ -106,6 +106,12 @@ type RepoSettingForm struct {
 	TrackerIssueStyle     string
 	EnablePulls           bool
 
+	//Datos Escolares
+	Professor	  int64
+	Subject 	  int64
+	Semester      int64
+	Group         int64
+
 	//Gestion de Tags
 	tags 		 string
 }

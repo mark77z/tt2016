@@ -115,7 +115,7 @@ func ExploreRepos(ctx *context.Context) {
 		Counter:  models.CountRepositories,
 		Ranger:   models.GetRecentUpdatedRepositories,
 		PageSize: setting.UI.ExplorePagingNum,
-		OrderBy:  "updated_unix DESC",
+		OrderBy:  "repository.updated_unix DESC",
 		TplName:  EXPLORE_REPOS,
 	})
 }
