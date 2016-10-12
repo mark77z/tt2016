@@ -14,6 +14,7 @@ import (
 	"github.com/gogits/gogs/modules/context"
 	"github.com/gogits/gogs/modules/setting"
 	"github.com/gogits/gogs/routers/user"
+	"github.com/gogits/gogs/modules/log"
 )
 
 const (
@@ -98,6 +99,7 @@ func RenderRepoSearch(ctx *context.Context, opts *RepoSearchOptions) {
 
 	for _, repo := range repos {
 		if err = repo.GetOwner(); err != nil {
+			log.Trace("%s", repo)
 			ctx.Handle(500, "GetOwner", fmt.Errorf("%d: %v", repo.ID, err))
 			return
 		}
