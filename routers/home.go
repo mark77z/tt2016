@@ -192,6 +192,7 @@ func ExploreProfessors(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("explore")
 	ctx.Data["PageIsExplore"] = true
 	ctx.Data["PageIsExploreProfessors"] = true
+	
 
 	RenderUserSearch(ctx, &UserSearchOptions{
 		Type:     models.USER_TYPE_PROFESSOR,
