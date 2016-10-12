@@ -32,11 +32,11 @@ type CreateRepoForm struct {
 	License     string
 	Readme      string
 	//Agregados
-	Tags		string
-	Semester    int64
-	Group       int64
-	Subject 	int64
-	Professor   int64
+	Tags      string
+	Semester  int64
+	Group     int64
+	Subject   int64
+	Professor int64
 }
 
 func (f *CreateRepoForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
@@ -107,13 +107,10 @@ type RepoSettingForm struct {
 	EnablePulls           bool
 
 	//Datos Escolares
-	Professor	  int64
-	Subject 	  int64
-	Semester      int64
-	Group         int64
-
-	//Gestion de Tags
-	tags 		 string
+	Professor int64
+	Subject   int64
+	Semester  int64
+	Group     int64
 }
 
 func (f *RepoSettingForm) Validate(ctx *macaron.Context, errs binding.Errors) binding.Errors {
