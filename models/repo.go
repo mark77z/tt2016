@@ -1607,30 +1607,18 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 
 	// Append conditions
 	sess := x.
-<<<<<<< HEAD
-	Join("INNER", "semester", "repository.semester_id = semester.id").
-	Join("INNER", "user", "repository.professor_id = user.id").
-	Join("INNER", "subject", "repository.subject_id = subject.id").
-	Join("INNER", "group", "repository.group_id = group.id").
-	Join("INNER", "tags_repo", "repository.id = tags_repo.repo_id").
-	Join("INNER", "tag", "tags_repo.tag_id = tag.id").
-	Where("LOWER(repository.lower_name) LIKE ?", "%"+opts.Keyword+"%").
-	Or("LOWER(semester.name) LIKE ?", "%"+opts.Keyword+"%").
-	Or("LOWER(user.full_name) LIKE ?", "%"+opts.Keyword+"%").
-	Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
-	Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%").
-	Or("LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%")
-=======
 		Join("INNER", "semester", "repository.semester_id = semester.id").
 		Join("INNER", "user", "repository.professor_id = user.id").
 		Join("INNER", "subject", "repository.subject_id = subject.id").
+		Join("INNER", "group", "repository.group_id = group.id").
 		Join("INNER", "tags_repo", "repository.id = tags_repo.repo_id").
 		Join("INNER", "tag", "tags_repo.tag_id = tag.id").
-		Where("LOWER(semester.name) LIKE ?", "%"+opts.Keyword+"%").
+		Where("LOWER(repository.lower_name) LIKE ?", "%"+opts.Keyword+"%").
+		Or("LOWER(semester.name) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(user.full_name) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
-		Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%")
->>>>>>> 395ec51844238e255ed5168b404045c4d7b524c0
+		Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%").
+		Or("LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%")
 
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)
