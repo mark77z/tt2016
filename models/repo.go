@@ -1606,7 +1606,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	repos = make([]*Repository, 0, opts.PageSize)
 
 	// Append conditions
-	sess := x.
+	sess := x.Cols("repository.name, repository.owner_id, repository.description, repository.is_mirror, repository.is_private, repository.updated_unix, repository.num_stars").
 		Join("INNER", "semester", "repository.semester_id = semester.id").
 		Join("INNER", "user", "repository.professor_id = user.id").
 		Join("INNER", "subject", "repository.subject_id = subject.id").
@@ -1619,6 +1619,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 		Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%")
+		
 
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)
@@ -1637,7 +1638,7 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	if len(opts.OrderBy) > 0 {
 		sess.OrderBy(opts.OrderBy)
 	}
-	return repos, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&repos)
+	return repos, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).GroupBy("repository.id").Find(&repos)
 }
 
 // DeleteRepositoryArchives deletes all repositories' archives.
