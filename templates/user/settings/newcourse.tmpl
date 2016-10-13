@@ -46,7 +46,7 @@
 								<input type="hidden" name="subject" value="{{.subject}}">
 								<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
 								<i class="dropdown icon"></i>
-								<div class="menu">
+								<div class="menu" id="subject-input">
 									{{range .Subjects}}
 										<div class="item" data-value="{{.ID}}">{{.Name}}</div>
 									{{end}}
@@ -58,6 +58,15 @@
 							<div class="ui checkbox">
 								<label><strong>{{.i18n.Tr "user.settings.active_course"}}</strong></label>
 								<input name="estatus" type="checkbox">
+							</div>
+						</div>
+
+						<div class="inline field ui left">
+							<div id="search-subject-box">
+								<div class="ui input">
+									<input class="prompt" name="subject" placeholder="{{.i18n.Tr "user.settings.course.search_subject_placeholder"}}" autocomplete="off" required>
+								</div>
+								<div class="ui segment results hide"></div>
 							</div>
 						</div>
 

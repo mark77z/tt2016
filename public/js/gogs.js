@@ -1195,10 +1195,6 @@ function searchSubjects() {
     $searchSubjectBox.keyup(function () {
         var $this = $(this);
         var keyword = $this.find('input').val();
-        if (keyword.length < 2) {
-            $results.hide();
-            return;
-        }
         $.ajax({
             url: suburl + '/api/v1/subjects/search?q=' + keyword,
             dataType: "json",
