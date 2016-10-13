@@ -1619,7 +1619,6 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 		Or("LOWER(subject.name) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(tag.etiqueta) LIKE ?", "%"+opts.Keyword+"%").
 		Or("LOWER(group.name) LIKE ?", "%"+opts.Keyword+"%")
-		
 
 	if opts.OwnerID > 0 {
 		sess.And("owner_id = ?", opts.OwnerID)

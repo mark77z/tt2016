@@ -12,6 +12,7 @@ import (
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/base"
 	"github.com/gogits/gogs/modules/context"
+	"github.com/gogits/gogs/modules/log"
 	"github.com/gogits/gogs/modules/setting"
 	"github.com/gogits/gogs/routers/user"
 )
@@ -97,6 +98,7 @@ func RenderRepoSearch(ctx *context.Context, opts *RepoSearchOptions) {
 
 	for _, repo := range repos {
 		if err = repo.GetOwner(); err != nil {
+			log.Trace("%s", repo)
 			ctx.Handle(500, "GetOwner", fmt.Errorf("%d: %v", repo.ID, err))
 			return
 		}
@@ -182,6 +184,21 @@ func ExploreUsers(ctx *context.Context) {
 		PageSize: setting.UI.ExplorePagingNum,
 		OrderBy:  "updated_unix DESC",
 		TplName:  EXPLORE_USERS,
+	})
+}
+
+func ExploreProfessors(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("explore")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreProfessors"] = true
+
+	RenderUserSearch(ctx, &UserSearchOptions{
+		Type:     models.USER_TYPE_PROFESSOR,
+		Counter:  models.CountProfessors,
+		Ranger:   models.Professors,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "updated_unix DESC",
+		TplName:  EXPLORE_PROFESSORS,
 	})
 }
 
