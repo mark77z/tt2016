@@ -510,42 +510,49 @@ func CollaborationPost(ctx *context.Context) {
 		return
 	}
 
-	u, err := models.GetUserByName(name)
-	if err != nil {
-		if models.IsErrUserNotExist(err) {
-			ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
-			ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
-		} else {
-			ctx.Handle(500, "GetUserByName", err)
-		}
-		return
-	}
-
-	// Organization is not allowed to be added as a collaborator.
-	if u.IsOrganization() {
-		ctx.Flash.Error(ctx.Tr("repo.settings.org_not_allowed_to_be_collaborator"))
+	if strings.Contains(name, "@"){
+		models.SendRegisterInvitationCollab(name, ctx.User, ctx.Repo.Repository)
+		ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_reg_success", name))
 		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
-		return
-	}
+	} else {
 
-	// Check if user is organization member.
-	if ctx.Repo.Owner.IsOrganization() && ctx.Repo.Owner.IsOrgMember(u.ID) {
-		ctx.Flash.Info(ctx.Tr("repo.settings.user_is_org_member"))
-		ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
-		return
-	}
+		u, err := models.GetUserByName(name)
+		if err != nil {
+			if models.IsErrUserNotExist(err) {
+				ctx.Flash.Error(ctx.Tr("form.user_not_exist"))
+				ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+			} else {
+				ctx.Handle(500, "GetUserByName", err)
+			}
+			return
+		}
 
-	if err = ctx.Repo.Repository.AddCollaborator(u); err != nil {
-		ctx.Handle(500, "AddCollaborator", err)
-		return
-	}
+		// Organization is not allowed to be added as a collaborator.
+		if u.IsOrganization() {
+			ctx.Flash.Error(ctx.Tr("repo.settings.org_not_allowed_to_be_collaborator"))
+			ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+			return
+		}
 
-	if setting.Service.EnableNotifyMail {
-		models.SendCollaboratorMail(u, ctx.User, ctx.Repo.Repository)
-	}
+		// Check if user is organization member.
+		if ctx.Repo.Owner.IsOrganization() && ctx.Repo.Owner.IsOrgMember(u.ID) {
+			ctx.Flash.Info(ctx.Tr("repo.settings.user_is_org_member"))
+			ctx.Redirect(ctx.Repo.RepoLink + "/settings/collaboration")
+			return
+		}
 
-	ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
-	ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+		if err = ctx.Repo.Repository.AddCollaborator(u); err != nil {
+			ctx.Handle(500, "AddCollaborator", err)
+			return
+		}
+
+		if setting.Service.EnableNotifyMail {
+			models.SendCollaboratorMail(u, ctx.User, ctx.Repo.Repository)
+		}
+
+		ctx.Flash.Success(ctx.Tr("repo.settings.add_collaborator_success"))
+		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
+	}
 }
 
 func ChangeCollaborationAccessMode(ctx *context.Context) {

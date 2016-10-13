@@ -4,6 +4,8 @@
 	<div class="ui container">
 		{{template "base/alert" .}}
 
+		
+
 		<div class="ui center aligned container">
 			{{if .Repository.ProfessorID}}
 			<a class="ui image label" href="/explore/repos?q={{.Repository.GetProfessorName}}">
@@ -47,19 +49,55 @@
 				{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
 				<p><a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a></p>
 		  </div>
-		</div>
+		</div><br>
 
-		<div class="ui mini horizontal divided list">
-		  {{range .HTags}}
-			<div class="item">
-			    <img class="ui avatar image" src="/img/tag.png">
-			    <div class="content">
-				      <a class="header" href="/explore/repos?q={{.Etiqueta}}">{{.Etiqueta}}</a>
-				    </div>
-				</div>
-			{{end}}
-		</div>
+		<div class="ui equal width grid">
+		  <div class="equal width row">
+		    <div class="left floated left aligned column">
+			    <div class="ui segment">
+			    	<div class="ui ribbon label">
+				        Tags
+				    </div><br>
+			    	<div class="ui large horizontal list">
+			    		{{if .IsRepositoryAdmin}}
+			    		<a class="ui right corner label" href="{{.RepoLink}}/settings/tags">
+					        <i class="plus icon"></i>
+					    </a>
+					    {{end}}
+					  	{{range .HTags}}
+					  	<div class="item">
+							<a class="ui tag label" href="/explore/repos?q={{.Etiqueta}}">{{.Etiqueta}}</a>
+						</div>
+						{{end}}
+					</div>
+			    </div>
+			</div>
+	
+		  	<div class="left floated left aligned column">
+		    	<div class="ui segment">
+		    		<div class="ui ribbon label">
+				        Colaboradores
+				    </div><br>
+			    	<div class="ui mini horizontal list">
+			    		{{if .IsRepositoryAdmin}}
+			    		<a class="ui right corner label" href="{{.RepoLink}}/settings/collaboration">
+					        <i class="plus icon"></i>
+					    </a>
+					    {{end}}
+					  	{{range .Collaborators}}
+						<div class="item">
+							<a class="ui basic image label">
+							  <img src="{{if not .UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Avatar}}{{else}}/avatars/{{.ID}}{{end}}">
+							  {{.Name}}
+							</a>
+						</div>
+						{{end}}
+					</div>
+			    </div>
+			</div>
 
+		  </div>
+		</div>
 		<div class="ui secondary menu">
 			{{if .PullRequestCtx.Allowed}}
 				<div class="fitted item">

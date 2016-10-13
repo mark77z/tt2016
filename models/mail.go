@@ -33,6 +33,7 @@ const (
 	MAIL_ISSUE_MENTION base.TplName = "issue/mention"
 
 	MAIL_NOTIFY_COLLABORATOR base.TplName = "notify/collaborator"
+	MAIL_NOTIFY_REG_COLLABORATOR base.TplName = "notify/reg_collaborator"
 )
 
 type MailRender interface {
@@ -190,6 +191,27 @@ func SendCollaboratorMail(u, doer *User, repo *Repository) {
 
 	msg := mailer.NewMessage([]string{u.Email}, subject, body)
 	msg.Info = fmt.Sprintf("UID: %d, add collaborator", u.ID)
+
+	mailer.SendAsync(msg)
+}
+
+func SendRegisterInvitationCollab(email string, doer *User, repo *Repository) {
+	repoName := path.Join(repo.Owner.Name, repo.Name)
+	subject := fmt.Sprintf("%s added you to %s", doer.DisplayName(), repoName)
+
+	data := map[string]interface{}{
+		"Subject":  subject,
+		"RepoName": repoName,
+		"Link":     repo.HTMLURL(),
+	}
+	body, err := mailRender.HTMLString(string(MAIL_NOTIFY_REG_COLLABORATOR), data)
+	if err != nil {
+		log.Error(3, "HTMLString: %v", err)
+		return
+	}
+
+	msg := mailer.NewMessage([]string{email}, subject, body)
+	msg.Info = fmt.Sprintf("UID: %d, add collaborator", email)
 
 	mailer.SendAsync(msg)
 }
