@@ -675,6 +675,11 @@ func runWeb(ctx *cli.Context) error {
 		}, ignSignIn, context.RepoAssignment(true), context.RepoRef())
 
 		m.Group("/:reponame", func() {
+			m.Get("/register", user.RegisterToCollab)
+			m.Post("/register", bindIgnErr(auth.RegisterForm{}), user.RegisterToCollabPost)
+		} , context.RepoAssignment(true), context.RepoRef())
+
+		m.Group("/:reponame", func() {
 			m.Any("/*", ignSignInAndCsrf, repo.HTTP)
 			m.Head("/tasks/trigger", repo.TriggerTask)
 		})
