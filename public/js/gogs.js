@@ -1186,6 +1186,18 @@ function getSubjectsFromProfessor(){
     });
 }
 
+function createSubject(){
+    var $subjectboxinsert = $("#subject-box-insert");
+    var $results = $subjectboxinsert.find('.search');
+    $results.keypress(function(event) {
+
+        if (event.which == 13){
+            alert("ENTER");
+        }
+    });
+}
+
+
 function searchSubjects() {
     if (!$('#search-subject-box .results').length) {
         return;
@@ -1196,10 +1208,6 @@ function searchSubjects() {
     $searchSubjectBox.keyup(function () {
         var $this = $(this);
         var keyword = $this.find('input').val();
-        if (keyword.length < 2) {
-            $results.hide();
-            return;
-        }
         $.ajax({
             url: suburl + '/api/v1/subjects/search?q=' + keyword,
             dataType: "json",
@@ -1208,7 +1216,7 @@ function searchSubjects() {
                     return str && str.length > 0;
                 };
 
-                $results.html('');
+                $results.html('<div class="menu transition hidden" tabindex="-1">');
 
                 if (response.ok && response.data.length) {
                     var html = '';
@@ -1216,7 +1224,9 @@ function searchSubjects() {
                         html += '<div class="item"><img class="ui avatar image" src="/img/subject.png"><span class="username">' + item.name + '</span>';
                         html += '</div>';
                     });
-                    $results.html(html);
+                    $results.html(html + "</div>");
+
+
                     $this.find('.results .item').click(function () {
                         $this.find('input').val($(this).find('.username').text());
                         $results.hide();
@@ -1501,6 +1511,7 @@ $(document).ready(function () {
     searchRepositories();
     searchTags();
     getSubjectsFromProfessor();
+    createSubject();
 
     initCommentForm();
     initInstall();
