@@ -19,10 +19,10 @@ import (
 )
 
 const (
-	PROFS     base.TplName = "admin/professor/list"
-	PROF_NEW  base.TplName = "admin/professor/new"
-	PROF_EDIT base.TplName = "admin/professor/edit"
-	SETTINGS_COURSES      base.TplName = "admin/professor/course"
+	PROFS            base.TplName = "admin/professor/list"
+	PROF_NEW         base.TplName = "admin/professor/new"
+	PROF_EDIT        base.TplName = "admin/professor/edit"
+	SETTINGS_COURSES base.TplName = "admin/professor/course"
 )
 
 func Professors(ctx *context.Context) {
@@ -82,7 +82,7 @@ func NewProfessorPost(ctx *context.Context, form auth.AdminCrateUserForm) {
 		FullName:  form.FullName,
 		Email:     form.Email,
 		Passwd:    form.Password,
-		Type: 	   models.USER_TYPE_PROFESSOR,
+		Type:      models.USER_TYPE_PROFESSOR,
 		IsActive:  true,
 		LoginType: models.LOGIN_PLAIN,
 	}
@@ -125,7 +125,6 @@ func NewProfessorPost(ctx *context.Context, form auth.AdminCrateUserForm) {
 	ctx.Flash.Success(ctx.Tr("admin.users.new_success", u.Name))
 	ctx.Redirect(setting.AppSubUrl + "/admin/professors/" + com.ToStr(u.ID))
 }
-
 
 func EditProfessor(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("admin.users.edit_account")
@@ -252,7 +251,7 @@ func SettingsCourses(ctx *context.Context) {
 }
 
 func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
-	u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
+	/*u, err := models.GetUserByID(ctx.ParamsInt64(":userid"))
 	if err != nil {
 		ctx.Handle(500, "GetUserByID", err)
 		return
@@ -307,7 +306,7 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("user.settings.course.add_course_success"))
-	ctx.Redirect(setting.AppSubUrl + "/admin/professors/" + ctx.Params(":userid") + "/course")
+	ctx.Redirect(setting.AppSubUrl + "/admin/professors/" + ctx.Params(":userid") + "/course")*/
 }
 
 func ChangeCourseStatus(ctx *context.Context) {

@@ -12,21 +12,21 @@ import (
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/base"
 	"github.com/gogits/gogs/modules/context"
+	"github.com/gogits/gogs/modules/log"
 	"github.com/gogits/gogs/modules/setting"
 	"github.com/gogits/gogs/routers/user"
-	"github.com/gogits/gogs/modules/log"
 )
 
 const (
 	HOME                  base.TplName = "home"
 	EXPLORE_REPOS         base.TplName = "explore/repos"
 	EXPLORE_USERS         base.TplName = "explore/users"
-	EXPLORE_PROFESSORS 	  base.TplName = "explore/professors"
 	EXPLORE_ORGANIZATIONS base.TplName = "explore/organizations"
 	EXPLORE_SUBJECTS      base.TplName = "explore/subjects"
 	EXPLORE_SEMESTERS     base.TplName = "explore/semesters"
 	EXPLORE_GROUPS        base.TplName = "explore/groups"
 	EXPLORE_TAGS          base.TplName = "explore/tags"
+	EXPLORE_PROFESSORS    base.TplName = "explore/professors"
 )
 
 func Home(ctx *context.Context) {
@@ -192,7 +192,6 @@ func ExploreProfessors(ctx *context.Context) {
 	ctx.Data["Title"] = ctx.Tr("explore")
 	ctx.Data["PageIsExplore"] = true
 	ctx.Data["PageIsExploreProfessors"] = true
-	
 
 	RenderUserSearch(ctx, &UserSearchOptions{
 		Type:     models.USER_TYPE_PROFESSOR,

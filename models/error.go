@@ -690,6 +690,7 @@ func IsErrUploadNotExist(err error) bool {
 func (err ErrUploadNotExist) Error() string {
 	return fmt.Sprintf("attachment does not exist [id: %d, uuid: %s]", err.ID, err.UUID)
 }
+
 //*****************************************************************************
 //*****************************************************************************
 type ErrSubjectAlreadyExist struct {
@@ -700,7 +701,6 @@ func IsErrSubjectAlreadyExist(err error) bool {
 	_, ok := err.(ErrSubjectAlreadyExist)
 	return ok
 }
-
 
 func (err ErrSubjectAlreadyExist) Error() string {
 	return fmt.Sprintf("subject already exists [name: %s]", err.Name)
@@ -714,7 +714,6 @@ func IsErrGroupAlreadyExist(err error) bool {
 	_, ok := err.(ErrGroupAlreadyExist)
 	return ok
 }
-
 
 func (err ErrGroupAlreadyExist) Error() string {
 	return fmt.Sprintf("Group already exists [name: %s]", err.Name)
@@ -747,6 +746,7 @@ func IsErrGroupNotExist(err error) bool {
 func (err ErrGroupNotExist) Error() string {
 	return fmt.Sprintf("group does not exist [uid: %d, name: %s]", err.UID, err.Name)
 }
+
 //*******************SEMESTER****************************
 type ErrSemesterAlreadyExist struct {
 	Name string
@@ -756,7 +756,6 @@ func IsErrSemesterAlreadyExist(err error) bool {
 	_, ok := err.(ErrSemesterAlreadyExist)
 	return ok
 }
-
 
 func (err ErrSemesterAlreadyExist) Error() string {
 	return fmt.Sprintf("semester already exists [name: %s]", err.Name)
@@ -786,7 +785,6 @@ func IsErrTagAlreadyExist(err error) bool {
 	return ok
 }
 
-
 func (err ErrTagAlreadyExist) Error() string {
 	return fmt.Sprintf("tag already exists [name: %s]", err.Name)
 }
@@ -803,4 +801,18 @@ func IsErrTagNotExist(err error) bool {
 
 func (err ErrTagNotExist) Error() string {
 	return fmt.Sprintf("tag does not exist [uid: %d, name: %s]", err.UID, err.Name)
+}
+
+//*********************COURSES***********************************
+type ErrCourseAlreadyExist struct {
+	Name string
+}
+
+func IsErrCourseAlreadyExist(err error) bool {
+	_, ok := err.(ErrCourseAlreadyExist)
+	return ok
+}
+
+func (err ErrCourseAlreadyExist) Error() string {
+	return fmt.Sprintf("course already exists [name: %s]", err.Name)
 }
