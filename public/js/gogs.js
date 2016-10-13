@@ -1322,7 +1322,9 @@ $(document).ready(function () {
     });
 
     // Semantic UI modules.
-    $('.dropdown').dropdown();
+    $('.dropdown').dropdown({
+        allowAdditions: true
+      });
     $('.jump.dropdown').dropdown({
         action: 'hide',
         onShow: function () {

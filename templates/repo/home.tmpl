@@ -86,7 +86,7 @@
 					    {{end}}
 					  	{{range .Collaborators}}
 						<div class="item">
-							<a class="ui basic image label">
+							<a class="ui basic image label" href="{{AppSubUrl}}/{{.Name}}">
 							  <img src="{{if not .UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Avatar}}{{else}}/avatars/{{.ID}}{{end}}">
 							  {{.Name}}
 							</a>
