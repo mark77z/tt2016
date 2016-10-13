@@ -26,6 +26,7 @@ const (
 	EXPLORE_SEMESTERS     base.TplName = "explore/semesters"
 	EXPLORE_GROUPS        base.TplName = "explore/groups"
 	EXPLORE_TAGS          base.TplName = "explore/tags"
+	EXPLORE_PROFESSORS    base.TplName = "explore/professors"
 )
 
 func Home(ctx *context.Context) {

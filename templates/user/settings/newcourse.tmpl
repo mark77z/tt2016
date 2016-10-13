@@ -1,0 +1,73 @@
+{{template "base/head" .}}
+<div class="user course">
+	<div class="ui container">
+		<div class="ui grid">
+			{{template "user/settings/navbar" .}}
+			<div class="twelve wide column content">
+				{{template "base/alert" .}}
+				<h4 class="ui top attached header">
+					{{.i18n.Tr "user.settings.new_course"}}
+				</h4>
+				<div class="ui attached segment">
+					<form class="ui form" action="{{.Link}}" method="post">
+						{{.CsrfTokenHtml}}
+
+						<div class="field">
+							<label>{{.i18n.Tr "repo.semester"}}</label>
+							<div class="ui search selection dropdown">
+								<input type="hidden" name="semester" value="{{.semester}}">
+								<div class="default text">{{.i18n.Tr "repo.select_semester"}}</div>
+								<i class="dropdown icon"></i>
+								<div class="menu">
+									{{range .Semesters}}
+										<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+									{{end}}
+								</div>
+							</div>
+						</div>
+
+						<div class="field">
+							<label>{{.i18n.Tr "repo.group"}}</label>
+							<div class="ui search selection dropdown">
+								<input type="hidden" name="group" value="{{.group}}">
+								<div class="default text">{{.i18n.Tr "repo.select_group"}}</div>
+								<i class="dropdown icon"></i>
+								<div class="menu">
+									{{range .Groups}}
+										<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+									{{end}}
+								</div>
+							</div>
+						</div>
+
+						<div class="field">
+							<label>{{.i18n.Tr "repo.subject"}}</label>
+							<div class="ui search selection dropdown">
+								<input type="hidden" name="subject" value="{{.subject}}">
+								<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
+								<i class="dropdown icon"></i>
+								<div class="menu">
+									{{range .Subjects}}
+										<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+									{{end}}
+								</div>
+							</div>
+						</div>
+
+						<div class="inline field">
+							<div class="ui checkbox">
+								<label><strong>{{.i18n.Tr "user.settings.active_course"}}</strong></label>
+								<input name="estatus" type="checkbox">
+							</div>
+						</div>
+
+						<div class="field">
+							<button class="ui green button">{{.i18n.Tr "user.settings.create_course"}}</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{template "base/footer" .}}

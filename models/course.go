@@ -8,13 +8,14 @@ import (
 	"fmt"
 )
 
-
 // Course represents an subject-user relation.
 type Course struct {
-	ID       int64 `xorm:"pk autoincr"`
-	Uid      int64 `xorm:"INDEX UNIQUE(s)"`
-	SubjID   int64 `xorm:"INDEX UNIQUE(s)"`
-	IsActive bool
+	ID         int64 `xorm:"pk autoincr"`
+	Uid        int64 `xorm:"INDEX UNIQUE(s)"`
+	SubjID     int64 `xorm:"INDEX UNIQUE(s)"`
+	SemesterID int64 `xorm:"INDEX UNIQUE(s)"`
+	GroupID    int64 `xorm:"INDEX UNIQUE(s)"`
+	IsActive   bool
 }
 
 func (s *Subject) IsUserSubj(uid int64) bool {
@@ -26,8 +27,12 @@ func IsUserSubject(subjID, uid int64) bool {
 	return has
 }
 
+func IsCourseExist(uid int64, subjID int64, semesterID int64, groupID int64) (bool, error) {
+	return x.Get(&Course{Uid: uid, SubjID: subjID, SemesterID: semesterID, GroupID: groupID})
+}
+
 // AddCourse adds new course.
-func (u *User) AddCourse(subjID int64) error {
+func (u *User) AddCourse(subjID int64, semesterID int64, groupID int64, estatus bool) error {
 	sess := x.NewSession()
 	defer sess.Close()
 	if err := sess.Begin(); err != nil {
@@ -35,9 +40,18 @@ func (u *User) AddCourse(subjID int64) error {
 	}
 
 	c := &Course{
-		Uid:   		u.ID,
-		SubjID: 	subjID,
-		IsActive: 	true,
+		Uid:        u.ID,
+		SubjID:     subjID,
+		SemesterID: semesterID,
+		GroupID:    groupID,
+		IsActive:   estatus,
+	}
+
+	isExist, err := IsCourseExist(u.ID, subjID, semesterID, groupID)
+	if err != nil {
+		return err
+	} else if isExist {
+		return ErrCourseAlreadyExist{"Course"}
 	}
 
 	if _, err := sess.Insert(c); err != nil {
@@ -55,6 +69,8 @@ func (u *User) getCourses(e Engine) ([]*Course, error) {
 
 type CourseInfo struct {
 	*Subject
+	*Group
+	*Semester
 	Course *Course
 }
 
@@ -74,9 +90,22 @@ func (u *User) getCoursesInfo(e Engine) ([]*CourseInfo, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		semester, err := GetSemesterByID(c.SemesterID)
+		if err != nil {
+			return nil, err
+		}
+
+		group, err := GetGroupByID(c.GroupID)
+		if err != nil {
+			return nil, err
+		}
+
 		info[i] = &CourseInfo{
-			Subject: subject,
-			Course:  c,
+			Subject:  subject,
+			Group:    group,
+			Semester: semester,
+			Course:   c,
 		}
 	}
 	return info, nil
@@ -100,17 +129,16 @@ func (u *User) ChangeCourseStatus(subjID int64, active int) error {
 		status = false
 	}
 
-	c.IsActive = status 
+	c.IsActive = status
 	_, err = x.Id(c.ID).AllCols().Update(c)
 	return err
 }
 
-
 // RemoveCourse removes user from given subject.
-func (u *User) RemoveCourse(subjID int64) error {
+func (u *User) RemoveCourse(courseID int64) error {
 	c := new(Course)
 
-	has, err := x.Where("uid=?", u.ID).And("subj_id=?", subjID).Get(c)
+	has, err := x.Where("uid=?", u.ID).And("id=?", courseID).Get(c)
 	if err != nil {
 		return fmt.Errorf("get course: %v", err)
 	} else if !has {

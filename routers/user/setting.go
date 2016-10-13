@@ -26,6 +26,7 @@ const (
 	SETTINGS_PASSWORD     base.TplName = "user/settings/password"
 	SETTINGS_EMAILS       base.TplName = "user/settings/email"
 	SETTINGS_COURSES      base.TplName = "user/settings/course"
+	SETTINGS_COURSES_NEW  base.TplName = "user/settings/newcourse"
 	SETTINGS_SSH_KEYS     base.TplName = "user/settings/sshkeys"
 	SETTINGS_SOCIAL       base.TplName = "user/settings/social"
 	SETTINGS_APPLICATIONS base.TplName = "user/settings/applications"
@@ -303,8 +304,61 @@ func SettingsCourses(ctx *context.Context) {
 	ctx.HTML(200, SETTINGS_COURSES)
 }
 
+func NewCourse(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	subjects, err := models.GetSubjects()
+	if err != nil {
+		ctx.Handle(500, "GetSubjects", err)
+		return
+	}
+	ctx.Data["Subjects"] = subjects
+
+	semesters, err := models.GetSemesters()
+	if err != nil {
+		ctx.Handle(500, "GetSemesters", err)
+		return
+	}
+	ctx.Data["Semesters"] = semesters
+
+	groups, err := models.GetGroups()
+	if err != nil {
+		ctx.Handle(500, "GetGroups", err)
+		return
+	}
+	ctx.Data["Groups"] = groups
+
+	ctx.HTML(200, SETTINGS_COURSES_NEW)
+}
+
+func NewCoursePost(ctx *context.Context, form auth.CreateNewCourseForm) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	semesterID := form.Semester
+	groupID := form.Group
+	subjectID := form.Subject
+	estatus := form.Estatus
+
+	if err := ctx.User.AddCourse(subjectID, semesterID, groupID, estatus); err != nil {
+
+		switch {
+		case models.IsErrCourseAlreadyExist(err):
+			ctx.RenderWithErr(ctx.Tr("El curso ya existe"), SETTINGS_COURSES_NEW, &form)
+		default:
+			ctx.Handle(500, "AddCourse", err)
+		}
+
+		return
+	}
+
+	ctx.Flash.Success(ctx.Tr("user.settings.course.add_course_success"))
+	ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
+}
+
 func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
-	name := ctx.Query("subject")
+	/*name := ctx.Query("subject")
 	if len(name) == 0 {
 		ctx.Redirect(setting.AppSubUrl + ctx.Req.URL.Path)
 		return
@@ -315,21 +369,21 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 		if models.IsErrSubjectNotExist(err) {
 
 			subject := &models.Subject{
-				Name: 	name,
+				Name: name,
 			}
 			if err := models.CreateSubject(subject); err != nil {
 				switch {
-					case models.IsErrSubjectAlreadyExist(err):
-						ctx.Data["Err_SubjectName"] = true
-						ctx.RenderWithErr(ctx.Tr("form.subjectname_been_taken"), SETTINGS_COURSES, &form)
-					case models.IsErrNameReserved(err):
-						ctx.Data["Err_SubjectName"] = true
-						ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(models.ErrNameReserved).Name), SETTINGS_COURSES, &form)
-					case models.IsErrNamePatternNotAllowed(err):
-						ctx.Data["Err_SubjectName"] = true
-						ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(models.ErrNamePatternNotAllowed).Pattern), SETTINGS_COURSES, &form)
-					default:
-						ctx.Handle(500, "CreateSubject", err)
+				case models.IsErrSubjectAlreadyExist(err):
+					ctx.Data["Err_SubjectName"] = true
+					ctx.RenderWithErr(ctx.Tr("form.subjectname_been_taken"), SETTINGS_COURSES, &form)
+				case models.IsErrNameReserved(err):
+					ctx.Data["Err_SubjectName"] = true
+					ctx.RenderWithErr(ctx.Tr("user.form.name_reserved", err.(models.ErrNameReserved).Name), SETTINGS_COURSES, &form)
+				case models.IsErrNamePatternNotAllowed(err):
+					ctx.Data["Err_SubjectName"] = true
+					ctx.RenderWithErr(ctx.Tr("user.form.name_pattern_not_allowed", err.(models.ErrNamePatternNotAllowed).Pattern), SETTINGS_COURSES, &form)
+				default:
+					ctx.Handle(500, "CreateSubject", err)
 				}
 				return
 			}
@@ -353,7 +407,7 @@ func CoursePost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 	}
 
 	ctx.Flash.Success(ctx.Tr("user.settings.course.add_course_success"))
-	ctx.Redirect(setting.AppSubUrl + "/user/settings/course")
+	ctx.Redirect(setting.AppSubUrl + "/user/settings/course") */
 }
 
 func ChangeCourseStatus(ctx *context.Context) {
