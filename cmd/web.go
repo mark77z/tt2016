@@ -178,7 +178,7 @@ func newMacaron() *macaron.Macaron {
 	}))
 	m.Use(toolbox.Toolboxer(m, toolbox.Options{
 		HealthCheckFuncs: []*toolbox.HealthCheckFuncDesc{
-			&toolbox.HealthCheckFuncDesc{
+			{
 				Desc: "Database connection",
 				Func: models.Ping,
 			},
@@ -220,7 +220,7 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/groups", routers.ExploreGroups)
 		m.Get("/subjects", routers.ExploreSubjects)
 		m.Get("/tags", routers.ExploreTags)
-		
+
 	}, ignSignIn)
 	m.Combo("/install", routers.InstallInit).Get(routers.Install).
 		Post(bindIgnErr(auth.InstallForm{}), routers.InstallPost)
@@ -248,6 +248,8 @@ func runWeb(ctx *cli.Context) error {
 
 		m.Group("/course", func() {
 			m.Combo("").Get(user.SettingsCourses).Post(bindIgnErr(auth.AdminCrateSubjectForm{}), user.CoursePost)
+			m.Get("/new", user.NewCourse)
+			m.Post("/new", bindIgnErr(auth.CreateNewCourseForm{}), user.NewCoursePost)
 			m.Post("/status", user.ChangeCourseStatus)
 			m.Post("/delete", user.DeleteCourse)
 		})
