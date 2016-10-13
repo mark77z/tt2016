@@ -17,10 +17,9 @@ import (
 )
 
 type Subject struct {
-	ID        int64  `xorm:"pk autoincr"`
-	Name      string `xorm:"UNIQUE NOT NULL"`
+	ID   int64  `xorm:"pk autoincr"`
+	Name string `xorm:"UNIQUE NOT NULL"`
 }
-
 
 func (s *Subject) ShortName(length int) string {
 	return base.EllipsisString(s.Name, length)
@@ -93,7 +92,7 @@ func CreateSubject(s *Subject) (err error) {
 
 	if _, err = sess.Insert(s); err != nil {
 		return err
-	} 
+	}
 
 	return sess.Commit()
 }
@@ -114,7 +113,6 @@ func Subjects(page, pageSize int) ([]*Subject, error) {
 	return subjects, x.Limit(pageSize, (page-1)*pageSize).Where("id > 0").Asc("id").Find(&subjects)
 }
 
-
 func getSubjects() ([]*Subject, error) {
 	subjects := make([]*Subject, 0, 5)
 	return subjects, x.Asc("name").Find(&subjects)
@@ -122,13 +120,12 @@ func getSubjects() ([]*Subject, error) {
 
 func GetSubjectsProfessor(ProfessorID int64) ([]*Subject, error) {
 	subjects := make([]*Subject, 0, 5)
-	return subjects, x.Join("LEFT", "`course`", "`course`.subj_id=`subject`.id").Where("course.uid=?", ProfessorID).Asc("name").Find(&subjects)
+	return subjects, x.Cols("subject.name").Join("LEFT", "`course`", "`course`.subj_id=`subject`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("subject.id").Find(&subjects)
 }
 
-func GetSubjects()([]*Subject, error){
+func GetSubjects() ([]*Subject, error) {
 	return getSubjects()
 }
-
 
 func updateSubject(e Engine, s *Subject) error {
 	if err := IsUsableSubjectname(s.Name); err != nil {
@@ -151,7 +148,6 @@ func updateSubject(e Engine, s *Subject) error {
 func UpdateSubject(s *Subject) error {
 	return updateSubject(x, s)
 }
-
 
 func deleteSubject(e *xorm.Session, s *Subject) error {
 
@@ -189,7 +185,6 @@ func DeleteSubject(s *Subject) (err error) {
 	return nil
 }
 
-
 func getSubjectByID(e Engine, id int64) (*Subject, error) {
 	s := new(Subject)
 	has, err := e.Id(id).Get(s)
@@ -223,7 +218,6 @@ func GetSubjectByName(name string) (*Subject, error) {
 	}
 	return s, nil
 }
-
 
 // GetSubjectIDsByNames returns a slice of ids corresponds to names.
 func GetSubjectIDsByNames(names []string) []int64 {
@@ -277,4 +271,3 @@ func SearchSubjectByName(opts *SearchSubjectOptions) (subjects []*Subject, _ int
 	}
 	return subjects, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&subjects)
 }
-

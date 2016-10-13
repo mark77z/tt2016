@@ -19,8 +19,9 @@ import (
 	"github.com/gogits/gogs/routers/api/v1/misc"
 	"github.com/gogits/gogs/routers/api/v1/org"
 	"github.com/gogits/gogs/routers/api/v1/repo"
-	"github.com/gogits/gogs/routers/api/v1/user"
+	"github.com/gogits/gogs/routers/api/v1/semester"
 	"github.com/gogits/gogs/routers/api/v1/subject"
+	"github.com/gogits/gogs/routers/api/v1/user"
 )
 
 func repoAssignment() macaron.Handler {
@@ -232,6 +233,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 		m.Group("/subjects", func() {
 			m.Get("/search", subject.Search)
 			m.Get("/searchByProfessor", subject.SearchByProfessor)
+		})
+
+		//Semesters
+		m.Group("/semesters", func() {
+			m.Get("/searchByProfessor", semester.SearchByProfessor)
 		})
 
 		// Repositories
