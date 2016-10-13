@@ -304,10 +304,7 @@ func SettingsCourses(ctx *context.Context) {
 	ctx.HTML(200, SETTINGS_COURSES)
 }
 
-func NewCourse(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("settings")
-	ctx.Data["PageIsSettingsSubjects"] = true
-
+func PrepareCoursesInfo(ctx *context.Context) {
 	subjects, err := models.GetSubjects()
 	if err != nil {
 		ctx.Handle(500, "GetSubjects", err)
@@ -328,6 +325,13 @@ func NewCourse(ctx *context.Context) {
 		return
 	}
 	ctx.Data["Groups"] = groups
+}
+
+func NewCourse(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("settings")
+	ctx.Data["PageIsSettingsSubjects"] = true
+
+	PrepareCoursesInfo(ctx)
 
 	ctx.HTML(200, SETTINGS_COURSES_NEW)
 }
@@ -345,6 +349,7 @@ func NewCoursePost(ctx *context.Context, form auth.CreateNewCourseForm) {
 
 		switch {
 		case models.IsErrCourseAlreadyExist(err):
+			PrepareCoursesInfo(ctx)
 			ctx.RenderWithErr(ctx.Tr("El curso ya existe"), SETTINGS_COURSES_NEW, &form)
 		default:
 			ctx.Handle(500, "AddCourse", err)

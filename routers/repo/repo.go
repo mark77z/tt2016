@@ -65,18 +65,7 @@ func checkContextUser(ctx *context.Context, uid int64) *models.User {
 	return org
 }
 
-func Create(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("new_repo")
-
-	// Give default value for template to render.
-	ctx.Data["Gitignores"] = models.Gitignores
-	ctx.Data["Licenses"] = models.Licenses
-	ctx.Data["Readmes"] = models.Readmes
-	ctx.Data["readme"] = "Default"
-	ctx.Data["private"] = ctx.User.LastRepoVisibility
-	ctx.Data["IsForcedPrivate"] = setting.Repository.ForcePrivate
-	ctx.Data["auto_init"] = true
-
+func PrepareInfoCreateRepo(ctx *context.Context) {
 	tags, err := models.GetTags()
 	if err != nil {
 		ctx.Handle(500, "GetTags", err)
@@ -111,6 +100,21 @@ func Create(ctx *context.Context) {
 		return
 	}
 	ctx.Data["Professors"] = professors
+}
+
+func Create(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("new_repo")
+
+	// Give default value for template to render.
+	ctx.Data["Gitignores"] = models.Gitignores
+	ctx.Data["Licenses"] = models.Licenses
+	ctx.Data["Readmes"] = models.Readmes
+	ctx.Data["readme"] = "Default"
+	ctx.Data["private"] = ctx.User.LastRepoVisibility
+	ctx.Data["IsForcedPrivate"] = setting.Repository.ForcePrivate
+	ctx.Data["auto_init"] = true
+
+	PrepareInfoCreateRepo(ctx)
 
 	ctxUser := checkContextUser(ctx, ctx.QueryInt64("org"))
 	if ctx.Written() {
@@ -124,15 +128,19 @@ func Create(ctx *context.Context) {
 func handleCreateError(ctx *context.Context, owner *models.User, err error, name string, tpl base.TplName, form interface{}) {
 	switch {
 	case models.IsErrReachLimitOfRepo(err):
+		PrepareInfoCreateRepo(ctx)
 		ctx.RenderWithErr(ctx.Tr("repo.form.reach_limit_of_creation", owner.RepoCreationNum()), tpl, form)
 	case models.IsErrRepoAlreadyExist(err):
 		ctx.Data["Err_RepoName"] = true
+		PrepareInfoCreateRepo(ctx)
 		ctx.RenderWithErr(ctx.Tr("form.repo_name_been_taken"), tpl, form)
 	case models.IsErrNameReserved(err):
 		ctx.Data["Err_RepoName"] = true
+		PrepareInfoCreateRepo(ctx)
 		ctx.RenderWithErr(ctx.Tr("repo.form.name_reserved", err.(models.ErrNameReserved).Name), tpl, form)
 	case models.IsErrNamePatternNotAllowed(err):
 		ctx.Data["Err_RepoName"] = true
+		PrepareInfoCreateRepo(ctx)
 		ctx.RenderWithErr(ctx.Tr("repo.form.name_pattern_not_allowed", err.(models.ErrNamePatternNotAllowed).Pattern), tpl, form)
 	default:
 		ctx.Handle(500, name, err)

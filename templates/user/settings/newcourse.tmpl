@@ -42,6 +42,7 @@
 
 						<div class="field">
 							<label>{{.i18n.Tr "repo.subject"}}</label>
+							<!--<div class="ui search selection dropdown" id="subject-box-insert">-->
 							<div class="ui search selection dropdown">
 								<input type="hidden" name="subject" value="{{.subject}}">
 								<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
@@ -57,7 +58,7 @@
 						<div class="inline field">
 							<div class="ui checkbox">
 								<label><strong>{{.i18n.Tr "user.settings.active_course"}}</strong></label>
-								<input name="estatus" type="checkbox">
+								<input name="estatus" type="checkbox" checked>
 							</div>
 						</div>
 
