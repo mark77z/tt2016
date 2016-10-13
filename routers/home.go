@@ -20,7 +20,6 @@ const (
 	HOME                  base.TplName = "home"
 	EXPLORE_REPOS         base.TplName = "explore/repos"
 	EXPLORE_USERS         base.TplName = "explore/users"
-	EXPLORE_PROFESSORS 	  base.TplName = "explore/professors"
 	EXPLORE_ORGANIZATIONS base.TplName = "explore/organizations"
 	EXPLORE_SUBJECTS      base.TplName = "explore/subjects"
 	EXPLORE_SEMESTERS     base.TplName = "explore/semesters"
@@ -183,21 +182,6 @@ func ExploreUsers(ctx *context.Context) {
 		PageSize: setting.UI.ExplorePagingNum,
 		OrderBy:  "updated_unix DESC",
 		TplName:  EXPLORE_USERS,
-	})
-}
-
-func ExploreProfessors(ctx *context.Context) {
-	ctx.Data["Title"] = ctx.Tr("explore")
-	ctx.Data["PageIsExplore"] = true
-	ctx.Data["PageIsExploreProfessors"] = true
-
-	RenderUserSearch(ctx, &UserSearchOptions{
-		Type:     models.USER_TYPE_PROFESSOR,
-		Counter:  models.CountProfessors,
-		Ranger:   models.Professors,
-		PageSize: setting.UI.ExplorePagingNum,
-		OrderBy:  "updated_unix DESC",
-		TplName:  EXPLORE_PROFESSORS,
 	})
 }
 
