@@ -1158,10 +1158,12 @@ function searchTags() {
 
 function getSubjectsFromProfessor(){
     var $subjectsBox = $("#subject-box");
+    var $semesterBox = $("#semester-box");
     var $inputProfessor = $("#professor");
     $inputProfessor.change(function (){
         var $this = $(this);
         var keyword = $this.val();
+        //GET SUBJECTS
         $.ajax({
             url: suburl + '/api/v1/subjects/searchByProfessor?q=' + keyword,
             dataType: "json",
@@ -1180,6 +1182,28 @@ function getSubjectsFromProfessor(){
                     $subjectsBox.html(html);
                 } else {
                     $subjectsBox.hide();
+                }
+            }
+        });
+        //GET SEMESTERS
+        $.ajax({
+            url: suburl + '/api/v1/semesters/searchByProfessor?q=' + keyword,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                $semesterBox.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item" data-value="'+item.id+'">'+item.name+'</div>';
+                    });
+                    $semesterBox.html(html);
+                } else {
+                    $semesterBox.hide();
                 }
             }
         });

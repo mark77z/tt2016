@@ -15,14 +15,11 @@ import (
 	"github.com/gogits/gogs/modules/setting"
 )
 
-
-
 // Semester represents the object of individual and member of organization.
 type Semester struct {
-	ID        int64  `xorm:"pk autoincr"`
-	Name      string `xorm:"VARCHAR(90) UNIQUE NOT NULL"`
+	ID   int64  `xorm:"pk autoincr"`
+	Name string `xorm:"VARCHAR(90) UNIQUE NOT NULL"`
 }
-
 
 func (s *Semester) ShortName(length int) string {
 	return base.EllipsisString(s.Name, length)
@@ -95,7 +92,7 @@ func CreateSemester(s *Semester) (err error) {
 
 	if _, err = sess.Insert(s); err != nil {
 		return err
-	} 
+	}
 
 	return sess.Commit()
 }
@@ -115,7 +112,6 @@ func Semesters(page, pageSize int) ([]*Semester, error) {
 	semesters := make([]*Semester, 0, pageSize)
 	return semesters, x.Limit(pageSize, (page-1)*pageSize).Asc("id").Find(&semesters)
 }
-
 
 func updateSemester(e Engine, s *Semester) error {
 	// Organization does not need email
@@ -139,7 +135,6 @@ func updateSemester(e Engine, s *Semester) error {
 func UpdateSemester(s *Semester) error {
 	return updateSemester(x, s)
 }
-
 
 func deleteSemester(e *xorm.Session, s *Semester) error {
 
@@ -170,7 +165,6 @@ func DeleteSemester(s *Semester) (err error) {
 
 	return nil
 }
-
 
 func getSemesterByID(e Engine, id int64) (*Semester, error) {
 	s := new(Semester)
@@ -205,7 +199,6 @@ func GetSemesterByName(name string) (*Semester, error) {
 	}
 	return s, nil
 }
-
 
 // GetSemesterIDsByNames returns a slice of ids corresponds to names.
 func GetSemesterIDsByNames(names []string) []int64 {
@@ -265,6 +258,11 @@ func getSemesters() ([]*Semester, error) {
 	return semesters, x.Asc("name").Find(&semesters)
 }
 
-func GetSemesters()([]*Semester, error){
+func GetSemesters() ([]*Semester, error) {
 	return getSemesters()
+}
+
+func GetSemestersProfessor(ProfessorID int64) ([]*Semester, error) {
+	semesters := make([]*Semester, 0, 5)
+	return semesters, x.Cols("semester.name").Join("LEFT", "`course`", "`course`.semester_id=`semester`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("semester.id").Find(&semesters)
 }

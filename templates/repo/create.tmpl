@@ -64,6 +64,19 @@
 
 					<div class="ui divider"></div>
 					<!-- METADATOS ESCOLARES-->
+					<div class="inline field">
+						<label>{{.i18n.Tr "repo.professor"}}</label>
+						<div class="ui search selection dropdown">
+							<input type="hidden" id="professor" name="professor" value="{{.professor}}">
+							<div class="default text">{{.i18n.Tr "repo.select_professor"}}</div>
+							<i class="dropdown icon"></i>
+							<div class="menu" id="">
+								{{range .Professors}}
+									<div class="item" data-value="{{.ID}}">{{.FullName}}</div>
+								{{end}}
+							</div>
+						</div>
+					</div>
 
 					<div class="inline field">
 						<label>{{.i18n.Tr "repo.semester"}}</label>
@@ -71,7 +84,7 @@
 							<input type="hidden" name="semester" value="{{.semester}}">
 							<div class="default text">{{.i18n.Tr "repo.select_semester"}}</div>
 							<i class="dropdown icon"></i>
-							<div class="menu">
+							<div class="menu" id="semester-box">
 								{{range .Semesters}}
 									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
 								{{end}}
@@ -94,26 +107,15 @@
 					</div>
 
 					<div class="inline field">
-						<label>{{.i18n.Tr "repo.professor"}}</label>
-						<div class="ui search selection dropdown">
-							<input type="hidden" id="professor" name="professor" value="{{.professor}}">
-							<div class="default text">{{.i18n.Tr "repo.select_professor"}}</div>
-							<i class="dropdown icon"></i>
-							<div class="menu" id="">
-								{{range .Professors}}
-									<div class="item" data-value="{{.ID}}">{{.FullName}}</div>
-								{{end}}
-							</div>
-						</div>
-					</div>
-
-					<div class="inline field">
 						<label>{{.i18n.Tr "repo.subject"}}</label>
 						<div class="ui search selection dropdown">
 							<input type="hidden" name="subject" value="{{.subject}}">
 							<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
 							<i class="dropdown icon"></i>
 							<div class="menu" id="subject-box">
+								{{range .Subjects}}
+									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+								{{end}}
 							</div>
 						</div>
 					</div>
