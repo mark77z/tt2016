@@ -1159,6 +1159,7 @@ function searchTags() {
 function getSubjectsFromProfessor(){
     var $subjectsBox = $("#subject-box");
     var $semesterBox = $("#semester-box");
+    var $groupBox = $("#group-box");
     var $inputProfessor = $("#professor");
     $inputProfessor.change(function (){
         var $this = $(this);
@@ -1204,6 +1205,28 @@ function getSubjectsFromProfessor(){
                     $semesterBox.html(html);
                 } else {
                     $semesterBox.hide();
+                }
+            }
+        });
+        //GET GROUPS
+        $.ajax({
+            url: suburl + '/api/v1/groups/searchByProfessor?q=' + keyword,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                $groupBox.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item" data-value="'+item.id+'">'+item.name+'</div>';
+                    });
+                    $groupBox.html(html);
+                } else {
+                    $groupBox.hide();
                 }
             }
         });

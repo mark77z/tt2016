@@ -16,14 +16,11 @@ import (
 	"github.com/gogits/gogs/modules/setting"
 )
 
-
-
 // Subject represents the object of individual and member of organization.
 type Group struct {
-	ID        int64  `xorm:"pk autoincr"`
-	Name      string `xorm:"VARCHAR(6) UNIQUE NOT NULL"`
+	ID   int64  `xorm:"pk autoincr"`
+	Name string `xorm:"VARCHAR(6) UNIQUE NOT NULL"`
 }
-
 
 // IsSubjectExist checks if given user name exist,
 // the user name should be noncased unique.
@@ -92,7 +89,7 @@ func CreateGroup(g *Group) (err error) {
 
 	if _, err = sess.Insert(g); err != nil {
 		return err
-	} 
+	}
 
 	return sess.Commit()
 }
@@ -113,16 +110,14 @@ func Groups(page, pageSize int) ([]*Group, error) {
 	return groups, x.Limit(pageSize, (page-1)*pageSize).Where("id > 0").Asc("id").Find(&groups)
 }
 
-
 func getGroups() ([]*Group, error) {
 	groups := make([]*Group, 0, 5)
 	return groups, x.Asc("name").Find(&groups)
 }
 
-func GetGroups()([]*Group, error){
+func GetGroups() ([]*Group, error) {
 	return getGroups()
 }
-
 
 func updateGroup(e Engine, g *Group) error {
 	// Organization does not need email
@@ -146,7 +141,6 @@ func updateGroup(e Engine, g *Group) error {
 func UpdateGroup(g *Group) error {
 	return updateGroup(x, g)
 }
-
 
 func deleteGroup(e *xorm.Session, g *Group) error {
 
@@ -176,7 +170,6 @@ func DeleteGroup(g *Group) (err error) {
 
 	return nil
 }
-
 
 func getGroupByID(e Engine, id int64) (*Group, error) {
 	g := new(Group)
@@ -208,7 +201,6 @@ func GetGroupByName(name string) (*Group, error) {
 	}
 	return g, nil
 }
-
 
 // GetGroupIDsByNames returns a slice of ids corresponds to names.
 func GetGroupIDsByNames(names []string) []int64 {
@@ -261,4 +253,9 @@ func SearchGroupByName(opts *SearchGroupOptions) (groups []*Group, _ int64, _ er
 		sess.OrderBy(opts.OrderBy)
 	}
 	return groups, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).Find(&groups)
+}
+
+func GetGroupsProfessor(ProfessorID int64) ([]*Group, error) {
+	groups := make([]*Group, 0, 5)
+	return groups, x.Cols("group.name").Join("LEFT", "`course`", "`course`.group_id=`group`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("group.id").Find(&groups)
 }

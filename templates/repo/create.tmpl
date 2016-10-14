@@ -98,7 +98,7 @@
 							<input type="hidden" name="group" value="{{.group}}">
 							<div class="default text">{{.i18n.Tr "repo.select_group"}}</div>
 							<i class="dropdown icon"></i>
-							<div class="menu">
+							<div class="menu" id="group-box">
 								{{range .Groups}}
 									<div class="item" data-value="{{.ID}}">{{.Name}}</div>
 								{{end}}
