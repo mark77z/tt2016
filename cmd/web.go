@@ -298,11 +298,6 @@ func runWeb(ctx *cli.Context) error {
 			m.Get("", admin.Professors)
 			m.Combo("/new").Get(admin.NewProfessor).Post(bindIgnErr(auth.AdminCrateUserForm{}), admin.NewProfessorPost)
 			m.Combo("/:userid").Get(admin.EditProfessor).Post(bindIgnErr(auth.AdminEditUserForm{}), admin.EditProfessorPost)
-			m.Group("/:userid/course", func() {
-				m.Combo("").Get(admin.SettingsCourses).Post(bindIgnErr(auth.AdminCrateSubjectForm{}), admin.CoursePost)
-				m.Post("/status", admin.ChangeCourseStatus)
-				m.Post("/delete", admin.DeleteCourse)
-			})
 			m.Post("/:userid/delete", admin.DeleteProfessor)
 		})
 
@@ -677,7 +672,7 @@ func runWeb(ctx *cli.Context) error {
 		m.Group("/:reponame", func() {
 			m.Get("/register", user.RegisterToCollab)
 			m.Post("/register", bindIgnErr(auth.RegisterForm{}), user.RegisterToCollabPost)
-		} , context.RepoAssignment(true), context.RepoRef())
+		}, context.RepoAssignment(true), context.RepoRef())
 
 		m.Group("/:reponame", func() {
 			m.Any("/*", ignSignInAndCsrf, repo.HTTP)

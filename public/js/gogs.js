@@ -1144,7 +1144,7 @@ function searchTags() {
                 if (response.ok && response.data.length) {
                     var html = '';
                     $.each(response.data, function (i, item) {
-                        html += '<div class="item" data-value="'+item.id+'">#'+item.etiqueta+'</div>';
+                        html += '<div class="item" data-value="'+item.id+'">'+item.etiqueta+'</div>';
                     });
                     $results.html(html);
                     $results.show();
@@ -1162,6 +1162,7 @@ function getSubjectsFromProfessor(){
     var $groupBox = $("#group-box");
     var $inputProfessor = $("#professor");
     $inputProfessor.change(function (){
+
         var $this = $(this);
         var keyword = $this.val();
         //GET SUBJECTS

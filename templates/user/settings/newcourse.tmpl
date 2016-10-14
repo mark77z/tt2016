@@ -1,4 +1,19 @@
 {{template "base/head" .}}
+<script type="text/javascript">
+	$( document ).ready(function() {
+    	$("#semester_dropdown").click(function() {
+			$("#semester_dropdown").removeClass( "error" );
+		});
+
+		$("#subject_dropdown").click(function() {
+			$("#subject_dropdown").removeClass( "error" );
+		});
+
+		$("#group_dropdown").click(function() {
+			$("#group_dropdown").removeClass( "error" );
+		});
+	});
+</script>
 <div class="user course">
 	<div class="ui container">
 		<div class="ui grid">
@@ -12,10 +27,10 @@
 					<form class="ui form" action="{{.Link}}" method="post">
 						{{.CsrfTokenHtml}}
 
-						<div class="field">
+						<div class="field {{if .Err_Course}}error{{end}}" id="semester_dropdown">
 							<label>{{.i18n.Tr "repo.semester"}}</label>
 							<div class="ui search selection dropdown">
-								<input type="hidden" name="semester" value="{{.semester}}">
+								<input type="hidden" name="semester" value="{{.semester}}" id="semester_hidden">
 								<div class="default text">{{.i18n.Tr "repo.select_semester"}}</div>
 								<i class="dropdown icon"></i>
 								<div class="menu">
@@ -26,10 +41,10 @@
 							</div>
 						</div>
 
-						<div class="field">
+						<div class="field {{if .Err_Course}}error{{end}}" id="group_dropdown">
 							<label>{{.i18n.Tr "repo.group"}}</label>
 							<div class="ui search selection dropdown">
-								<input type="hidden" name="group" value="{{.group}}">
+								<input type="hidden" name="group" value="{{.group}}" id="group_hidden">
 								<div class="default text">{{.i18n.Tr "repo.select_group"}}</div>
 								<i class="dropdown icon"></i>
 								<div class="menu">
@@ -40,11 +55,11 @@
 							</div>
 						</div>
 
-						<div class="field">
+						<div class="field {{if .Err_Course}}error{{end}}" id="subject_dropdown">
 							<label>{{.i18n.Tr "repo.subject"}}</label>
 							<!--<div class="ui search selection dropdown" id="subject-box-insert">-->
 							<div class="ui search selection dropdown">
-								<input type="hidden" name="subject" value="{{.subject}}">
+								<input type="hidden" name="subject" value="{{.subject}}" id="subject_hidden">
 								<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
 								<i class="dropdown icon"></i>
 								<div class="menu">
@@ -66,6 +81,34 @@
 							<button class="ui green button">{{.i18n.Tr "user.settings.create_course"}}</button>
 						</div>
 					</form>
+					<script>
+						$("form").submit(function( event ) {
+							var semester = $("#semester_hidden").val();
+							var group = $("#group_hidden").val();
+							var subject = $("#subject_hidden").val();
+
+							if(semester == "" || semester.length == 0){
+								$("#semester_dropdown").addClass( "error" );
+								event.preventDefault();
+							}else{
+								$("#semester_dropdown").removeClass( "error" );
+							}
+
+							if(group == "" || group.length == 0){
+								$("#group_dropdown").addClass( "error" );
+								event.preventDefault();
+							}else{
+								$("#group_dropdown").removeClass( "error" );
+							}							
+
+							if(subject == "" || subject.length == 0){
+								$("#subject_dropdown").addClass( "error" );
+								event.preventDefault();
+							}else{
+								$("#subject_dropdown").removeClass( "error" );
+							}
+						});
+					</script>
 				</div>
 			</div>
 		</div>
