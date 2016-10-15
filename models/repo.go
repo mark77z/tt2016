@@ -1591,6 +1591,20 @@ type SearchRepoOptions struct {
 	PageSize int // Can be smaller than or equal to setting.ExplorePagingNum
 }
 
+
+type AdvancedSearchRepoOptions struct {
+	Keyword  string
+	Prof     string
+	Subj     string
+	Group 	 string
+	Sem      string
+	OwnerID  int64
+	OrderBy  string
+	Private  bool // Include private repositories in results
+	Page     int
+	PageSize int // Can be smaller than or equal to setting.ExplorePagingNum
+}
+
 // SearchRepositoryByName takes keyword and part of repository name to search,
 // it returns results in given range and number of total results.
 func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int64, _ error) {
@@ -1626,6 +1640,72 @@ func SearchRepositoryByName(opts *SearchRepoOptions) (repos []*Repository, _ int
 	if !opts.Private {
 		sess.And("is_private=?", false)
 	}
+
+	var countSess xorm.Session
+	countSess = *sess
+	count, err := countSess.Count(new(Repository))
+	if err != nil {
+		return nil, 0, fmt.Errorf("Count: %v", err)
+	}
+
+	if len(opts.OrderBy) > 0 {
+		sess.OrderBy(opts.OrderBy)
+	}
+	return repos, count, sess.Limit(opts.PageSize, (opts.Page-1)*opts.PageSize).GroupBy("repository.id").Find(&repos)
+}
+
+
+func AdvancedSearchRepositoryByName(opts *AdvancedSearchRepoOptions) (repos []*Repository, _ int64, _ error) {
+	if len(opts.Keyword) != 0 {
+		opts.Keyword = strings.ToLower(opts.Keyword)
+	}
+
+	if opts.Page <= 0 {
+		opts.Page = 1
+	}
+	log.Trace(opts.Keyword)
+	repos = make([]*Repository, 0, opts.PageSize)
+
+	// Append conditions
+	
+	sess := x.Cols("repository.name, repository.owner_id, repository.description, repository.is_mirror, repository.is_private, repository.updated_unix, repository.num_stars")
+
+	//.Cols("repository.name, repository.owner_id, repository.description, repository.is_mirror, repository.is_private, repository.updated_unix, repository.num_stars")
+
+	if opts.Prof != "" {
+		sess.Join("INNER", "user", "repository.professor_id = user.id")
+	}
+	if opts.Subj != "" {
+		sess.Join("INNER", "subject", "repository.subject_id = subject.id")
+	}
+	if opts.Group != "" {
+		sess.Join("INNER", "group", "repository.group_id = group.id")
+	}
+	if opts.Sem != "" {
+		sess.Join("INNER", "semester", "repository.semester_id = semester.id")
+	}
+
+	sess.Where("LOWER(repository.lower_name) LIKE ?", "%"+opts.Keyword+"%").
+	Or("LOWER(repository.description) LIKE ?", "%"+opts.Keyword+"%")
+
+	if opts.Prof != "" {
+		sess.And("user.full_name = ?", opts.Prof)
+	}
+	if opts.Subj != "" {
+		sess.And("subject.name = ?", opts.Subj)
+	}
+	if opts.Group != "" {
+		sess.And("group.name = ?", opts.Group)
+	}
+	if opts.Sem != "" {
+		sess.And("semester.name = ?", opts.Sem)
+	}
+
+	if !opts.Private {
+		sess.And("is_private=?", false)
+	}
+
+	
 
 	var countSess xorm.Session
 	countSess = *sess

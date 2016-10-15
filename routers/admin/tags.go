@@ -7,7 +7,7 @@ package admin
 import (
 	//"strings"
 
-	"github.com/Unknwon/com"
+	//"github.com/Unknwon/com"
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/auth"
@@ -80,7 +80,7 @@ func NewTagPost(ctx *context.Context, form auth.AdminCreateTagForm) {
 	log.Trace("Tag created by admin: %s", t.Etiqueta)
 
 	ctx.Flash.Success(ctx.Tr("admin.new_tag_success", t.Etiqueta))
-	ctx.Redirect(setting.AppSubUrl + "/admin/tags/" + com.ToStr(t.ID))
+	ctx.Redirect(setting.AppSubUrl + "/admin/tags/new")
 }
 
 func prepareTagInfo(ctx *context.Context) *models.Tag {

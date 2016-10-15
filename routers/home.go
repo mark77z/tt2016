@@ -20,6 +20,7 @@ import (
 const (
 	HOME                  base.TplName = "home"
 	EXPLORE_REPOS         base.TplName = "explore/repos"
+	EXPLORE_ADV           base.TplName = "explore/advanced"
 	EXPLORE_USERS         base.TplName = "explore/users"
 	EXPLORE_ORGANIZATIONS base.TplName = "explore/organizations"
 	EXPLORE_SUBJECTS      base.TplName = "explore/subjects"
@@ -120,6 +121,101 @@ func ExploreRepos(ctx *context.Context) {
 		PageSize: setting.UI.ExplorePagingNum,
 		OrderBy:  "repository.updated_unix DESC",
 		TplName:  EXPLORE_REPOS,
+	})
+}
+
+func RenderAdvancedRepoSearch(ctx *context.Context, opts *RepoSearchOptions) {
+	page := ctx.QueryInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	var (
+		repos []*models.Repository
+		count int64
+		err   error
+	)
+
+	keyword := ctx.Query("q")
+	if len(keyword) == 0  && ctx.Query("professor") == "" && ctx.Query("subject") == "" && ctx.Query("group") == "" && ctx.Query("semester") == "" {
+		repos, err = opts.Ranger(page, opts.PageSize)
+		if err != nil {
+			ctx.Handle(500, "opts.Ranger", err)
+			return
+		}
+		count = opts.Counter(opts.Private)
+	} else {
+		repos, count, err = models.AdvancedSearchRepositoryByName(&models.AdvancedSearchRepoOptions{
+			Keyword:  keyword,
+			Prof:     ctx.Query("professor"),
+			Subj:     ctx.Query("subject"),
+			Group:    ctx.Query("group"),
+			Sem:      ctx.Query("semester"),
+			OrderBy:  opts.OrderBy,
+			Private:  opts.Private,
+			Page:     page,
+			PageSize: opts.PageSize,
+		})
+		if err != nil {
+			ctx.Handle(500, "SearchRepositoryByName", err)
+			return
+		}
+	}
+	ctx.Data["Keyword"] = keyword
+	ctx.Data["Total"] = count
+	ctx.Data["Page"] = paginater.New(int(count), opts.PageSize, page, 5)
+
+	for _, repo := range repos {
+		if err = repo.GetOwner(); err != nil {
+			log.Trace("%s", repo)
+			ctx.Handle(500, "GetOwner", fmt.Errorf("%d: %v", repo.ID, err))
+			return
+		}
+	}
+	ctx.Data["Repos"] = repos
+
+	ctx.HTML(200, opts.TplName)
+}
+
+func AdvancedSearch(ctx *context.Context) {
+	ctx.Data["Title"] = ctx.Tr("advanced")
+	ctx.Data["PageIsExplore"] = true
+	ctx.Data["PageIsExploreAdvanced"] = true
+
+	subjects, err := models.GetSubjects()
+	if err != nil {
+		ctx.Handle(500, "GetSubjects", err)
+		return
+	}
+	ctx.Data["Subjects"] = subjects
+
+	semesters, err := models.GetSemesters()
+	if err != nil {
+		ctx.Handle(500, "GetSemesters", err)
+		return
+	}
+	ctx.Data["Semesters"] = semesters
+
+	groups, err := models.GetGroups()
+	if err != nil {
+		ctx.Handle(500, "GetGroups", err)
+		return
+	}
+	ctx.Data["Groups"] = groups
+
+	professors, err := models.GetProfessors()
+	if err != nil {
+		ctx.Handle(500, "GetProfessors", err)
+		return
+	}
+	ctx.Data["Professors"] = professors
+
+	RenderAdvancedRepoSearch(ctx, &RepoSearchOptions{
+		Counter:  models.CountRepositories,
+		Ranger:   models.GetRecentUpdatedRepositories,
+		PageSize: setting.UI.ExplorePagingNum,
+		OrderBy:  "repository.updated_unix DESC",
+		TplName:  EXPLORE_ADV,
 	})
 }
 

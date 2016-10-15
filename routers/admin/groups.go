@@ -7,7 +7,7 @@ package admin
 import (
 	//"strings"
 
-	"github.com/Unknwon/com"
+	//"github.com/Unknwon/com"
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/auth"
@@ -80,7 +80,7 @@ func NewGroupPost(ctx *context.Context, form auth.AdminCreateGroupForm) {
 	log.Trace("Group created by admin: %s", g.Name)
 
 	ctx.Flash.Success(ctx.Tr("admin.users.new_group_success", g.Name))
-	ctx.Redirect(setting.AppSubUrl + "/admin/groups/" + com.ToStr(g.ID))
+	ctx.Redirect(setting.AppSubUrl + "/admin/groups/new")
 }
 
 func prepareGroupInfo(ctx *context.Context) *models.Group {

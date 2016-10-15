@@ -16,9 +16,9 @@
 					</div>
 					<div class="ui tab active list" data-tab="subjects">
 						<h4 class="ui top attached header">
-							{{.i18n.Tr "home.my_subjects"}} <span class="ui grey label">{{.ContextUser.GetSubjectCount}}</span>
+							{{.i18n.Tr "home.my_subjects"}}
 							<div class="ui right">
-								<a class="poping up" href="{{AppSubUrl}}/repo/create" data-content="{{.i18n.Tr "new_subject"}}" data-variation="tiny inverted" data-position="left center">
+								<a class="poping up" href="{{AppSubUrl}}/user/settings/course" data-content="{{.i18n.Tr "new_subject"}}" data-variation="tiny inverted" data-position="left center">
 									<i class="plus icon"></i>
 									<span class="sr-only">{{.i18n.Tr "new_subject"}}</span>
 								</a>
@@ -28,11 +28,9 @@
 							<ul class="repo-owner-name-list">
 								{{range .Subjects}}
 									<li>
-										<a href="{{AppSubUrl}}/{{$.ContextUser.Name}}/{{.Name}}">
+										<a href="{{AppSubUrl}}/explore/{{.Name}}">
+											<i class="octicon octicon-briefcase"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
-											<span class="ui right text light grey">
-												{{.NumStars}} <i class="octicon octicon-star rear"></i>
-											</span>
 										</a>
 									</li>
 								{{end}}
@@ -45,26 +43,17 @@
 						</div>
 					</div>
 
-					<div class="ui tab list" data-tab="orgs">
+					<div class="ui tab list" data-tab="groups">
 						<h4 class="ui top attached header">
-							{{.i18n.Tr "home.my_orgs"}} <span class="ui grey label">{{.ContextUser.GetOrganizationCount}}</span>
-							<div class="ui right">
-								<a class="poping up" href="{{AppSubUrl}}/org/create" data-content="{{.i18n.Tr "new_org"}}" data-variation="tiny inverted" data-position="left center">
-									<i class="plus icon"></i>
-									<span class="sr-only">{{.i18n.Tr "new_org"}}</span>
-								</a>
-							</div>
+							{{.i18n.Tr "home.my_orgs"}}
 						</h4>
 						<div class="ui attached table segment">
 							<ul class="repo-owner-name-list">
-								{{range .ContextUser.Orgs}}
+								{{range .Groups}}
 									<li>
 										<a href="{{AppSubUrl}}/{{.Name}}">
-											<i class="octicon octicon-organization"></i>
+											<i class="octicon octicon-calendar"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
-											<span class="ui right text light grey">
-												{{.NumRepos}} <i class="octicon octicon-repo rear"></i>
-											</span>
 										</a>
 									</li>
 								{{end}}

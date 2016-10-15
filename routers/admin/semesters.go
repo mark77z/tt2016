@@ -7,7 +7,7 @@ package admin
 import (
 	//"strings"
 
-	"github.com/Unknwon/com"
+	//"github.com/Unknwon/com"
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/auth"
@@ -80,7 +80,7 @@ func NewSemesterPost(ctx *context.Context, form auth.AdminCrateSemesterForm) {
 	log.Trace("Semester created by admin: %s", s.Name)
 
 	ctx.Flash.Success(ctx.Tr("admin.users.new_semester_success", s.Name))
-	ctx.Redirect(setting.AppSubUrl + "/admin/semesters/" + com.ToStr(s.ID))
+	ctx.Redirect(setting.AppSubUrl + "/admin/semesters/new")
 }
 
 func prepareSemesterInfo(ctx *context.Context) *models.Semester {

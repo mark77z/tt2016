@@ -7,7 +7,7 @@ package admin
 import (
 	//"strings"
 
-	"github.com/Unknwon/com"
+	//"github.com/Unknwon/com"
 
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/auth"
@@ -80,7 +80,7 @@ func NewSubjectPost(ctx *context.Context, form auth.AdminCrateSubjectForm) {
 	log.Trace("Subject created by admin (%s): %s", ctx.User.Name, s.Name)
 
 	ctx.Flash.Success(ctx.Tr("admin.users.new_subject_success", s.Name))
-	ctx.Redirect(setting.AppSubUrl + "/admin/subjects/" + com.ToStr(s.ID))
+	ctx.Redirect(setting.AppSubUrl + "/admin/subjects/new")
 }
 
 func prepareSubjectInfo(ctx *context.Context) *models.Subject {

@@ -136,7 +136,29 @@ func Dashboard(ctx *context.Context) {
 			return
 		}
 	}
+
+	subjects, err := models.GetSubjectsProfessor(ctx.User.ID)
+	if err != nil {
+		ctx.Handle(500, "GetSubjectsProfessor", err)
+		return
+	}
+
+	/*groups, err := models.GetGr(ctx.User.ID)
+	if err != nil {
+		ctx.Handle(500, "GetSemestersProfessor", err)
+		return
+	}
+
+	semesters, err := models.GetSemestersProfessor(ctx.User.ID)
+	if err != nil {
+		ctx.Handle(500, "GetSemestersProfessor", err)
+		return
+	}*/
+
 	ctx.Data["Repos"] = repos
+	ctx.Data["Subjects"] = subjects
+	/*ctx.Data["Groups"] = groups
+	ctx.Data["Semesters"] = semesters*/
 	ctx.Data["MaxShowRepoNum"] = setting.UI.User.RepoPagingNum
 
 	if err := models.MirrorRepositoryList(mirrors).LoadAttributes(); err != nil {

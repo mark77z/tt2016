@@ -1356,8 +1356,13 @@ $(document).ready(function () {
     });
 
     // Semantic UI modules.
-    $('.dropdown').dropdown({
-        allowAdditions: true
+    $('.ui.dropdown').dropdown({
+        message: {
+          addResult     : 'Add <b>{term}</b>',
+          count         : '{count} selected',
+          maxSelections : 'Max {maxCount} selections',
+          noResults     : 'Sin resultados.'
+        },
       });
     $('.jump.dropdown').dropdown({
         action: 'hide',

@@ -220,6 +220,7 @@ func runWeb(ctx *cli.Context) error {
 		m.Get("/groups", routers.ExploreGroups)
 		m.Get("/subjects", routers.ExploreSubjects)
 		m.Get("/tags", routers.ExploreTags)
+		m.Get("/advanced", routers.AdvancedSearch)
 
 	}, ignSignIn)
 	m.Combo("/install", routers.InstallInit).Get(routers.Install).
