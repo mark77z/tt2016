@@ -12,6 +12,10 @@
 		$("#group_dropdown").click(function() {
 			$("#group_dropdown").removeClass( "error" );
 		});
+
+		$("#create-subject").click(function(){
+			$('.ui.modal').modal('show');
+		});
 	});
 </script>
 <div class="user course">
@@ -20,6 +24,9 @@
 			{{template "user/settings/navbar" .}}
 			<div class="twelve wide column content">
 				{{template "base/alert" .}}
+				<div class="ui positive message hide" id="divMensajeMateria">
+					<p id="mensajeMateria"></p>
+				</div>
 				<h4 class="ui top attached header">
 					{{.i18n.Tr "user.settings.new_course"}}
 				</h4>
@@ -55,10 +62,11 @@
 							</div>
 						</div>
 
-						<div class="field {{if .Err_Course}}error{{end}}" id="subject_dropdown">
+						<div class="inline field {{if .Err_Course}}error{{end}}" id="subject_dropdown">
 							<label>{{.i18n.Tr "repo.subject"}}</label>
+							<div style="height: 5px;"></div>
 							<!--<div class="ui search selection dropdown" id="subject-box-insert">-->
-							<div class="ui search selection dropdown">
+							<div class="ui search selection dropdown" style="width: 94%;" id="SubjectBox">
 								<input type="hidden" name="subject" value="{{.subject}}" id="subject_hidden">
 								<div class="default text">{{.i18n.Tr "repo.select_subject"}}</div>
 								<i class="dropdown icon"></i>
@@ -68,6 +76,9 @@
 									{{end}}
 								</div>
 							</div>
+							<a target="_blank" class="ui icon button green" style="left: 1%; position:relative;" title="Registrar Materia" id="create-subject">
+								<i class="plus icon"></i>
+							</a>
 						</div>
 
 						<div class="inline field">
@@ -112,6 +123,28 @@
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
+<div class="ui modal">
+	<i class="close icon"></i>
+	<div class="header">
+		{{.i18n.Tr "user.settings.proffesor.create_subject"}}
+	</div>
+	<div class="ui attached segment">
+		<div class="ui error message hide" id="divMensajeMateriaError">
+			<p id="mensajeMateria">La Materia ya se encuentra registrada</p>
+		</div>
+		<form class="ui form" method="post" id="form-registrarMateria">
+			{{.CsrfTokenHtml}}
+
+			<div class="inline required field ">
+				<label for="subject_name">{{.i18n.Tr "repo.subject"}}</label>
+				<input id="subject_modal" value="" autofocus="" required>
+			</div>
+			<div class="field">
+				<button class="ui green button">Registrar Materia</button>
+			</div>
+		</form>
 	</div>
 </div>
 {{template "base/footer" .}}

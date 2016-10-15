@@ -7,6 +7,7 @@ package subject
 import (
 	api "github.com/gogits/go-gogs-client"
 
+	"fmt"
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/context"
 	"strconv"
@@ -80,4 +81,35 @@ func SearchByProfessor(ctx *context.APIContext) {
 		"ok":   true,
 		"data": results,
 	})
+}
+
+func CreateSubject(ctx *context.APIContext) {
+	subject := ctx.Query("s")
+
+	s := &models.Subject{
+		Name: subject,
+	}
+
+	if err := models.CreateSubject(s); err != nil {
+		switch {
+		case models.IsErrSubjectAlreadyExist(err):
+			fmt.Errorf("MATERIA REPETIDA %v", err)
+		default:
+			fmt.Errorf("DEFAULT ERROR %v", err)
+		}
+
+		return
+	}
+
+	results := make([]*api.Subject, 1)
+	results[0] = &api.Subject{
+		ID:   s.ID,
+		Name: subject,
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"ok":   true,
+		"data": results,
+	})
+
 }

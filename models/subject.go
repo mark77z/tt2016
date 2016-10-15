@@ -120,7 +120,7 @@ func getSubjects() ([]*Subject, error) {
 
 func GetSubjectsProfessor(ProfessorID int64) ([]*Subject, error) {
 	subjects := make([]*Subject, 0, 5)
-	return subjects, x.Cols("subject.name").Join("LEFT", "`course`", "`course`.subj_id=`subject`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("subject.id").Find(&subjects)
+	return subjects, x.Cols("subject.id", "subject.name").Join("LEFT", "`course`", "`course`.subj_id=`subject`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("subject.id").Find(&subjects)
 }
 
 func GetSubjects() ([]*Subject, error) {

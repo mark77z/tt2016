@@ -264,5 +264,5 @@ func GetSemesters() ([]*Semester, error) {
 
 func GetSemestersProfessor(ProfessorID int64) ([]*Semester, error) {
 	semesters := make([]*Semester, 0, 5)
-	return semesters, x.Cols("semester.name").Join("LEFT", "`course`", "`course`.semester_id=`semester`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("semester.id").Find(&semesters)
+	return semesters, x.Cols("semester.id", "semester.name").Join("LEFT", "`course`", "`course`.semester_id=`semester`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("semester.id").Find(&semesters)
 }
