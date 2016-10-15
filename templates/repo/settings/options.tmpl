@@ -102,6 +102,9 @@
 								<div class="default text" style="color: black;">{{if .Subject_Success}}{{.Subject.Name}}{{else}}{{.i18n.Tr "form.unselect_field"}}{{end}}</div>
 								<i class="dropdown icon"></i>
 								<div class="menu" id="subject-box">
+									{{range .Subjects}}
+										<div class="item" data-value="{{.ID}}">{{.Name}}</div>
+									{{end}}
 								</div>
 							</div>
 						</div>
