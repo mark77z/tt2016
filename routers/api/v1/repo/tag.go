@@ -5,9 +5,9 @@
 package repo
 
 import (
-
 	api "github.com/gogits/go-gogs-client"
 
+	"fmt"
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/context"
 )
@@ -26,8 +26,8 @@ func SearchTag(ctx *context.APIContext) {
 	results := make([]*api.Tag, len(tags))
 	for i := range tags {
 		results[i] = &api.Tag{
-			ID:        tags[i].ID,
-			Etiqueta:  tags[i].Etiqueta,
+			ID:       tags[i].ID,
+			Etiqueta: tags[i].Etiqueta,
 		}
 	}
 
@@ -35,4 +35,35 @@ func SearchTag(ctx *context.APIContext) {
 		"ok":   true,
 		"data": results,
 	})
+}
+
+func CreateTag(ctx *context.APIContext) {
+	tag := ctx.Query("t")
+
+	t := &models.Tag{
+		Etiqueta: tag,
+	}
+
+	if err := models.CreateTag(t); err != nil {
+		switch {
+		case models.IsErrTagAlreadyExist(err):
+			fmt.Errorf("TAG REPETIDA %v", err)
+		default:
+			fmt.Errorf("DEFAULT ERROR %v", err)
+		}
+
+		return
+	}
+
+	results := make([]*api.Tag, 1)
+	results[0] = &api.Tag{
+		ID:       t.ID,
+		Etiqueta: tag,
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"ok":   true,
+		"data": results,
+	})
+
 }
