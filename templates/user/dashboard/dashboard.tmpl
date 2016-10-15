@@ -28,7 +28,7 @@
 							<ul class="repo-owner-name-list">
 								{{range .Subjects}}
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{.SignedUser.FullName}}&subject={{.Name}}&group=&semester=">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject={{.Name}}&group=&semester=" onclick="addProfessor(this);">
 											<i class="octicon octicon-briefcase"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -51,7 +51,7 @@
 							<ul class="repo-owner-name-list">
 								{{range .Groups}}
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{.SignedUser.FullName}}&subject=&group={{.Name}}&semester=">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject=&group={{.Name}}&semester=">
 											<i class="octicon octicon-organization"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -69,7 +69,7 @@
 							<ul class="repo-owner-name-list">
 								{{range .Semestres}}
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{.SignedUser.FullName}}&subject=&group=&semester={{.Name}}">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject=&group=&semester={{.Name}}">
 											<i class="octicon octicon-calendar"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -207,4 +207,11 @@
 		</div>
 	</div>
 </div>
+<script type="text/javascript">
+	function addProfessor(element) {
+		$(element).attr('href', function() {
+        	return this.href + '&professor={{.SignedUser.FullName}}';
+    	});
+	}
+</script>
 {{template "base/footer" .}}
