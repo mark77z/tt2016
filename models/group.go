@@ -257,5 +257,5 @@ func SearchGroupByName(opts *SearchGroupOptions) (groups []*Group, _ int64, _ er
 
 func GetGroupsProfessor(ProfessorID int64) ([]*Group, error) {
 	groups := make([]*Group, 0, 5)
-	return groups, x.Cols("group.name").Join("LEFT", "`course`", "`course`.group_id=`group`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("group.id").Find(&groups)
+	return groups, x.Cols("group.id", "group.name").Join("LEFT", "`course`", "`course`.group_id=`group`.id").Where("course.uid=?", ProfessorID).Asc("name").GroupBy("group.id").Find(&groups)
 }

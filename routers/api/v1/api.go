@@ -234,6 +234,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 		m.Group("/subjects", func() {
 			m.Get("/search", subject.Search)
 			m.Get("/searchByProfessor", subject.SearchByProfessor)
+			m.Get("/create", subject.CreateSubject)
 		})
 
 		//Semesters

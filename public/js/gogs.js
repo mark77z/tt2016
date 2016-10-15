@@ -1128,6 +1128,14 @@ function searchUsers() {
     });
     hideWhenLostFocus('#search-user-box .results', '#search-user-box');
 }
+
+function getSubjects(){
+    var $SubjectsBox = $("#SubjectBox");
+    var $results = $SubjectsBox.find('.menu');
+
+    
+}
+
 function searchTags() {
     var $searchTagBox = $('#tag-box');
     var $results = $searchTagBox.find('.menu');
@@ -1233,18 +1241,6 @@ function getSubjectsFromProfessor(){
         });
     });
 }
-
-function createSubject(){
-    var $subjectboxinsert = $("#subject-box-insert");
-    var $results = $subjectboxinsert.find('.search');
-    $results.keypress(function(event) {
-
-        if (event.which == 13){
-            alert("ENTER");
-        }
-    });
-}
-
 
 function searchSubjects() {
     if (!$('#search-subject-box .results').length) {
@@ -1368,6 +1364,36 @@ function initCodeView() {
             }
         }).trigger('hashchange');
     }
+}
+
+function registrarMateria(){
+    var $form = $("#form-registrarMateria");
+    $form.submit(function( event ) {
+        var $subject = $("#subject_modal").val();
+        $.ajax({
+            url: suburl + '/api/v1/subjects/create?s=' + $subject,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                if (response.ok && response.data.length) {
+                    $.each(response.data, function (i, item) {
+                        $('.ui.modal').modal('hide');
+                        $("#divMensajeMateriaError").hide();
+                        $("#mensajeMateria").html("Se ha registrado la materia: " + item.name)
+                        $("#divMensajeMateria").show();
+                        $("#subject_modal").val("");
+                    });
+                }
+            },
+            error: function(response){
+                $("#divMensajeMateriaError").show();
+            }
+        });
+        event.preventDefault();
+    });
 }
 
 $(document).ready(function () {
@@ -1564,7 +1590,8 @@ $(document).ready(function () {
     searchRepositories();
     searchTags();
     getSubjectsFromProfessor();
-    createSubject();
+    getSubjects();
+    registrarMateria();
 
     initCommentForm();
     initInstall();
