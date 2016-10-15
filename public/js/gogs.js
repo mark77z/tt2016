@@ -1144,10 +1144,9 @@ function getSubjects(){
                 if (response.ok && response.data.length) {
                     var html = '';
                     $.each(response.data, function (i, item) {
-                        html += '<div class="item" data-value="'+item.id+'">'+item.etiqueta+'</div>';
+                        html += '<div class="item" data-value="'+item.id+'">'+item.name+'</div>';
                     });
                     $results.html(html);
-                    $results.show();
                 } else {
                     $results.hide();
                 }
@@ -1386,6 +1385,36 @@ function initCodeView() {
     }
 }
 
+function registrarTag(){
+    var $form = $("#form-registrarTag");
+    $form.submit(function( event ) {
+        var tag = $("#tag_modal").val();
+        $.ajax({
+            url: suburl + '/api/v1/tags/create?t=' + tag,
+            dataType: "json",
+            success: function (response) {
+                var notEmpty = function (str) {
+                    return str && str.length > 0;
+                };
+
+                if (response.ok && response.data.length) {
+                    $.each(response.data, function (i, item) {
+                        $('.ui.modal').modal('hide');
+                        $("#divMensajeTagError").hide();
+                        $("#mensajeTag").html("Se ha registrado la tag: " + item.etiqueta)
+                        $("#divMensajeTag").show();
+                        $("#tag_modal").val("");
+                    });
+                }
+            },
+            error: function(response){
+                $("#divMensajeTagError").show();
+            }
+        });
+        event.preventDefault();
+    });
+}
+
 function registrarMateria(){
     var $form = $("#form-registrarMateria");
     $form.submit(function( event ) {
@@ -1612,6 +1641,7 @@ $(document).ready(function () {
     getSubjectsFromProfessor();
     getSubjects();
     registrarMateria();
+    registrarTag();
 
     initCommentForm();
     initInstall();
