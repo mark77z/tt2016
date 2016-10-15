@@ -1132,8 +1132,28 @@ function searchUsers() {
 function getSubjects(){
     var $SubjectsBox = $("#SubjectBox");
     var $results = $SubjectsBox.find('.menu');
+    $SubjectsBox.click(function(){
+        var $this = $(this);
+        $.ajax({
+            url: suburl + '/api/v1/subjects/list',
+            dataType: "json",
+            success: function (response) {
 
-    
+                $results.html('');
+
+                if (response.ok && response.data.length) {
+                    var html = '';
+                    $.each(response.data, function (i, item) {
+                        html += '<div class="item" data-value="'+item.id+'">'+item.etiqueta+'</div>';
+                    });
+                    $results.html(html);
+                    $results.show();
+                } else {
+                    $results.hide();
+                }
+            }
+        });
+    });
 }
 
 function searchTags() {

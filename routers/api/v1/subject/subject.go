@@ -58,6 +58,30 @@ func Search(ctx *context.APIContext) {
 	})
 }
 
+func List(ctx *context.APIContext) {
+	subjects, err := models.GetSubjects()
+	if err != nil {
+		ctx.JSON(500, map[string]interface{}{
+			"ok":    false,
+			"error": err.Error(),
+		})
+		return
+	}
+
+	results := make([]*api.Subject, len(subjects))
+	for i := range subjects {
+		results[i] = &api.Subject{
+			ID:   subjects[i].ID,
+			Name: subjects[i].Name,
+		}
+	}
+
+	ctx.JSON(200, map[string]interface{}{
+		"ok":   true,
+		"data": results,
+	})
+}
+
 func SearchByProfessor(ctx *context.APIContext) {
 	ProfessorID, _ := strconv.ParseInt(ctx.Query("q"), 10, 64)
 	subjects, err := models.GetSubjectsProfessor(ProfessorID)
