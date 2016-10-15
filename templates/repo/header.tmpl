@@ -5,7 +5,16 @@
 			<div class="column"><!-- start column -->
 				<div class="ui header">
 					<div class="ui huge breadcrumb">
-						<i class="mega-octicon octicon-{{if .IsPrivate}}lock{{else if .IsMirror}}repo-clone{{else if .IsFork}}repo-forked{{else}}repo{{end}}"></i>
+						{{if .IsPrivate}}
+							<i class="unlock alternate icon"></i>
+						{{else if .IsMirror}}
+							<i class="clone icon"></i>
+						{{else if .IsFork}}
+							<i class="fork icon"></i>
+						{{else}}
+							<i class="git square icon"></i>
+						{{end}}
+						<!--<i class="mega-octicon octicon-{{if .IsPrivate}}lock{{else if .IsMirror}}repo-clone{{else if .IsFork}}repo-forked{{else}}repo{{end}}"></i>-->
 						<a href="{{AppSubUrl}}/{{.Owner.Name}}">{{.Owner.Name}}</a>
 						<div class="divider"> / </div>
 						<a href="{{$.RepoLink}}">{{.Name}}</a>

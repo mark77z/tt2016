@@ -8,6 +8,7 @@
 			</div>
 			<div class="six wide column">
 				{{if .SignedUser.IsProfessor}}
+				{{$Prof := .SignedUser.FullName}}
 				<div class="row">
 					<div class="ui three item tabable menu">
 						<a class="item active" data-tab="subjects">{{.i18n.Tr "subject"}}</a>
@@ -16,7 +17,7 @@
 					</div>
 					<div class="ui tab active list" data-tab="subjects">
 						<h4 class="ui top attached header">
-							{{.i18n.Tr "home.my_subjects"}}
+							{{.i18n.Tr "home.my_subjects"}} <span class="ui grey label">{{len .Subjects}}</span>
 							<div class="ui right">
 								<a class="poping up" href="{{AppSubUrl}}/user/settings/course" data-content="{{.i18n.Tr "new_subject"}}" data-variation="tiny inverted" data-position="left center">
 									<i class="plus icon"></i>
@@ -26,9 +27,9 @@
 						</h4>
 						<div class="ui attached table segment">
 							<ul class="repo-owner-name-list">
-								{{range .Subjects}}
+								{{range .Subjects}} 
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject={{.Name}}&group=&semester=" onclick="addProfessor(this);">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{$Prof}}&subject={{.Name}}&group=&semester=">
 											<i class="octicon octicon-briefcase"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -45,13 +46,13 @@
 
 					<div class="ui tab list" data-tab="groups">
 						<h4 class="ui top attached header">
-							{{.i18n.Tr "home.my_groups"}}
+							{{.i18n.Tr "home.my_groups"}} <span class="ui grey label">{{len .Groups}}</span>
 						</h4>
 						<div class="ui attached table segment">
 							<ul class="repo-owner-name-list">
 								{{range .Groups}}
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject=&group={{.Name}}&semester=" onclick="addProfessor(this);">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{$Prof}}&subject=&group={{.Name}}&semester=">
 											<i class="octicon octicon-organization"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -63,13 +64,13 @@
 
 					<div class="ui tab list" data-tab="semesters">
 						<h4 class="ui top attached header">
-							{{.i18n.Tr "home.my_semesters"}}
+							{{.i18n.Tr "home.my_semesters"}} <span class="ui grey label">{{len .Semesters}}</span>
 						</h4>
 						<div class="ui attached table segment">
 							<ul class="repo-owner-name-list">
 								{{range .Semesters}}
 									<li>
-										<a href="{{AppSubUrl}}/explore/advanced/?q=&subject=&group=&semester={{.Name}}" onclick="addProfessor(this);">
+										<a href="{{AppSubUrl}}/explore/advanced/?q=&professor={{$Prof}}&subject=&group=&semester={{.Name}}">
 											<i class="octicon octicon-calendar"></i>
 											<strong class="text truncate item-name">{{.Name}}</strong>
 										</a>
@@ -207,13 +208,4 @@
 		</div>
 	</div>
 </div>
-{{if .SignedUser.IsProfessor}}
-<script type="text/javascript">
-	function addProfessor(element) {
-		$(element).attr('href', function() {
-        	return this.href + '&professor={{.SignedUser.FullName}}';
-    	});
-	}
-</script>
-{{end}}
 {{template "base/footer" .}}
