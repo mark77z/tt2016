@@ -19,8 +19,9 @@ import (
 )
 
 const (
-	COMMITS base.TplName = "repo/commits"
-	DIFF    base.TplName = "repo/diff/page"
+	COMMITS       base.TplName = "repo/commits"
+	CONTRIBUTIONS base.TplName = "repo/contributions"
+	DIFF          base.TplName = "repo/diff/page"
 )
 
 func RefCommits(ctx *context.Context) {
@@ -41,6 +42,37 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 		newCommits.PushBack(c)
 	}
 	return newCommits
+}
+
+func Contributions(ctx *context.Context) {
+	ctx.Data["PageIsContributions"] = true
+	commitsCount, err := ctx.Repo.Commit.CommitsCount()
+	if err != nil {
+		ctx.Handle(500, "GetCommitsCount", err)
+		return
+	}
+
+	page := ctx.QueryInt("page")
+	if page <= 1 {
+		page = 1
+	}
+	ctx.Data["Page"] = paginater.New(int(commitsCount), git.CommitsRangeSize, page, 5)
+
+	// Both `git log branchName` and `git log commitId` work.
+	commits, err := ctx.Repo.Commit.CommitsByRange(page)
+	if err != nil {
+		ctx.Handle(500, "CommitsByRange", err)
+		return
+	}
+	commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
+	commits = models.ValidateCommitsWithEmails(commits)
+	ctx.Data["Commits"] = commits
+
+	ctx.Data["Username"] = ctx.Repo.Owner.Name
+	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
+	ctx.Data["CommitCount"] = commitsCount
+	ctx.Data["Branch"] = ctx.Repo.BranchName
+	ctx.HTML(200, CONTRIBUTIONS)
 }
 
 func Commits(ctx *context.Context) {

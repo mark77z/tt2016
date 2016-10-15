@@ -73,6 +73,9 @@
 					<i class="octicon octicon-book"></i> {{.i18n.Tr "repo.wiki"}}
 				</a>
 			{{end}}
+			<a class="{{if .PageIsContributions}}active{{end}} item" href="{{.RepoLink}}/contributions">
+				<i class="octicon octicon-organization"></i> {{.i18n.Tr "repo.contributions"}}
+			</a>
 			{{if .IsRepositoryAdmin}}
 				<div class="right menu">
 					<a class="{{if .PageIsSettings}}active{{end}} item" href="{{.RepoLink}}/settings">

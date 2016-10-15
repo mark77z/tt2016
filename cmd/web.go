@@ -619,6 +619,7 @@ func runWeb(ctx *cli.Context) error {
 	m.Group("/:username/:reponame", func() {
 		m.Group("", func() {
 			m.Get("/releases", repo.Releases)
+			m.Get("/contributions", repo.Contributions)
 			m.Get("/^:type(issues|pulls)$", repo.RetrieveLabels, repo.Issues)
 			m.Get("/^:type(issues|pulls)$/:index", repo.ViewIssue)
 			m.Get("/labels/", repo.RetrieveLabels, repo.Labels)
