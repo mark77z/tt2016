@@ -4,8 +4,6 @@
 	<div class="ui container">
 		{{template "base/alert" .}}
 
-		
-
 		<div class="ui center aligned container">
 			{{if .Repository.ProfessorID}}
 			<a class="ui image label" href="/explore/repos?q={{.Repository.GetProfessorName}}">
@@ -17,7 +15,7 @@
 
 			{{if .Repository.SubjectID}}
 			<a class="ui image label" href="/explore/repos?q={{.Repository.GetSubjectName}}">
-			  <i class="university icon"></i>
+			  <i class="book icon"></i>
 			  Materia
 			  <div class="detail">{{.Repository.GetSubjectName}}</div>
 			</a>
@@ -33,15 +31,15 @@
 
 			{{if .Repository.GroupID}}
 			<a class="ui image label" href="/explore/repos?q={{.Repository.GetGroupName}}">
-			  <i class="university icon"></i>
+			  <i class="users icon"></i>
 			  Grupo
 			  <div class="detail">{{.Repository.GetGroupName}}</div>
 			</a>
 			{{end}}
 		</div>
 
-		<div class="ui icon message">
-		  <i class="inbox icon"></i>
+		<div class="ui mini icon message">
+		  <i class="mini braille icon"></i>
 		  <div class="content">
 		    <div class="header">
 		      Descripcion
@@ -49,55 +47,56 @@
 				{{if .Repository.DescriptionHtml}}<span class="description has-emoji">{{.Repository.DescriptionHtml}}</span>{{else}}<span class="no-description text-italic">{{.i18n.Tr "repo.no_desc"}}</span>{{end}}
 				<p><a class="link" href="{{.Repository.Website}}">{{.Repository.Website}}</a></p>
 		  </div>
-		</div><br>
-
-		<div class="ui equal width grid">
-		  <div class="equal width row">
-		    <div class="left floated left aligned column">
-			    <div class="ui segment">
-			    	<div class="ui ribbon label">
-				        Tags
-				    </div><br>
-			    	<div class="ui large horizontal list">
-			    		{{if .IsRepositoryAdmin}}
-			    		<a class="ui right corner label" href="{{.RepoLink}}/settings/tags">
-					        <i class="plus icon"></i>
-					    </a>
-					    {{end}}
-					  	{{range .HTags}}
-					  	<div class="item">
-							<a class="ui tag label" href="/explore/repos?q={{.Etiqueta}}">{{.Etiqueta}}</a>
-						</div>
-						{{end}}
-					</div>
-			    </div>
-			</div>
-	
-		  	<div class="left floated left aligned column">
-		    	<div class="ui segment">
-		    		<div class="ui ribbon label">
-				        Colaboradores
-				    </div><br>
-			    	<div class="ui mini horizontal list">
-			    		{{if .IsRepositoryAdmin}}
-			    		<a class="ui right corner label" href="{{.RepoLink}}/settings/collaboration">
-					        <i class="plus icon"></i>
-					    </a>
-					    {{end}}
-					  	{{range .Collaborators}}
-						<div class="item">
-							<a class="ui basic image label" href="{{AppSubUrl}}/{{.Name}}">
-							  <img src="{{if not .UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Avatar}}{{else}}/avatars/{{.ID}}{{end}}">
-							  {{.Name}}
-							</a>
-						</div>
-						{{end}}
-					</div>
-			    </div>
-			</div>
-
-		  </div>
 		</div>
+
+		<div class="ui grid">
+			<div class="row">
+			  	<div class="column">
+			    	<div class="ui segment">
+			    		<div class="ui left ribbon label">
+					        <i class="users icon"></i>Colaboradores
+					    </div>
+				    	<div class="ui equal width mini horizontal list">
+				    		{{if .IsRepositoryAdmin}}
+				    		<a class="ui right corner label" href="{{.RepoLink}}/settings/collaboration">
+						        <i class="plus icon"></i>
+						    </a>
+						    {{end}}
+						  	{{range .Collaborators}}
+							<div class="item">
+								<a class="ui fluid basic image label" href="{{AppSubUrl}}/{{.Name}}">
+								  <img src="{{if not .UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Avatar}}{{else}}/avatars/{{.ID}}{{end}}">
+								  {{.Name}}
+								</a>
+							</div>
+							{{end}}
+						</div>
+				    </div>
+				</div>
+			</div>
+		  	<div class=" dluid row">
+			    <div class="left floated left aligned column">
+				    	<div class="ui mini horizontal list">
+						  	{{range .HTags}}
+						  	<div class="item">
+								<a class="ui tiny label" href="/explore/repos?q={{.Etiqueta}}">
+								  <i class="tag icon"></i>
+								  {{.Etiqueta}}
+								</a>
+							</div>
+							{{end}}
+							{{if .IsRepositoryAdmin}}
+							<div class="item">
+							    <a class="ui compact mini icon button" href="{{.RepoLink}}/settings/tags">
+								  <i class="plus icon"></i>
+								</a>
+							</div>
+						    {{end}}
+						</div>
+				</div>
+			</div>
+		</div>
+
 		<div class="ui secondary menu">
 			{{if .PullRequestCtx.Allowed}}
 				<div class="fitted item">
