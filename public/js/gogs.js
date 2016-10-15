@@ -1144,10 +1144,9 @@ function getSubjects(){
                 if (response.ok && response.data.length) {
                     var html = '';
                     $.each(response.data, function (i, item) {
-                        html += '<div class="item" data-value="'+item.id+'">'+item.etiqueta+'</div>';
+                        html += '<div class="item" data-value="'+item.id+'">'+item.name+'</div>';
                     });
                     $results.html(html);
-                    $results.show();
                 } else {
                     $results.hide();
                 }
