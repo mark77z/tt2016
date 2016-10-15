@@ -1,54 +1,18 @@
 <form class="ui form">
-	<div class="ui fluid action input">
-	  <input name="q" value="{{.Keyword}}" placeholder="{{.i18n.Tr "explore.search"}}..." autofocus>
-	  <button class="ui blue button">{{.i18n.Tr "explore.search"}}</button><br>
-	</div><br>
-	<div class="ui centered grid">
-		<div class="row">
-			<div class="ui floating dropdown labeled icon button">
-			  <input type="hidden" name="professor">
-			  <i class="student icon"></i>
-			  <span class="text">Profesores</span>
-			  <div class="menu">
-			    <div class="ui icon search input">
-			      <i class="search icon"></i>
-			      <input placeholder="Busqueda..." type="text">
-			    </div>
-			    <div class="scrolling menu">
-			    	{{range .Professors}}
-				      <div class="item">
-				        {{.FullName}}
-				      </div>
-			      	{{end}}
-			    </div>
-			  </div>
+	<div class="three fields">
+	    <div class="field">
+	    	<div class="ui fluid icon input">
+  				<input name="q" value="{{.Keyword}}" placeholder="{{.i18n.Tr "explore.search"}}..." autofocus>
+  				<i class="git square icon"></i>
 			</div>
-
-			<div class="ui floating dropdown labeled icon button">
-			  <input type="hidden" name="subject">
-			  <i class="book icon"></i>
-			  <span class="text">Materias</span>
-			  <div class="menu">
-			    <div class="ui icon search input">
-			      <i class="search icon"></i>
-			      <input placeholder="Busqueda..." type="text">
-			    </div>
-			    <div class="scrolling menu">
-			    	{{range .Subjects}}
-				      <div class="item">
-				        {{.Name}}
-				      </div>
-				    {{end}}
-			    </div>
-			  </div>
-			</div>
-
-			<div class="ui floating dropdown labeled icon button">
+	    </div>
+	    <div class="centered field">
+	    	<div class="ui fluid dropdown labeled icon button">
 			  <input type="hidden" name="group">
 			  <i class="users icon"></i>
 			  <span class="text">Grupos</span>
 			  <div class="menu">
-			    <div class="ui icon search input">
+			    <div class="ui icon search input" id="advanced_dropdowns">
 			      <i class="search icon"></i>
 			      <input placeholder="Busqueda..." type="text">
 			    </div>
@@ -61,15 +25,14 @@
 			    </div>
 			  </div>
 			</div>
-		</div>
-
-		<div class="row">
-			<div class="ui floating dropdown labeled icon button">
+	    </div>
+	    <div class="field">
+	    	<div class="ui fluid dropdown labeled icon button">
 			  <input type="hidden" name="semester">
 			  <i class="calendar icon"></i>
 			  <span class="text">Semestres</span>
 			  <div class="menu">
-			    <div class="ui icon search input">
+			    <div class="ui icon search input" id="advanced_dropdowns">
 			      <i class="search icon"></i>
 			      <input placeholder="Busqueda..." type="text">
 			    </div>
@@ -82,7 +45,56 @@
 			    </div>
 			  </div>
 			</div>
+	    </div>
+	</div>
+
+	<div class="two fields">
+		<div class="field">
+			<div class="ui compact fluid dropdown labeled icon button">
+			  <input type="hidden" name="professor">
+			  <i class="student icon"></i>
+			  <span class="text">Profesores</span>
+			  <div class="menu">
+			    <div class="ui icon search input" id="advanced_dropdowns">
+			      <i class="search icon"></i>
+			      <input placeholder="Busqueda..." type="text">
+			    </div>
+			    <div class="scrolling menu">
+			    	{{range .Professors}}
+				      <div class="item">
+				        {{.FullName}}
+				      </div>
+			      	{{end}}
+			    </div>
+			  </div>
+			</div>
+		</div>
+		<div class="field">
+			<div class="ui compact fluid dropdown labeled icon button">
+			  <input type="hidden" name="subject">
+			  <i class="book icon"></i>
+			  <span class="text">Materias</span>
+			  <div class="menu">
+			    <div class="ui icon search input" id="advanced_dropdowns">
+			      <i class="search icon"></i>
+			      <input placeholder="Busqueda..." type="text">
+			    </div>
+			    <div class="scrolling menu">
+			    	{{range .Subjects}}
+				      <div class="item">
+				        {{.Name}}
+				      </div>
+				    {{end}}
+			    </div>
+			  </div>
+			</div>
 		</div>
 	</div>
-</form><br>
+	<div class="field">
+		<button class="fluid ui button"><i class="search icon"></i></button>
+	</div>
+</form>
+<div class="ui mini message">
+  Numero de repositorios encontrados: {{.Total}}
+</div>
 <div class="ui divider"></div>

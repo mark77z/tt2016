@@ -2951,3 +2951,7 @@ footer .ui.language .menu {
 .ui.user.list .item .description a:hover {
   text-decoration: underline;
 }
+
+#advanced_dropdowns{
+  width: initial !important;
+}
