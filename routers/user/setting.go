@@ -350,7 +350,8 @@ func NewCoursePost(ctx *context.Context, form auth.CreateNewCourseForm) {
 		switch {
 		case models.IsErrCourseAlreadyExist(err):
 			PrepareCoursesInfo(ctx)
-			ctx.RenderWithErr(ctx.Tr("El curso ya existe"), SETTINGS_COURSES_NEW, &form)
+			ctx.Data["Err_Course"] = true
+			ctx.RenderWithErr(ctx.Tr("user.settings.course.already_exists"), SETTINGS_COURSES_NEW, &form)
 		default:
 			ctx.Handle(500, "AddCourse", err)
 		}

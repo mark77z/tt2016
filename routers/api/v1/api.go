@@ -16,6 +16,7 @@ import (
 	"github.com/gogits/gogs/modules/auth"
 	"github.com/gogits/gogs/modules/context"
 	"github.com/gogits/gogs/routers/api/v1/admin"
+	"github.com/gogits/gogs/routers/api/v1/group"
 	"github.com/gogits/gogs/routers/api/v1/misc"
 	"github.com/gogits/gogs/routers/api/v1/org"
 	"github.com/gogits/gogs/routers/api/v1/repo"
@@ -238,6 +239,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 		//Semesters
 		m.Group("/semesters", func() {
 			m.Get("/searchByProfessor", semester.SearchByProfessor)
+		})
+
+		//Groups
+		m.Group("/groups", func() {
+			m.Get("/searchByProfessor", group.SearchByProfessor)
 		})
 
 		// Repositories
