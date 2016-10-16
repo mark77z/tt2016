@@ -9,12 +9,11 @@ import (
 	"path"
 
 	"github.com/Unknwon/paginater"
-
 	"github.com/gogits/git-module"
-
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/base"
 	"github.com/gogits/gogs/modules/context"
+	//"github.com/gogits/gogs/modules/log"
 	"github.com/gogits/gogs/modules/setting"
 )
 
@@ -58,16 +57,20 @@ func Contributions(ctx *context.Context) {
 	}
 	ctx.Data["Page"] = paginater.New(int(commitsCount), git.CommitsRangeSize, page, 5)
 
+	//collaborators, _ := ctx.Repo.GetCollaborators
+
 	// Both `git log branchName` and `git log commitId` work.
-	commits, err := ctx.Repo.Commit.CommitsByRange(page)
+	commits, err := ctx.Repo.Commit.CommitsByAuthor("astrear", page)
+	numCommitsAuthor := commits.Len()
+	ctx.Data["numCommitsAuthor"] = numCommitsAuthor
+
 	if err != nil {
 		ctx.Handle(500, "CommitsByRange", err)
 		return
 	}
-	commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
+	//commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
 	commits = models.ValidateCommitsWithEmails(commits)
 	ctx.Data["Commits"] = commits
-
 	ctx.Data["Username"] = ctx.Repo.Owner.Name
 	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
 	ctx.Data["CommitCount"] = commitsCount
