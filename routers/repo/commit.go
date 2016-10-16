@@ -13,7 +13,7 @@ import (
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/base"
 	"github.com/gogits/gogs/modules/context"
-	//"github.com/gogits/gogs/modules/log"
+	"github.com/gogits/gogs/modules/log"
 	"github.com/gogits/gogs/modules/setting"
 )
 
@@ -45,31 +45,29 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
-	commits, err := ctx.Repo.Commit.CommitsCountPerCollab()
-	if err != nil {
-		ctx.Handle(500, "CommitsCountPerCollab", err)
-		return
+
+	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
+	author := ""
+	for _, c := range collaborators {
+		if c.FullName == "" {
+			author = c.Name
+		} else {
+			author = c.FullName
+		}
+
+		stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
+		log.Trace("STATS: insertions[%d] deletions[%d] user[%s] files[%d]", stats.Insertions, stats.Deletions, stats.Author, stats.Files)
+
 	}
 
-	/*collaborators, _ := ctx.Repo.GetCollaborators
-	Both `git log branchName` and `git log commitId` work.
-	commits, err := ctx.Repo.Commit.CommitsByAuthor("astrear", page)
-	numCommitsAuthor := commits.Len()
-	ctx.Data["numCommitsAuthor"] = numCommitsAuthor
-	*/
-
-	if err != nil {
-		ctx.Handle(500, "CommitsByRange", err)
-		return
+	if ctx.Repo.Owner.FullName != "" {
+		author = ctx.Repo.Owner.FullName
+	} else {
+		author = ctx.Repo.Owner.Name
 	}
-	//commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
-	//commits = models.ValidateCommitsWithEmails(commits)
-	//
-	ctx.Data["Commits"] = commits
-	ctx.Data["Username"] = ctx.Repo.Owner.Name
-	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
-	//ctx.Data["CommitCount"] = commitsCount
-	ctx.Data["Branch"] = ctx.Repo.BranchName
+	stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
+	log.Trace("STATS: insertions[%d] deletions[%d] user[%s] files[%d]", stats.Insertions, stats.Deletions, stats.Author, stats.Files)
+
 	ctx.HTML(200, CONTRIBUTIONS)
 }
 

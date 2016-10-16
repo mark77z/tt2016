@@ -2,10 +2,7 @@
 <div class="repository commits">
 	{{template "repo/header" .}}
 	<div class="ui container">
-		{{range .Commits}}
-			{{.NumCommits}} || {{.UserName}}<br>
-		{{end}}
-
+		
 	</div>
 </div>
 {{template "base/footer" .}}
