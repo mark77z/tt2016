@@ -3,22 +3,24 @@
 	{{template "repo/header" .}}
 	<div class="ui container">
 
-		{{range .AllCommits.Info}}
-				{{.NumCommits}} || {{.Date}} || {{.User}}
-				<br>
-		{{end}}
-		{{.AllCommits.Total}}
-
-		<br><br>
-		{{range .Commits}}
-			{{range .Info}}
-				{{.NumCommits}} || {{.Date}} || {{.User}}
-				<br>
+		{{ .RepoStadistics.Modifications.Insertions}}  |  {{ .RepoStadistics.Modifications.Deletions}}  |  {{ .RepoStadistics.Modifications.Author}}
+		<br>
+		<br>
+		{{range .UserStadistics}}
+			{{ .User.FullName}}
+			<br>
+			Modificaciones: {{ .Modifications.Insertions}}  |  {{ .Modifications.Deletions}}  |  {{ .Modifications.Author}}
+			<br>
+			{{range .Commits.Info}}
+				Commits {{ .NumCommits}}  |  {{ .Date}}  |  {{ .User}}
 			{{end}}
-			Total {{.Total}}
-			<br><br>
+			<br>
+			Total commits : {{ .Commits.Total}}
+			<br>
+			<br>
 		{{end}}
 
+		
 	</div>
 </div>
 {{template "base/footer" .}}

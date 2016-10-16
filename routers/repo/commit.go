@@ -7,6 +7,7 @@ package repo
 import (
 	"container/list"
 	"path"
+	"fmt"
 
 	"github.com/Unknwon/paginater"
 	"github.com/gogits/git-module"
@@ -43,8 +44,29 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 	return newCommits
 }
 
+
+type UserStadistics struct{
+	Modifications *git.StatsUser
+	Commits 	  *git.CommitsInfo
+	User 		  *models.User
+}
+
+type RepoStadistics struct{
+	Modifications *git.StatsUser
+	Commits 	 *git.CommitsInfo
+}
+
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
+
+	var repostadistics * RepoStadistics
+	var userstadistics []*UserStadistics
+
+	stats, err := ctx.Repo.Commit.NumStatCommitsPerUser("")
+	if err != nil {
+		ctx.Handle(500, "CommitsCountPerCollab", err)
+		return
+	}
 
 	allcommits, err := ctx.Repo.Commit.CommitsCountPerCollab("")
 	if err != nil {
@@ -52,41 +74,69 @@ func Contributions(ctx *context.Context) {
 		return
 	}
 
-	commits := make([]*git.CommitsInfo, 0, 4)
-	ownercommits, err := ctx.Repo.Commit.CommitsCountPerCollab(ctx.Repo.Owner.FullName)
-	if err != nil {
-		ctx.Handle(500, "CommitsCountPerCollab", err)
-		return
+	repostadistics = &RepoStadistics{
+		Modifications: stats,
+		Commits: 	  allcommits,
 	}
 
-	if ownercommits != nil{
-		commits = append(commits, ownercommits)
-	}
+	users := make([]*models.Collaborator, 0, 4)
+	users = append(users, &models.Collaborator{
+			User: ctx.Repo.Owner,
+			Collaboration: &models.Collaboration{},
+	})
 
-	users, err := ctx.Repo.Repository.GetCollaborators()
-	if err != nil {
-		ctx.Handle(500, "GetCollaborators", err)
-		return
-	}
-	ctx.Data["Collaborators"] = users
+	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
+	users = append(users, collaborators...)
 
+	userstadistics = make([]*UserStadistics, 0, 4)
 	for _, user := range users {
-		commitspd, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
-		if err != nil {
-			ctx.Handle(500, "CommitsCountPerCollab", err)
-			return
-		}
 
-		if commitspd != nil{
-			commits = append(commits, commitspd)
+		if user.FullName == "" {
+			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "CommitsCountPerCollab", err)
+				return
+			}
+			stats, err := ctx.Repo.Commit.NumStatCommitsPerUser(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "NumStatCommitsPerUser", err)
+				return
+			}
+			userstadistics = append(userstadistics, &UserStadistics{
+				Modifications: stats,
+				Commits: 	  commits,
+				User: 		  user.User,
+			})
+		} else {
+			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "CommitsCountPerCollab", err)
+				return
+			}
+			stats, err := ctx.Repo.Commit.NumStatCommitsPerUser(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "NumStatCommitsPerUser", err)
+				return
+			}
+			userstadistics = append(userstadistics, &UserStadistics{
+				Modifications: stats,
+				Commits: 	  commits,
+				User: 		  user.User,
+			})
 		}
+		
 	}
 
-	ctx.Data["AllCommits"] = allcommits
-	ctx.Data["Commits"] = commits
+	fmt.Printf("%+v\n\n", repostadistics.Modifications)
+	for _, stat := range userstadistics {
+		fmt.Printf("%+v\n", stat.Modifications)
+	}
+
+	ctx.Data["Commiters"] = users
+	ctx.Data["RepoStadistics"] = repostadistics
+	ctx.Data["UserStadistics"] = userstadistics
 	ctx.Data["Username"] = ctx.Repo.Owner.Name
 	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
-	ctx.Data["Branch"] = ctx.Repo.BranchName
 	ctx.HTML(200, CONTRIBUTIONS)
 }
 
