@@ -45,35 +45,30 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
-	commitsCount, err := ctx.Repo.Commit.CommitsCount()
+	commits, err := ctx.Repo.Commit.CommitsCountPerCollab()
 	if err != nil {
-		ctx.Handle(500, "GetCommitsCount", err)
+		ctx.Handle(500, "CommitsCountPerCollab", err)
 		return
 	}
 
-	page := ctx.QueryInt("page")
-	if page <= 1 {
-		page = 1
-	}
-	ctx.Data["Page"] = paginater.New(int(commitsCount), git.CommitsRangeSize, page, 5)
-
-	//collaborators, _ := ctx.Repo.GetCollaborators
-
-	// Both `git log branchName` and `git log commitId` work.
+	/*collaborators, _ := ctx.Repo.GetCollaborators
+	Both `git log branchName` and `git log commitId` work.
 	commits, err := ctx.Repo.Commit.CommitsByAuthor("astrear", page)
 	numCommitsAuthor := commits.Len()
 	ctx.Data["numCommitsAuthor"] = numCommitsAuthor
+	*/
 
 	if err != nil {
 		ctx.Handle(500, "CommitsByRange", err)
 		return
 	}
 	//commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
-	commits = models.ValidateCommitsWithEmails(commits)
+	//commits = models.ValidateCommitsWithEmails(commits)
+	//
 	ctx.Data["Commits"] = commits
 	ctx.Data["Username"] = ctx.Repo.Owner.Name
 	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
-	ctx.Data["CommitCount"] = commitsCount
+	//ctx.Data["CommitCount"] = commitsCount
 	ctx.Data["Branch"] = ctx.Repo.BranchName
 	ctx.HTML(200, CONTRIBUTIONS)
 }
