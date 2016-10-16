@@ -7,6 +7,7 @@ package repo
 import (
 	"container/list"
 	"path"
+	"fmt"
 
 	"github.com/Unknwon/paginater"
 	"github.com/gogits/git-module"
@@ -43,83 +44,99 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 	return newCommits
 }
 
-type AporteUsuario struct {
-	Insertions      int64
-	Deletions       int64
-	Name            string
-	Files           int
-	ID              int64
-	FullName        string
-	Avatar          string
-	UseCustomAvatar bool
+
+type UserStadistics struct{
+	Modifications *git.StatsUser
+	Commits 	  *git.CommitsInfo
+	User 		  *models.User
 }
 
-type EstadisticasRepo struct {
-	Insertions int64
-	Deletions  int64
-	Files      int
+type RepoStadistics struct{
+	Modifications *git.StatsUser
+	Commits 	 *git.CommitsInfo
 }
 
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
 
-	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
-	author := ""
-	users := make([]*AporteUsuario, 0)
+	var repostadistics * RepoStadistics
+	var userstadistics []*UserStadistics
 
-	//ESTADISTICAS PROPIETARIO
-	if ctx.Repo.Owner.FullName != "" {
-		author = ctx.Repo.Owner.FullName
-	} else {
-		author = ctx.Repo.Owner.Name
+	stats, err := ctx.Repo.Commit.NumStatCommitsPerUser("")
+	if err != nil {
+		ctx.Handle(500, "CommitsCountPerCollab", err)
+		return
 	}
-	stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
 
-	users = append(users, &AporteUsuario{
-		ID:              ctx.Repo.Owner.ID,
-		Name:            ctx.Repo.Owner.Name,
-		FullName:        ctx.Repo.Owner.FullName,
-		Avatar:          ctx.Repo.Owner.Avatar,
-		UseCustomAvatar: ctx.Repo.Owner.UseCustomAvatar,
-		Insertions:      stats.Insertions,
-		Deletions:       stats.Deletions,
-		Files:           stats.Files,
+	allcommits, err := ctx.Repo.Commit.CommitsCountPerCollab("")
+	if err != nil {
+		ctx.Handle(500, "CommitsCountPerCollab", err)
+		return
+	}
+
+	repostadistics = &RepoStadistics{
+		Modifications: stats,
+		Commits: 	  allcommits,
+	}
+
+	users := make([]*models.Collaborator, 0, 4)
+	users = append(users, &models.Collaborator{
+			User: ctx.Repo.Owner,
+			Collaboration: &models.Collaboration{},
 	})
-	//FIN ESTADISTICAS PROPIETARIO
 
-	//ESTADISTICAS DE CADA COLABORADOR
-	for _, c := range collaborators {
-		if c.FullName == "" {
-			author = c.Name
+	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
+	users = append(users, collaborators...)
+
+	userstadistics = make([]*UserStadistics, 0, 4)
+	for _, user := range users {
+
+		if user.FullName == "" {
+			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "CommitsCountPerCollab", err)
+				return
+			}
+			stats, err := ctx.Repo.Commit.NumStatCommitsPerUser(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "NumStatCommitsPerUser", err)
+				return
+			}
+			userstadistics = append(userstadistics, &UserStadistics{
+				Modifications: stats,
+				Commits: 	  commits,
+				User: 		  user.User,
+			})
 		} else {
-			author = c.FullName
+			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "CommitsCountPerCollab", err)
+				return
+			}
+			stats, err := ctx.Repo.Commit.NumStatCommitsPerUser(user.FullName)
+			if err != nil {
+				ctx.Handle(500, "NumStatCommitsPerUser", err)
+				return
+			}
+			userstadistics = append(userstadistics, &UserStadistics{
+				Modifications: stats,
+				Commits: 	  commits,
+				User: 		  user.User,
+			})
 		}
-
-		stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
-		users = append(users, &AporteUsuario{
-			ID:              c.ID,
-			Name:            c.Name,
-			FullName:        c.FullName,
-			Avatar:          c.Avatar,
-			UseCustomAvatar: c.UseCustomAvatar,
-			Insertions:      stats.Insertions,
-			Deletions:       stats.Deletions,
-			Files:           stats.Files,
-		})
+		
 	}
-	//FIN ESTADISTICAS DE CADA COLABORADOR
 
-	//ESTADISTICAS REPOSITORIO
-	stats, _ = ctx.Repo.Commit.NumStatCommitsPerUser("")
-	statsRepo := &EstadisticasRepo{
-		Insertions: stats.Insertions,
-		Deletions:  stats.Deletions,
-		Files:      stats.Files,
+	fmt.Printf("%+v\n\n", repostadistics.Modifications)
+	for _, stat := range userstadistics {
+		fmt.Printf("%+v\n", stat.Modifications)
 	}
-	//FIN ESTADISTICAS REPOSITORIO
 
-	ctx.Data["EstadisticasRepo"] = statsRepo
-	ctx.Data["Collaborators"] = users
+	ctx.Data["Commiters"] = users
+	ctx.Data["RepoStadistics"] = repostadistics
+	ctx.Data["UserStadistics"] = userstadistics
+	ctx.Data["Username"] = ctx.Repo.Owner.Name
+	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
 	ctx.HTML(200, CONTRIBUTIONS)
 }
 

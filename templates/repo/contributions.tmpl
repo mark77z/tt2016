@@ -8,7 +8,7 @@
 					Aportaciones de los Usuarios
 				</div>
 				<div class="meta">
-					{{.EstadisticasRepo.Files}} Archivos Modificados/<span style="color: #6cc644;">{{.EstadisticasRepo.Insertions}} ++</span>/<span style="color: #bd2c00;">{{.EstadisticasRepo.Deletions}} -- </span>
+					{{.RepoStadistics.Modifications.Files}} Archivos Modificados/<span style="color: #6cc644;">{{.RepoStadistics.Modifications.Insertions}} ++</span>/<span style="color: #bd2c00;">{{.RepoStadistics.Modifications.Deletions}} -- </span>
 				</div>
 				<div class="description">
 					<canvas id="myChart" width="200" height="40px"></canvas>
@@ -16,19 +16,19 @@
 			</div>
 		</div>
 		<div class="ui cards">
-			{{range .Collaborators}}
+			{{range .UserStadistics}}
 				<div class="ui fluid card" style="width:48.7%;">
 					<div class="content">
-						<img class="right floated mini ui image" src="{{if not .UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.Avatar}}{{else}}/avatars/{{.ID}}{{end}}">
+						<img class="right floated mini ui image" src="{{if not .User.UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.User.Avatar}}{{else}}/avatars/{{.User.ID}}{{end}}">
 						<div class="header">
-							{{if .FullName}}
-								{{.FullName}}
-							{{else if .Name}}
-								{{.Name}}
+							{{if .User.FullName}}
+								{{.User.FullName}}
+							{{else if .User.Name}}
+								{{.User.Name}}
 							{{end}}
 						</div>
 						<div class="meta">
-							{{.Files}} Archivos Modificados/<span style="color: #6cc644;">{{.Insertions}} ++</span>/<span style="color: #bd2c00;">{{.Deletions}} -- </span>
+							<span style="color: #4078c0;">{{ .Commits.Total}} commits</span>/{{ .Modifications.Files}} Archivos Modificados/<span style="color: #6cc644;">{{ .Modifications.Insertions}}++</span>/<span style="color: #bd2c00;">{{ .Modifications.Deletions}} -- </span>
 						</div>
 						<div class="description">
 							<canvas id="myChart2" width="100" height="40px"></canvas>
