@@ -13,7 +13,7 @@ import (
 	"github.com/gogits/gogs/models"
 	"github.com/gogits/gogs/modules/base"
 	"github.com/gogits/gogs/modules/context"
-	"github.com/gogits/gogs/modules/log"
+	//"github.com/gogits/gogs/modules/log"
 	"github.com/gogits/gogs/modules/setting"
 )
 
@@ -43,11 +43,51 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 	return newCommits
 }
 
+type AporteUsuario struct {
+	Insertions      int64
+	Deletions       int64
+	Name            string
+	Files           int
+	ID              int64
+	FullName        string
+	Avatar          string
+	UseCustomAvatar bool
+}
+
+type EstadisticasRepo struct {
+	Insertions int64
+	Deletions  int64
+	Files      int
+}
+
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
 
 	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
 	author := ""
+	users := make([]*AporteUsuario, 0)
+
+	//ESTADISTICAS PROPIETARIO
+	if ctx.Repo.Owner.FullName != "" {
+		author = ctx.Repo.Owner.FullName
+	} else {
+		author = ctx.Repo.Owner.Name
+	}
+	stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
+
+	users = append(users, &AporteUsuario{
+		ID:              ctx.Repo.Owner.ID,
+		Name:            ctx.Repo.Owner.Name,
+		FullName:        ctx.Repo.Owner.FullName,
+		Avatar:          ctx.Repo.Owner.Avatar,
+		UseCustomAvatar: ctx.Repo.Owner.UseCustomAvatar,
+		Insertions:      stats.Insertions,
+		Deletions:       stats.Deletions,
+		Files:           stats.Files,
+	})
+	//FIN ESTADISTICAS PROPIETARIO
+
+	//ESTADISTICAS DE CADA COLABORADOR
 	for _, c := range collaborators {
 		if c.FullName == "" {
 			author = c.Name
@@ -56,18 +96,30 @@ func Contributions(ctx *context.Context) {
 		}
 
 		stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
-		log.Trace("STATS: insertions[%d] deletions[%d] user[%s] files[%d]", stats.Insertions, stats.Deletions, stats.Author, stats.Files)
-
+		users = append(users, &AporteUsuario{
+			ID:              c.ID,
+			Name:            c.Name,
+			FullName:        c.FullName,
+			Avatar:          c.Avatar,
+			UseCustomAvatar: c.UseCustomAvatar,
+			Insertions:      stats.Insertions,
+			Deletions:       stats.Deletions,
+			Files:           stats.Files,
+		})
 	}
+	//FIN ESTADISTICAS DE CADA COLABORADOR
 
-	if ctx.Repo.Owner.FullName != "" {
-		author = ctx.Repo.Owner.FullName
-	} else {
-		author = ctx.Repo.Owner.Name
+	//ESTADISTICAS REPOSITORIO
+	stats, _ = ctx.Repo.Commit.NumStatCommitsPerUser("")
+	statsRepo := &EstadisticasRepo{
+		Insertions: stats.Insertions,
+		Deletions:  stats.Deletions,
+		Files:      stats.Files,
 	}
-	stats, _ := ctx.Repo.Commit.NumStatCommitsPerUser(author)
-	log.Trace("STATS: insertions[%d] deletions[%d] user[%s] files[%d]", stats.Insertions, stats.Deletions, stats.Author, stats.Files)
+	//FIN ESTADISTICAS REPOSITORIO
 
+	ctx.Data["EstadisticasRepo"] = statsRepo
+	ctx.Data["Collaborators"] = users
 	ctx.HTML(200, CONTRIBUTIONS)
 }
 
