@@ -2,8 +2,21 @@
 <div class="repository commits">
 	{{template "repo/header" .}}
 	<div class="ui container">
+
+		{{range .AllCommits.Info}}
+				{{.NumCommits}} || {{.Date}} || {{.User}}
+				<br>
+		{{end}}
+		{{.AllCommits.Total}}
+
+		<br><br>
 		{{range .Commits}}
-			{{.NumCommits}} || {{.UserName}}<br>
+			{{range .Info}}
+				{{.NumCommits}} || {{.Date}} || {{.User}}
+				<br>
+			{{end}}
+			Total {{.Total}}
+			<br><br>
 		{{end}}
 
 	</div>

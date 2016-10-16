@@ -45,30 +45,47 @@ func RenderIssueLinks(oldCommits *list.List, repoLink string) *list.List {
 
 func Contributions(ctx *context.Context) {
 	ctx.Data["PageIsContributions"] = true
-	commits, err := ctx.Repo.Commit.CommitsCountPerCollab()
+
+	allcommits, err := ctx.Repo.Commit.CommitsCountPerCollab("")
 	if err != nil {
 		ctx.Handle(500, "CommitsCountPerCollab", err)
 		return
 	}
 
-	/*collaborators, _ := ctx.Repo.GetCollaborators
-	Both `git log branchName` and `git log commitId` work.
-	commits, err := ctx.Repo.Commit.CommitsByAuthor("astrear", page)
-	numCommitsAuthor := commits.Len()
-	ctx.Data["numCommitsAuthor"] = numCommitsAuthor
-	*/
-
+	commits := make([]*git.CommitsInfo, 0, 4)
+	ownercommits, err := ctx.Repo.Commit.CommitsCountPerCollab(ctx.Repo.Owner.FullName)
 	if err != nil {
-		ctx.Handle(500, "CommitsByRange", err)
+		ctx.Handle(500, "CommitsCountPerCollab", err)
 		return
 	}
-	//commits = RenderIssueLinks(commits, ctx.Repo.RepoLink)
-	//commits = models.ValidateCommitsWithEmails(commits)
-	//
+
+	if ownercommits != nil{
+		commits = append(commits, ownercommits)
+	}
+
+	users, err := ctx.Repo.Repository.GetCollaborators()
+	if err != nil {
+		ctx.Handle(500, "GetCollaborators", err)
+		return
+	}
+	ctx.Data["Collaborators"] = users
+
+	for _, user := range users {
+		commitspd, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
+		if err != nil {
+			ctx.Handle(500, "CommitsCountPerCollab", err)
+			return
+		}
+
+		if commitspd != nil{
+			commits = append(commits, commitspd)
+		}
+	}
+
+	ctx.Data["AllCommits"] = allcommits
 	ctx.Data["Commits"] = commits
 	ctx.Data["Username"] = ctx.Repo.Owner.Name
 	ctx.Data["Reponame"] = ctx.Repo.Repository.Name
-	//ctx.Data["CommitCount"] = commitsCount
 	ctx.Data["Branch"] = ctx.Repo.BranchName
 	ctx.HTML(200, CONTRIBUTIONS)
 }
