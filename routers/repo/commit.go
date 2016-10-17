@@ -84,12 +84,15 @@ func Contributions(ctx *context.Context) {
 		Collaboration: &models.Collaboration{},
 	})
 
-	collaborators, _ := ctx.Repo.Repository.GetCollaborators()
+	collaborators, err := ctx.Repo.Repository.GetCollaborators()
+	if err != nil {
+		fmt.Errorf("GetCollaborators: [%v]", err)
+	}
+
 	users = append(users, collaborators...)
 
 	userstadistics = make([]*UserStadistics, 0, 4)
 	for _, user := range users {
-
 		if user.FullName == "" {
 			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.Name)
 			if err != nil {
@@ -101,11 +104,14 @@ func Contributions(ctx *context.Context) {
 				ctx.Handle(500, "NumStatCommitsPerUser", err)
 				return
 			}
-			userstadistics = append(userstadistics, &UserStadistics{
-				Modifications: stats,
-				Commits:       commits,
-				User:          user.User,
-			})
+
+			if user.Type != models.USER_TYPE_PROFESSOR {
+				userstadistics = append(userstadistics, &UserStadistics{
+					Modifications: stats,
+					Commits:       commits,
+					User:          user.User,
+				})
+			}
 		} else {
 			commits, err := ctx.Repo.Commit.CommitsCountPerCollab(user.FullName)
 			if err != nil {
@@ -117,13 +123,15 @@ func Contributions(ctx *context.Context) {
 				ctx.Handle(500, "NumStatCommitsPerUser", err)
 				return
 			}
-			userstadistics = append(userstadistics, &UserStadistics{
-				Modifications: stats,
-				Commits:       commits,
-				User:          user.User,
-			})
-		}
 
+			if user.Type != models.USER_TYPE_PROFESSOR {
+				userstadistics = append(userstadistics, &UserStadistics{
+					Modifications: stats,
+					Commits:       commits,
+					User:          user.User,
+				})
+			}
+		}
 	}
 
 	fmt.Printf("%+v\n\n", repostadistics.Modifications)
