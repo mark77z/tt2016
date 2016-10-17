@@ -2955,3 +2955,7 @@ footer .ui.language .menu {
 #advanced_dropdowns{
   width: initial !important;
 }
+
+.CodeMirror, .CodeMirror-scroll{
+  min-height: 250px !important;
+}

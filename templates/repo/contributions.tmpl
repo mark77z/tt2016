@@ -1,10 +1,10 @@
 {{template "base/head" .}}
 <script>
     var randomColorFactor = function() {
-      return Math.round(Math.random() * 255);
+      return Math.round(Math.random()* 127) + 127;
     };
     var randomColor = function(opacity) {
-      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor()+ ',' + (opacity || '1') + ')';
     };
 
     function pintarGrafica(colorGrafica){
@@ -18,7 +18,7 @@
     	});
     }
 
-    var colorGraficaRepositorio = "#1db34f";
+    var colorGraficaRepositorio = "#E5F9AF";
 </script>
 <div class="repository commits">
 	{{template "repo/header" .}}
@@ -72,13 +72,13 @@
 							stacked: true,
 							scaleLabel: {
 								display: true,
-								labelString: 'Numero de Commits'
+								labelString: 'Commits'
 							}
 						}]
 					}
 				}
 			};
-			pintarGrafica("#1db34f");
+			pintarGrafica("#00B5AD");
 
 			var ctx = document.getElementById("canvas").getContext("2d");
 			window.myLine = new Chart(ctx, config);
@@ -87,7 +87,10 @@
 			{{range .UserStadistics}}
 				<div class="ui fluid card" style="width:48.7%;">
 					<div class="content">
-						<img class="right floated mini ui image" src="{{if not .User.UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.User.Avatar}}{{else}}/avatars/{{.User.ID}}{{end}}">
+						
+						<a href="{{AppSubUrl}}/{{.User.Name}}">
+						  <img class="right bordered floated mini ui image" src="{{if not .User.UseCustomAvatar}}https://secure.gravatar.com/avatar/{{.User.Avatar}}{{else}}/avatars/{{.User.ID}}{{end}}">
+						</a>
 						<div class="header">
 							{{if .User.FullName}}
 								{{.User.FullName}}
@@ -96,7 +99,7 @@
 							{{end}}
 						</div>
 						<div class="meta">
-							<span style="color: #4078c0;">{{ .Commits.Total}} commits</span>/<span style="color: #d36900;">{{ .Modifications.Files}} Archivos Modificados</span>/<span style="color: #6cc644;">{{ .Modifications.Insertions}}++</span>/<span style="color: #bd2c00;">{{ .Modifications.Deletions}} -- </span>
+							<span style="color: #5C5C5C;">{{ .Commits.Total}} commits</span>/<span style="color: #d36900;">{{ .Modifications.Files}} Archivos Modificados</span>/<span style="color: #6cc644;">{{ .Modifications.Insertions}}++</span>/<span style="color: #bd2c00;">{{ .Modifications.Deletions}} -- </span>
 						</div>
 						<div class="description">
 							<canvas id="canvas_{{.User.ID}}" width="200" height="50px"></canvas>

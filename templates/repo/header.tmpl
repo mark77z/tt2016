@@ -82,9 +82,11 @@
 					<i class="octicon octicon-book"></i> {{.i18n.Tr "repo.wiki"}}
 				</a>
 			{{end}}
+			{{if not .Repository.IsMirror}}
 			<a class="{{if .PageIsContributions}}active{{end}} item" href="{{.RepoLink}}/contributions">
 				<i class="octicon octicon-graph"></i> {{.i18n.Tr "repo.contributions"}}
 			</a>
+			{{end}}
 			{{if .IsRepositoryAdmin}}
 				<div class="right menu">
 					<a class="{{if .PageIsSettings}}active{{end}} item" href="{{.RepoLink}}/settings">
