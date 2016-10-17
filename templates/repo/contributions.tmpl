@@ -1,4 +1,25 @@
 {{template "base/head" .}}
+<script>
+    var randomColorFactor = function() {
+      return Math.round(Math.random() * 255);
+    };
+    var randomColor = function(opacity) {
+      return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '1') + ')';
+    };
+
+    function pintarGrafica(colorGrafica){
+    	$.each(config.data.datasets, function(i, dataset) {
+    		var color = colorGrafica;
+    		dataset.borderColor = color;
+    		dataset.backgroundColor = color;
+    		dataset.pointBorderColor = color;
+    		dataset.pointBackgroundColor = color;
+    		dataset.pointBorderWidth = 1;
+    	});
+    }
+
+    var colorGraficaRepositorio = "#1db34f";
+</script>
 <div class="repository commits">
 	{{template "repo/header" .}}
 	<div class="ui container">
@@ -8,13 +29,60 @@
 					Aportaciones de los Usuarios
 				</div>
 				<div class="meta">
-					{{.RepoStadistics.Modifications.Files}} Archivos Modificados/<span style="color: #6cc644;">{{.RepoStadistics.Modifications.Insertions}} ++</span>/<span style="color: #bd2c00;">{{.RepoStadistics.Modifications.Deletions}} -- </span>
+					<span style="color: #4078c0;">{{ .RepoStadistics.Commits.Total}} commits</span>/<span style="color: #d36900;">{{.RepoStadistics.Modifications.Files}} Archivos Modificados</span>/<span style="color: #6cc644;">{{.RepoStadistics.Modifications.Insertions}} ++</span>/<span style="color: #bd2c00;">{{.RepoStadistics.Modifications.Deletions}} -- </span>
 				</div>
 				<div class="description">
-					<canvas id="myChart" width="200" height="40px"></canvas>
+					<canvas id="canvas" width="200" height="40px"></canvas>
 				</div>
 			</div>
 		</div>
+		<script type="text/javascript">
+			var arr_labels = new Array();
+			var arr_commits = new Array();
+			var i = 0;
+
+			{{range .RepoStadistics.Commits.Info}} 
+				arr_labels[i] = {{ .Date}};
+				arr_commits[i] = {{ .NumCommits}};
+				i++;
+			{{end}}
+
+			var config = {
+				type: 'line',
+				data: {
+					labels: arr_labels.reverse(),
+					datasets: [{
+						label: "Commits",
+						data: arr_commits.reverse(),
+					}]
+				},
+				options: {
+					responsive: true,
+					tooltips: {
+						mode: 'x-axis',
+					},
+					scales: {
+						xAxes: [{
+							scaleLabel: {
+								display: true,
+								labelString: 'Fecha'
+							}
+						}],
+						yAxes: [{
+							stacked: true,
+							scaleLabel: {
+								display: true,
+								labelString: 'Numero de Commits'
+							}
+						}]
+					}
+				}
+			};
+			pintarGrafica("#1db34f");
+
+			var ctx = document.getElementById("canvas").getContext("2d");
+			window.myLine = new Chart(ctx, config);
+		</script>
 		<div class="ui cards">
 			{{range .UserStadistics}}
 				<div class="ui fluid card" style="width:48.7%;">
@@ -28,95 +96,63 @@
 							{{end}}
 						</div>
 						<div class="meta">
-							<span style="color: #4078c0;">{{ .Commits.Total}} commits</span>/{{ .Modifications.Files}} Archivos Modificados/<span style="color: #6cc644;">{{ .Modifications.Insertions}}++</span>/<span style="color: #bd2c00;">{{ .Modifications.Deletions}} -- </span>
+							<span style="color: #4078c0;">{{ .Commits.Total}} commits</span>/<span style="color: #d36900;">{{ .Modifications.Files}} Archivos Modificados</span>/<span style="color: #6cc644;">{{ .Modifications.Insertions}}++</span>/<span style="color: #bd2c00;">{{ .Modifications.Deletions}} -- </span>
 						</div>
 						<div class="description">
-							<canvas id="myChart2" width="100" height="40px"></canvas>
+							<canvas id="canvas_{{.User.ID}}" width="200" height="50px"></canvas>
 						</div>
 					</div>
 				</div>
+				<script type="text/javascript">
+					var arr_labels = new Array();
+					var arr_commits = new Array();
+					var i = 0;
+
+					{{range .Commits.Info}} 
+						arr_labels[i] = {{ .Date}};
+						arr_commits[i] = {{ .NumCommits}};
+						i++;
+					{{end}}
+
+					var config = {
+						type: 'line',
+						data: {
+							labels: arr_labels.reverse(),
+							datasets: [{
+								label: "Commits",
+								data: arr_commits.reverse(),
+							}]
+						},
+						options: {
+							responsive: true,
+							tooltips: {
+								mode: 'x-axis',
+							},
+							scales: {
+								xAxes: [{
+									scaleLabel: {
+										display: true,
+										labelString: 'Fecha'
+									}
+								}],
+								yAxes: [{
+									stacked: true,
+									scaleLabel: {
+										display: true,
+										labelString: 'Numero de Commits'
+									}
+								}]
+							}
+						}
+					};
+					
+					pintarGrafica(randomColor(1));
+
+					var ctx = document.getElementById("canvas_{{.User.ID}}").getContext("2d");
+					window.myLine = new Chart(ctx, config);
+				</script>
 			{{end}}
 		</div>
-		<script>
-		var ctx = $("#myChart");
-		var myChart = new Chart(ctx, {
-			type: 'line',
-			data: {
-				labels: ["January", "February", "March", "April", "May", "June", "July"],
-				datasets: [
-				{
-					label: "Commits",
-					fill: false,
-					lineTension: 0.1,
-					backgroundColor: "rgba(75,192,192,0.4)",
-					borderColor: "rgba(75,192,192,1)",
-					borderCapStyle: 'butt',
-					borderDash: [],
-					borderDashOffset: 0.0,
-					borderJoinStyle: 'miter',
-					pointBorderColor: "rgba(75,192,192,1)",
-					pointBackgroundColor: "#fff",
-					pointBorderWidth: 1,
-					pointHoverRadius: 5,
-					pointHoverBackgroundColor: "rgba(75,192,192,1)",
-					pointHoverBorderColor: "rgba(220,220,220,1)",
-					pointHoverBorderWidth: 2,
-					pointRadius: 1,
-					pointHitRadius: 10,
-					data: [65, 59, 80, 81, 56, 55, 40],
-					spanGaps: false,
-				}
-				]
-			},
-			options: {
-				scales: {
-					yAxes: [{
-						ticks: {
-							beginAtZero:true
-						}
-					}]
-				}
-			}
-		});
-
-		var ctx2 = $("#myChart2");
-		var myChart = new Chart(ctx2, {
-		    type: 'bar',
-		    data: {
-		        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
-		        datasets: [{
-		            label: '# of Votes',
-		            data: [12, 19, 3, 5, 2, 3],
-		            backgroundColor: [
-		                'rgba(255, 99, 132, 0.2)',
-		                'rgba(54, 162, 235, 0.2)',
-		                'rgba(255, 206, 86, 0.2)',
-		                'rgba(75, 192, 192, 0.2)',
-		                'rgba(153, 102, 255, 0.2)',
-		                'rgba(255, 159, 64, 0.2)'
-		            ],
-		            borderColor: [
-		                'rgba(255,99,132,1)',
-		                'rgba(54, 162, 235, 1)',
-		                'rgba(255, 206, 86, 1)',
-		                'rgba(75, 192, 192, 1)',
-		                'rgba(153, 102, 255, 1)',
-		                'rgba(255, 159, 64, 1)'
-		            ],
-		            borderWidth: 1
-		        }]
-		    },
-		    options: {
-		        scales: {
-		            yAxes: [{
-		                ticks: {
-		                    beginAtZero:true
-		                }
-		            }]
-		        }
-		    }
-		});
-		</script>
 	</div>
 </div>
 {{template "base/footer" .}}
