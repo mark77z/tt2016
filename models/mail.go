@@ -25,14 +25,14 @@ const (
 	MAIL_AUTH_RESET_PASSWORD  base.TplName = "auth/reset_passwd"
 	MAIL_AUTH_REGISTER_NOTIFY base.TplName = "auth/register_notify"
 
-	MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY 	base.TplName = "auth/register_professor_notify"
-	MAIL_AUTH_REGISTER_PROFESSOR_APPROVED 	base.TplName = "auth/register_professor_approved"
-	MAIL_AUTH_REGISTER_PROFESSOR_DENIED 	base.TplName = "auth/register_professor_denied"
+	MAIL_AUTH_REGISTER_PROFESSOR_NOTIFY   base.TplName = "auth/register_professor_notify"
+	MAIL_AUTH_REGISTER_PROFESSOR_APPROVED base.TplName = "auth/register_professor_approved"
+	MAIL_AUTH_REGISTER_PROFESSOR_DENIED   base.TplName = "auth/register_professor_denied"
 
 	MAIL_ISSUE_COMMENT base.TplName = "issue/comment"
 	MAIL_ISSUE_MENTION base.TplName = "issue/mention"
 
-	MAIL_NOTIFY_COLLABORATOR base.TplName = "notify/collaborator"
+	MAIL_NOTIFY_COLLABORATOR     base.TplName = "notify/collaborator"
 	MAIL_NOTIFY_REG_COLLABORATOR base.TplName = "notify/reg_collaborator"
 )
 
@@ -176,7 +176,7 @@ func SendRegisterNotifyMail(c *macaron.Context, u *User) {
 // SendCollaboratorMail sends mail notification to new collaborator.
 func SendCollaboratorMail(u, doer *User, repo *Repository) {
 	repoName := path.Join(repo.Owner.Name, repo.Name)
-	subject := fmt.Sprintf("%s added you to %s", doer.DisplayName(), repoName)
+	subject := fmt.Sprintf("GitWolf: %s te añadio como colaboorador a %s", doer.DisplayName(), repoName)
 
 	data := map[string]interface{}{
 		"Subject":  subject,
@@ -197,7 +197,7 @@ func SendCollaboratorMail(u, doer *User, repo *Repository) {
 
 func SendRegisterInvitationCollab(email string, doer *User, repo *Repository) {
 	repoName := path.Join(repo.Owner.Name, repo.Name)
-	subject := fmt.Sprintf("%s added you to %s", doer.DisplayName(), repoName)
+	subject := fmt.Sprintf("GitWolf: %s te añadio como colaboorador a %s", doer.DisplayName(), repoName)
 
 	data := map[string]interface{}{
 		"Subject":  subject,

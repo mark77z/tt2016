@@ -10,20 +10,20 @@
 		<a class="{{if .PageIsSettingsPassword}}active{{end}} item" href="{{AppSubUrl}}/user/settings/password">
 			{{.i18n.Tr "settings.password"}}
 		</a>
-		<a class="{{if .PageIsSettingsEmails}}active{{end}} item" href="{{AppSubUrl}}/user/settings/email">
+		<!--<a class="{{if .PageIsSettingsEmails}}active{{end}} item" href="{{AppSubUrl}}/user/settings/email">
 			{{.i18n.Tr "settings.emails"}}
-		</a>
+		</a>-->
 		{{if .SignedUser.IsProfessor}}
 			<a class="{{if .PageIsSettingsSubjects}}active{{end}} item" href="{{AppSubUrl}}/user/settings/course">
 				{{.i18n.Tr "user.settings.courses"}}
 			</a>
 		{{end}}
-		<a class="{{if .PageIsSettingsSSHKeys}}active{{end}} item" href="{{AppSubUrl}}/user/settings/ssh">
+		<!--<a class="{{if .PageIsSettingsSSHKeys}}active{{end}} item" href="{{AppSubUrl}}/user/settings/ssh">
 			{{.i18n.Tr "settings.ssh_keys"}}
-		</a>
-		<a class="{{if .PageIsSettingsApplications}}active{{end}} item" href="{{AppSubUrl}}/user/settings/applications">
+		</a>-->
+		<!--<a class="{{if .PageIsSettingsApplications}}active{{end}} item" href="{{AppSubUrl}}/user/settings/applications">
 			{{.i18n.Tr "settings.applications"}}
-		</a>
+		</a>-->
 		<a class="{{if .PageIsSettingsDelete}}active{{end}} item" href="{{AppSubUrl}}/user/settings/delete">
 			{{.i18n.Tr "settings.delete"}}
 		</a>
